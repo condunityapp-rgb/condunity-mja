@@ -41,19 +41,20 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 </head>
 <body>
   <header class="header">
-    <!-- ÍCONE / LOGO CONDUNITY -->
+    <!-- Ícone/Logo CondUnity -->
     <div class="logo">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
            xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:10px">
         <defs>
-          <linearGradient id="g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <linearGradient id="cuGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/>
           </linearGradient>
         </defs>
-        <rect width="40" height="40" rx="10" fill="url(#g)"/>
-        <text x="20" y="24" text-anchor="middle"
-              font-family="Inter, Segoe UI, Arial, sans-serif"
-              font-size="11.5" font-weight="800" fill="#fff">CondU</text>
+        <rect width="40" height="40" rx="10" fill="url(#cuGrad)"/>
+        <rect x="8" y="14" width="7" height="16" rx="1.5" fill="white" opacity=".9"/>
+        <rect x="17" y="10" width="7" height="20" rx="1.5" fill="white" opacity=".9"/>
+        <rect x="26" y="16" width="7" height="14" rx="1.5" fill="white" opacity=".9"/>
+        <path d="M11 14 v9 c0 5 4 7 9 7s9-2 9-7v-9" stroke="#0ea5e9" stroke-width="2.2" stroke-linecap="round"/>
       </svg>
     </div>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
@@ -138,18 +139,29 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  // === TROQUE AQUI (ou mantenha suas chaves atuais) ===
+  // === SUAS CHAVES (use as que já funcionam) ===
   const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-  // ====================================================
+  // =============================================
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
-
+  let seenMsgIds = new Set();
   const $ = id => document.getElementById(id);
   const show = el => el.classList.remove('hidden');
   const hide = el => el.classList.add('hidden');
   function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
+
+  const appendMsg = (m) => {
+    if (m?.id && seenMsgIds.has(m.id)) return;
+    if (m?.id) seenMsgIds.add(m.id);
+    const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
+    const div = document.createElement('div');
+    div.className='msg';
+    div.innerHTML = `<span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}`;
+    $('chatBox').appendChild(div);
+    $('chatBox').scrollTop = $('chatBox').scrollHeight;
+  };
 
   async function login(){
     const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
@@ -166,12 +178,10 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   async function logout(){ await client.auth.signOut(); location.reload(); }
 
   async function boot(){
-    // 1) Usuário logado
     const { data: userData } = await client.auth.getUser();
     const uid = userData?.user?.id;
     if(!uid){ alert('Sem sessão'); return; }
 
-    // 2) Perfil pelo uid (exige policy "profiles: read own")
     const { data: me, error: eProf } = await client.from('profiles')
       .select('id, full_name, role, condominium_id, unit_id')
       .eq('id', uid).single();
@@ -179,17 +189,14 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     profile = me; condoId = me.condominium_id; isManager = (me.role === 'manager' || me.role === 'admin');
     $('roleBadge').innerText = isManager ? 'Manager' : 'Resident';
 
-    // 3) Sala "Geral"
     const { data: room, error: eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
     if(eRoom){ alert('Sala de chat não encontrada'); return; }
     generalRoomId = room.id;
 
-    // 4) Módulos
     listenChat(); await loadChat();
     if(isManager) show($('postForm')); else hide($('postForm'));
     await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
-    // 5) Perfil visual
     $('profileInfo').innerHTML = `
       <div class="item">
         <div><strong>Nome:</strong> ${me?.full_name || '-'}</div>
@@ -202,20 +209,14 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   async function loadChat(){
     const { data, error } = await client
       .from('chat_messages')
-      .select('content, created_at, room_id, sender_name')
+      .select('id, content, created_at, room_id, sender_name')
       .eq('room_id', generalRoomId)
       .order('created_at',{ascending:true})
       .limit(200);
     if(error){ alert('Erro ao carregar chat: '+error.message); return; }
-
-    $('chatBox').innerHTML = (data||[]).map(m=>{
-      const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
-      return `<div class="msg">
-        <span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>
-        ${escapeHtml(m.content)}
-      </div>`;
-    }).join('');
-    $('chatBox').scrollTop = $('chatBox').scrollHeight;
+    seenMsgIds = new Set();
+    $('chatBox').innerHTML = '';
+    (data||[]).forEach(m => appendMsg(m));
   }
 
   async function sendMessage(){
@@ -224,27 +225,27 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
       (profile?.full_name && profile.full_name.trim()) ||
       ($('whoami').innerText || 'Usuário');
 
-    const { error } = await client.from('chat_messages').insert({
-      room_id: generalRoomId,
-      content: text,
-      sender_id: profile?.id || null,
-      sender_name: displayName
-    });
+    const { data, error } = await client.from('chat_messages')
+      .insert({
+        room_id: generalRoomId,
+        content: text,
+        sender_id: profile?.id || null,
+        sender_name: displayName
+      })
+      .select('id, content, created_at, room_id, sender_name')
+      .single();
+
     if (error) { alert('Erro ao enviar: ' + error.message); return; }
     $('chatInput').value='';
+    appendMsg(data); // mostra instantâneo
   }
 
   function listenChat(){
     client.channel('chat-insert')
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'}, payload=>{
-        if(payload.new.room_id !== generalRoomId) return;
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages' }, payload=>{
         const m = payload.new;
-        const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
-        const div = document.createElement('div');
-        div.className='msg';
-        div.innerHTML = `<span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}`;
-        $('chatBox').appendChild(div);
-        $('chatBox').scrollTop = $('chatBox').scrollHeight;
+        if (m.room_id !== generalRoomId) return;
+        appendMsg(m);
       })
       .subscribe();
   }
@@ -318,13 +319,11 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   const escapeHtml = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
 
-  // Restaura sessão se já estava logado
+  // Sessão existente
   (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email; await boot(); } })();
 
   // Service Worker (PWA)
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  }
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
   </script>
 </body>
 </html>
