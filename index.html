@@ -1,83 +1,276 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>CondUnity - Mansão Jorge Amado</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background:#f7f7f7; }
-    .card { background:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-    input, button { padding:8px; margin:4px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CondUnity - Mansão Jorge Amado</title>
+<link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <h1>CondUnity - Mansão Jorge Amado</h1>
-  <div class="card">
-    <h2>Login</h2>
-    <input id="email" placeholder="Email"><br>
-    <input id="password" type="password" placeholder="Senha"><br>
-    <button onclick="login()">Entrar</button>
-    <button onclick="signup()">Criar conta</button>
+  <header class="header">
+    <div class="logo">CU</div>
+    <div class="title">CondUnity • Mansão Jorge Amado</div>
+    <div style="margin-left:auto" class="small" id="whoami"></div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <input id="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Senha">
+        <button class="primary" onclick="login()">Entrar</button>
+        <button onclick="signup()">Criar conta</button>
+        <button onclick="logout()">Sair</button>
+        <span class="badge" id="roleBadge" title="Perfil"></span>
+      </div>
+      <div class="small">Dica: use os logins de teste que você cadastrou no Supabase (síndico e morador).</div>
+    </div>
+
+    <div class="nav">
+      <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
+      <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
+      <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
+      <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
+      <button id="tabBtn-profile" onclick="openTab('profile')">Perfil</button>
+    </div>
+
+    <div class="flex">
+      <div class="flex-1">
+        <!-- CHAT -->
+        <section id="tab-chat" class="card">
+          <h3>Chat Geral do Condomínio</h3>
+          <div id="chatBox" class="chat-box"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="chatInput" class="flex-1" placeholder="Escreva uma mensagem...">
+            <button class="primary" onclick="sendMessage()">Enviar</button>
+          </div>
+        </section>
+
+        <!-- POSTS -->
+        <section id="tab-posts" class="card hidden">
+          <h3>Comunicados</h3>
+          <div id="postsList" class="list"></div>
+          <div id="postForm" class="card hidden">
+            <div class="row">
+              <input id="postTitle" class="flex-1" placeholder="Título">
+            </div>
+            <div class="row">
+              <textarea id="postContent" class="flex-1" placeholder="Conteúdo"></textarea>
+            </div>
+            <button class="primary" onclick="createPost()">Publicar comunicado</button>
+          </div>
+        </section>
+
+        <!-- BOOKINGS -->
+        <section id="tab-bookings" class="card hidden">
+          <h3>Reservas</h3>
+          <div class="row">
+            <select id="amenitySelect"></select>
+            <input id="startAt" type="datetime-local">
+            <input id="endAt" type="datetime-local">
+            <button class="primary" onclick="requestBooking()">Solicitar</button>
+          </div>
+          <div class="small">Dica: Síndico pode aprovar/rejeitar abaixo.</div>
+          <div id="bookingsList" class="list" style="margin-top:10px"></div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="tab-profile" class="card hidden">
+          <h3>Perfil</h3>
+          <div id="profileInfo"></div>
+        </section>
+      </div>
+
+      <!-- ADS -->
+      <aside class="sidebar">
+        <section id="tab-ads" class="card">
+          <h3>Parceiros</h3>
+          <div id="adsBox" class="list"></div>
+        </section>
+      </aside>
+    </div>
   </div>
 
-  <div class="card" id="chatBox" style="display:none">
-    <h2>Chat Geral do Condomínio</h2>
-    <div id="messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:5px; background:#fafafa;"></div>
-    <input id="chatInput" placeholder="Escreva uma mensagem...">
-    <button onclick="sendMessage()">Enviar</button>
-  </div>
+  <footer class="footer">CondUnity • MVP gratuito • Supabase + GitHub Pages</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  // === CONFIGURE AQUI ===
+  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
+  // ======================
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let session = null;
-let generalRoomId = null;
+  let session = null;
+  let profile = null;
+  let condoId = null;
+  let generalRoomId = null;
+  let isManager = false;
 
-async function login(){
-  const { data, error } = await client.auth.signInWithPassword({
-    email: document.getElementById('email').value,
-    password: document.getElementById('password').value
-  });
-  if(error){ alert(error.message); return; }
-  session = data.session;
-  document.getElementById('chatBox').style.display='block';
-  loadRoom();
-}
+  function $(id){ return document.getElementById(id); }
+  function show(el){ el.classList.remove('hidden'); }
+  function hide(el){ el.classList.add('hidden'); }
+  function openTab(k){
+    ['chat','posts','bookings','ads','profile'].forEach(t=>{
+      const s = $('tab-'+t); const b = $('tabBtn-'+t);
+      if(t===k){ show(s); b.classList.add('active'); } else { hide(s); b.classList.remove('active'); }
+    });
+  }
 
-async function signup(){
-  const { data, error } = await client.auth.signUp({
-    email: document.getElementById('email').value,
-    password: document.getElementById('password').value
-  });
-  if(error){ alert(error.message); return; }
-  alert('Conta criada! Agora faça login.');
-}
+  async function login(){
+    const { data, error } = await client.auth.signInWithPassword({
+      email: $('email').value, password: $('password').value
+    });
+    if(error){ alert(error.message); return; }
+    session = data.session;
+    $('whoami').innerText = data.user.email;
+    await boot();
+  }
 
-async function loadRoom(){
-  const { data, error } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
-  if(data) generalRoomId = data.id;
-  listenMessages();
-}
+  async function signup(){
+    const { error } = await client.auth.signUp({ email: $('email').value, password: $('password').value });
+    if(error){ alert(error.message); return; }
+    alert('Conta criada! Verifique as configurações de confirmação no Supabase. Depois, faça login.');
+  }
 
-async function sendMessage(){
-  const text = document.getElementById('chatInput').value;
-  if(!text) return;
-  await client.from('chat_messages').insert({ room_id: generalRoomId, content: text });
-  document.getElementById('chatInput').value='';
-}
+  async function logout(){
+    await client.auth.signOut();
+    session = null; profile=null; $('whoami').innerText='';
+    $('roleBadge').innerText='';
+    $('chatBox').innerHTML=''; $('postsList').innerHTML=''; $('bookingsList').innerHTML=''; $('adsBox').innerHTML='';
+  }
 
-function listenMessages(){
-  client.channel('room-changes')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' },
-    payload => {
-      const div = document.getElementById('messages');
-      div.innerHTML += '<div>'+payload.new.content+'</div>';
-      div.scrollTop = div.scrollHeight;
-    })
-    .subscribe();
-}
-</script>
+  async function boot(){
+    // carregar profile
+    const { data: me } = await client.from('profiles').select('id, full_name, role, condominium_id, unit_id').single();
+    profile = me;
+    isManager = me?.role === 'manager' || me?.role === 'admin';
+    $('roleBadge').innerText = isManager ? 'Manager' : 'Resident';
+    condoId = me?.condominium_id;
+
+    // sala geral
+    const { data: room } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
+    generalRoomId = room?.id;
+    listenChat();
+    await loadChat();
+
+    // posts
+    if(isManager) show($('postForm')); else hide($('postForm'));
+    await loadPosts();
+
+    // amenities + bookings
+    await loadAmenities();
+    await loadBookings();
+
+    // ads
+    await loadAds();
+
+    // profile box
+    $('profileInfo').innerHTML = `
+      <div class="item">
+        <div><strong>Nome:</strong> ${me?.full_name || '-'}</div>
+        <div><strong>Role:</strong> ${me?.role}</div>
+        <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div>
+      </div>
+    `;
+  }
+
+  // ===== Chat =====
+  async function loadChat(){
+    const { data } = await client.from('chat_messages').select('content, created_at').order('created_at',{ascending:true}).limit(100);
+    $('chatBox').innerHTML = (data||[]).map(m=>`<div class="msg"><span class="kv">${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}</div>`).join('');
+    $('chatBox').scrollTop = $('chatBox').scrollHeight;
+  }
+
+  async function sendMessage(){
+    const text = $('chatInput').value.trim();
+    if(!text) return;
+    await client.from('chat_messages').insert({ room_id: generalRoomId, content: text });
+    $('chatInput').value='';
+  }
+
+  function listenChat(){
+    client.channel('chat-insert')
+      .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chat_messages' }, payload => {
+        const m = payload.new;
+        const div = document.createElement('div');
+        div.className='msg';
+        div.innerHTML = '<span class="kv">'+new Date(m.created_at).toLocaleString('pt-BR')+'</span><br>'+escapeHtml(m.content);
+        $('chatBox').appendChild(div);
+        $('chatBox').scrollTop = $('chatBox').scrollHeight;
+      })
+      .subscribe();
+  }
+
+  // ===== Posts =====
+  async function loadPosts(){
+    const { data } = await client.from('posts').select('id,title,content,created_at').order('created_at',{ascending:false}).limit(50);
+    $('postsList').innerHTML = (data||[]).map(p=>`<div class="item"><div><strong>${escapeHtml(p.title)}</strong></div><div class="kv">${new Date(p.created_at).toLocaleString('pt-BR')}</div><div>${escapeHtml(p.content)}</div></div>`).join('');
+  }
+  async function createPost(){
+    const title = $('postTitle').value.trim();
+    const content = $('postContent').value.trim();
+    if(!title || !content){ alert('Preencha título e conteúdo'); return; }
+    await client.from('posts').insert({ condominium_id: condoId, author_id: profile.id, title, content });
+    $('postTitle').value=''; $('postContent').value='';
+    await loadPosts();
+  }
+
+  // ===== Bookings =====
+  async function loadAmenities(){
+    const { data } = await client.from('amenities').select('id,name').order('name');
+    $('amenitySelect').innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+  }
+  async function requestBooking(){
+    const amenity_id = $('amenitySelect').value;
+    const starts_at = $('startAt').value? new Date($('startAt').value).toISOString(): null;
+    const ends_at = $('endAt').value? new Date($('endAt').value).toISOString(): null;
+    if(!amenity_id || !starts_at || !ends_at) { alert('Preencha área comum e horários'); return; }
+    const payload = { condominium_id: condoId, amenity_id, requester_id: profile.id, starts_at, ends_at };
+    const { error } = await client.from('bookings').insert(payload);
+    if(error){ alert(error.message); return; }
+    await loadBookings();
+  }
+  async function loadBookings(){
+    const { data } = await client.from('bookings').select('id,amenity_id,starts_at,ends_at,status').order('starts_at',{ascending:false}).limit(50);
+    $('bookingsList').innerHTML = (data||[]).map(b=>{
+      const actions = isManager && b.status==='pending'
+        ? `<button onclick="setBooking('${b.id}','approved')">Aprovar</button> <button onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
+        : `<span class="badge">${b.status}</span>`;
+      return `<div class="item"><div><strong>${b.amenity_id}</strong></div><div class="kv">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div><div>${actions}</div></div>`;
+    }).join('');
+  }
+  async function setBooking(id, status){
+    const { error } = await client.from('bookings').update({ status }).eq('id', id);
+    if(error){ alert(error.message); return; }
+    await loadBookings();
+  }
+
+  // ===== Ads =====
+  async function loadAds(){
+    const now = new Date().toISOString();
+    const { data } = await client.from('partner_ads')
+      .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
+      .order('priority',{ascending:false});
+    const filtered = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
+    $('adsBox').innerHTML = filtered.map(a=>`
+      <a class="item" href="${a.link_url||'#'}" target="_blank">
+        <div><strong>${escapeHtml(a.title)}</strong></div>
+        ${a.image_url ? `<img src="${a.image_url}" alt="${escapeHtml(a.title)}" style="width:100%;border-radius:8px;margin-top:6px">` : ''}
+      </a>
+    `).join('');
+  }
+
+  // helpers
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+  function fmt(s){ try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } }
+
+  // auto session restore
+  (async ()=>{
+    const { data } = await client.auth.getSession();
+    session = data.session;
+    if(session){ $('whoami').innerText = session.user.email; boot(); }
+  })();
+  </script>
 </body>
 </html>
