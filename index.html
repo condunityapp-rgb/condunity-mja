@@ -4,12 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CondUnity - Mansão Jorge Amado</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
 <style>
 :root{--bg:#f7f9fc;--card:#ffffff;--text:#0f172a;--muted:#475569;--primary:#2563eb}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
 .header{padding:20px 16px;display:flex;align-items:center;gap:12px;background:#fff;box-shadow:0 1px 0 rgba(15,23,42,.06);position:sticky;top:0;z-index:10}
-.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1d4ed8,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
 .title{font-size:20px;font-weight:700}
 .container{max-width:1100px;margin:24px auto;padding:0 16px}
 .nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
@@ -36,7 +41,21 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 </head>
 <body>
   <header class="header">
-    <div class="logo">CDNY</div>
+    <!-- ÍCONE / LOGO CONDUNITY -->
+    <div class="logo">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
+           xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:10px">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="10" fill="url(#g)"/>
+        <text x="20" y="24" text-anchor="middle"
+              font-family="Inter, Segoe UI, Arial, sans-serif"
+              font-size="11.5" font-weight="800" fill="#fff">CondU</text>
+      </svg>
+    </div>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
     <div style="margin-left:auto" class="small" id="whoami"></div>
   </header>
@@ -119,10 +138,10 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  // === SUAS CHAVES (DEIXE COMO ESTÃO, JÁ USANDO AS SUAS) ===
+  // === TROQUE AQUI (ou mantenha suas chaves atuais) ===
   const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-  // =========================================================
+  // ====================================================
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
@@ -147,13 +166,15 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   async function logout(){ await client.auth.signOut(); location.reload(); }
 
   async function boot(){
-    // 1) Descobrir usuário logado
+    // 1) Usuário logado
     const { data: userData } = await client.auth.getUser();
     const uid = userData?.user?.id;
     if(!uid){ alert('Sem sessão'); return; }
 
-    // 2) Buscar profile explicitamente pelo uid
-    const { data: me, error: eProf } = await client.from('profiles').select('id, full_name, role, condominium_id, unit_id').eq('id', uid).single();
+    // 2) Perfil pelo uid (exige policy "profiles: read own")
+    const { data: me, error: eProf } = await client.from('profiles')
+      .select('id, full_name, role, condominium_id, unit_id')
+      .eq('id', uid).single();
     if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
     profile = me; condoId = me.condominium_id; isManager = (me.role === 'manager' || me.role === 'admin');
     $('roleBadge').innerText = isManager ? 'Manager' : 'Resident';
@@ -163,12 +184,12 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     if(eRoom){ alert('Sala de chat não encontrada'); return; }
     generalRoomId = room.id;
 
-    // 4) Carregar módulos
+    // 4) Módulos
     listenChat(); await loadChat();
     if(isManager) show($('postForm')); else hide($('postForm'));
     await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
-    // 5) Perfil
+    // 5) Perfil visual
     $('profileInfo').innerHTML = `
       <div class="item">
         <div><strong>Nome:</strong> ${me?.full_name || '-'}</div>
@@ -177,36 +198,64 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
       </div>`;
   }
 
-  // Chat
+  // ===== CHAT =====
   async function loadChat(){
-    const { data, error } = await client.from('chat_messages').select('content, created_at, room_id').eq('room_id', generalRoomId).order('created_at',{ascending:true}).limit(100);
+    const { data, error } = await client
+      .from('chat_messages')
+      .select('content, created_at, room_id, sender_name')
+      .eq('room_id', generalRoomId)
+      .order('created_at',{ascending:true})
+      .limit(200);
     if(error){ alert('Erro ao carregar chat: '+error.message); return; }
-    $('chatBox').innerHTML = (data||[]).map(m=>`<div class="msg"><span class="kv">${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}</div>`).join('');
+
+    $('chatBox').innerHTML = (data||[]).map(m=>{
+      const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
+      return `<div class="msg">
+        <span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>
+        ${escapeHtml(m.content)}
+      </div>`;
+    }).join('');
     $('chatBox').scrollTop = $('chatBox').scrollHeight;
   }
+
   async function sendMessage(){
     const text = $('chatInput').value.trim(); if(!text) return;
-    const { error } = await client.from('chat_messages').insert({ room_id: generalRoomId, content: text });
+    const displayName =
+      (profile?.full_name && profile.full_name.trim()) ||
+      ($('whoami').innerText || 'Usuário');
+
+    const { error } = await client.from('chat_messages').insert({
+      room_id: generalRoomId,
+      content: text,
+      sender_id: profile?.id || null,
+      sender_name: displayName
+    });
     if (error) { alert('Erro ao enviar: ' + error.message); return; }
-    $('chatInput').value='';  // otimismo local
+    $('chatInput').value='';
   }
+
   function listenChat(){
     client.channel('chat-insert')
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'}, payload=>{
         if(payload.new.room_id !== generalRoomId) return;
         const m = payload.new;
+        const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
         const div = document.createElement('div');
         div.className='msg';
-        div.innerHTML = '<span class="kv">'+new Date(m.created_at).toLocaleString('pt-BR')+'</span><br>'+escapeHtml(m.content);
+        div.innerHTML = `<span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}`;
         $('chatBox').appendChild(div);
         $('chatBox').scrollTop = $('chatBox').scrollHeight;
       })
       .subscribe();
   }
 
-  // Posts
+  // ===== POSTS =====
   async function loadPosts(){
-    const { data, error } = await client.from('posts').select('id,title,content,created_at').eq('condominium_id', condoId).order('created_at',{ascending:false}).limit(50);
+    const { data, error } = await client.from('posts')
+      .select('id,title,content,created_at')
+      .eq('condominium_id', condoId)
+      .order('created_at',{ascending:false})
+      .limit(50);
     if(error){ $('postsList').innerHTML='<div class="item">Sem permissão para ler comunicados.</div>'; return; }
     $('postsList').innerHTML = (data||[]).map(p=>`<div class="item"><div><strong>${escapeHtml(p.title)}</strong></div><div class="kv">${new Date(p.created_at).toLocaleString('pt-BR')}</div><div>${escapeHtml(p.content)}</div></div>`).join('');
   }
@@ -218,7 +267,7 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     $('postTitle').value=''; $('postContent').value=''; await loadPosts();
   }
 
-  // Reservas
+  // ===== RESERVAS =====
   async function loadAmenities(){
     const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
     $('amenitySelect').innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
@@ -233,7 +282,11 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     await loadBookings();
   }
   async function loadBookings(){
-    const { data } = await client.from('bookings').select('id,amenity_id,starts_at,ends_at,status').eq('condominium_id', condoId).order('starts_at',{ascending:false}).limit(50);
+    const { data } = await client.from('bookings')
+      .select('id,amenity_id,starts_at,ends_at,status')
+      .eq('condominium_id', condoId)
+      .order('starts_at',{ascending:false})
+      .limit(50);
     $('bookingsList').innerHTML = (data||[]).map(b=>{
       const actions = (isManager && b.status==='pending')
         ? `<button onclick="setBooking('${b.id}','approved')">Aprovar</button> <button onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
@@ -247,10 +300,12 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     await loadBookings();
   }
 
-  // Ads
+  // ===== ADS =====
   async function loadAds(){
     const now = new Date().toISOString();
-    const { data } = await client.from('partner_ads').select('title,image_url,link_url,priority,starts_at,ends_at,is_active').eq('condominium_id', condoId).order('priority',{ascending:false});
+    const { data } = await client.from('partner_ads')
+      .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
+      .eq('condominium_id', condoId).order('priority',{ascending:false});
     const filtered = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
     $('adsBox').innerHTML = filtered.map(a=>`
       <a class="item" href="${a.link_url||'#'}" target="_blank">
@@ -265,6 +320,11 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 
   // Restaura sessão se já estava logado
   (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email; await boot(); } })();
+
+  // Service Worker (PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
   </script>
 </body>
 </html>
