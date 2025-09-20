@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>CondUnity - Mansão Jorge Amado</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background:#f7f7f7; }
+    .card { background:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    input, button { padding:8px; margin:4px; }
+  </style>
+</head>
+<body>
+  <h1>CondUnity - Mansão Jorge Amado</h1>
+  <div class="card">
+    <h2>Login</h2>
+    <input id="email" placeholder="Email"><br>
+    <input id="password" type="password" placeholder="Senha"><br>
+    <button onclick="login()">Entrar</button>
+    <button onclick="signup()">Criar conta</button>
+  </div>
+
+  <div class="card" id="chatBox" style="display:none">
+    <h2>Chat Geral do Condomínio</h2>
+    <div id="messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:5px; background:#fafafa;"></div>
+    <input id="chatInput" placeholder="Escreva uma mensagem...">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://SEU-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'SUA-ANON-KEY';
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let session = null;
+let generalRoomId = null;
+
+async function login(){
+  const { data, error } = await client.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  });
+  if(error){ alert(error.message); return; }
+  session = data.session;
+  document.getElementById('chatBox').style.display='block';
+  loadRoom();
+}
+
+async function signup(){
+  const { data, error } = await client.auth.signUp({
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  });
+  if(error){ alert(error.message); return; }
+  alert('Conta criada! Agora faça login.');
+}
+
+async function loadRoom(){
+  const { data, error } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
+  if(data) generalRoomId = data.id;
+  listenMessages();
+}
+
+async function sendMessage(){
+  const text = document.getElementById('chatInput').value;
+  if(!text) return;
+  await client.from('chat_messages').insert({ room_id: generalRoomId, content: text });
+  document.getElementById('chatInput').value='';
+}
+
+function listenMessages(){
+  client.channel('room-changes')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' },
+    payload => {
+      const div = document.getElementById('messages');
+      div.innerHTML += '<div>'+payload.new.content+'</div>';
+      div.scrollTop = div.scrollHeight;
+    })
+    .subscribe();
+}
+</script>
+</body>
+</html>
