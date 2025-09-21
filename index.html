@@ -56,23 +56,24 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 .small{font-size:12px;color:#64748b}
 
 /* Banner de instalação */
-.install-banner{
-  position:fixed;left:12px;right:12px;bottom:12px;z-index:50;
-  background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:12px 14px;
-  box-shadow:0 10px 24px rgba(15,23,42,.12);display:none
-}
+.install-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:50;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:12px 14px;box-shadow:0 10px 24px rgba(15,23,42,.12);display:none}
 .install-banner .title{font-weight:700}
 .install-banner .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .install-banner .hint{font-size:12px;color:#64748b}
 .install-banner .actions{display:flex;gap:8px}
 .install-banner .xbtn{background:transparent;border:none;cursor:pointer;font-size:18px;line-height:1}
+
+/* Emoji picker simples */
+.emoji-toggle{border:1px solid #e2e8f0;background:#fff;border-radius:12px;padding:0 10px;font-size:20px;cursor:pointer}
+.emoji-panel{position:absolute;bottom:54px;right:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px;display:none;box-shadow:0 8px 20px rgba(15,23,42,.12);max-width:280px}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;font-size:22px}
+.chat-row{display:flex;gap:8px;align-items:center;position:relative}
 </style>
 </head>
 <body>
   <header class="header">
     <div class="logo">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
-           xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:12px">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:12px">
         <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
         <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
         <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".9"/>
@@ -105,6 +106,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
       <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
       <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
+      <button id="tabBtn-invoices" onclick="openTab('invoices')">Faturas</button>
       <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
       <button id="tabBtn-profile" onclick="openTab('profile')">Perfil</button>
     </div>
@@ -115,9 +117,13 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
         <section id="tab-chat" class="card">
           <h3>Chat Geral do Condomínio</h3>
           <div id="chatBox" class="chat-box"></div>
-          <div class="row" style="margin-top:8px">
-            <input id="chatInput" class="flex-1" placeholder="Escreva uma mensagem...">
+          <div class="chat-row" style="margin-top:8px">
+            <button class="emoji-toggle" id="emojiToggle" title="Emojis">😊</button>
+            <input id="chatInput" class="flex-1" placeholder="Escreva uma mensagem... (Enter envia, Shift+Enter quebra linha)">
             <button class="primary" onclick="sendMessage()">Enviar</button>
+            <div id="emojiPanel" class="emoji-panel">
+              <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
           </div>
         </section>
 
@@ -152,6 +158,19 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
           </div>
         </section>
 
+        <!-- INVOICES -->
+        <section id="tab-invoices" class="card hidden">
+          <h3>Faturas do seu apartamento</h3>
+          <div id="invArea">
+            <div class="small">Abaixo mostramos suas faturas. Se a lista estiver vazia, você pode abrir no sistema atual do condomínio.</div>
+            <div id="invoicesList" class="list" style="margin-top:10px"></div>
+            <div class="grid2" style="margin-top:10px">
+              <a class="btn" id="openExternalBills" href="#" target="_blank" rel="noopener">Abrir no app atual</a>
+              <button class="btn" onclick="explainBillingIntegration()">Como integrar automaticamente</button>
+            </div>
+          </div>
+        </section>
+
         <!-- PROFILE -->
         <section id="tab-profile" class="card hidden">
           <h3>Perfil</h3>
@@ -163,13 +182,26 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       <aside class="sidebar">
         <section id="tab-ads" class="card">
           <h3>Parceiros</h3>
-          <div id="adsBox" class="list"></div>
+
+          <!-- Chamada para moradores -->
+          <div class="item">
+            <div style="font-weight:700; font-size:15px">📣 Moradores têm prioridade!</div>
+            <div class="small" style="margin:6px 0 10px">
+              Divulgue seu negócio aqui no CondUnity. Prioridade sempre para moradores do condomínio.
+            </div>
+            <button class="primary" onclick="togglePartnerForm()">Divulgar meu negócio</button>
+          </div>
+
+          <div id="adsBox" class="list" style="margin-top:10px"></div>
+
+          <!-- Formulário (agora para qualquer logado; manager publica direto) -->
           <div id="partnerForm" class="hidden" style="margin-top:12px">
             <h4>Cadastrar parceiro</h4>
             <div class="row"><input id="adTitle" class="flex-1" placeholder="Título (ex: CEC Tecnologia BA)"></div>
             <div class="row"><input id="adLink" class="flex-1" placeholder="Link (WhatsApp, site, instagram...)"></div>
             <div class="row"><input id="adImage" class="flex-1" placeholder="URL da imagem (logo)"></div>
-            <button class="primary" onclick="createPartner()">Publicar parceiro</button>
+            <div class="small">Moradores: seu anúncio entra como <b>aguardando aprovação</b>.</div>
+            <button class="primary" onclick="createPartner()">Enviar para publicação</button>
           </div>
         </section>
       </aside>
@@ -209,9 +241,9 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   const hide = el => el.classList.add('hidden');
 
   function openTab(k){
-    ['chat','posts','bookings','ads','profile'].forEach(t=>{
+    ['chat','posts','bookings','invoices','ads','profile'].forEach(t=>{
       const s=$('tab-'+t), b=$('tabBtn-'+t);
-      if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')}
+      if(s && b){ if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }
     });
   }
 
@@ -227,7 +259,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
     }
   }
-
   const initials = (s) => {
     s = (s||'').trim(); if(!s) return '?';
     const parts = s.split(/\s+/).slice(0,2);
@@ -292,7 +323,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     await loadChat();
     listenChat(); // registra UMA vez
 
-    await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
+    await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds(); await loadInvoices();
 
     $('profileInfo').innerHTML = `
       <div class="item">
@@ -300,7 +331,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
         <div><strong>Role:</strong> ${me?.role}</div>
         <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div>
       </div>`;
-    if (isManager) show($('partnerForm')); else hide($('partnerForm'));
   }
 
   // CHAT: carga inicial
@@ -317,21 +347,36 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     (data||[]).forEach(m => appendMsg(m));
   }
 
-  // CHAT: envio otimista + filtros
+  // CHAT: envio otimista + Enter para enviar
   async function sendMessage(){
-    const text = $('chatInput').value.trim(); if(!text) return;
-    const displayName = (profile?.full_name && profile.full_name.trim()) || (await (await client.auth.getUser()).data.user.email.split('@')[0]);
+    const input = $('chatInput');
+    const text = input.value.trim(); if(!text) return;
+    const displayName =
+      (profile?.full_name && profile.full_name.trim()) ||
+      (await (await client.auth.getUser()).data.user.email.split('@')[0]);
 
-    // Otimista: mostra na hora
+    // Otimista
     const temp = { id: 'tmp-'+Math.random().toString(36).slice(2), content: text, created_at: new Date().toISOString(), sender_name: displayName };
     appendMsg(temp);
 
-    $('chatInput').value='';
+    input.value='';
     const { error } = await client.from('chat_messages')
       .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName });
-    if (error) { alert('Erro ao enviar: ' + error.message); await loadChat(); } // ressincroniza se der erro
+    if (error) { alert('Erro ao enviar: ' + error.message); await loadChat(); }
   }
 
+  // Enter (sem Shift) envia; Shift+Enter quebra linha
+  (function(){
+    const input = $('chatInput');
+    input.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  })();
+
+  // Realtime filtrado por sala
   function listenChat(){
     if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
     chatChannel = client.channel('room:'+generalRoomId)
@@ -339,7 +384,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
         { event:'INSERT', schema:'public', table:'chat_messages', filter: `room_id=eq.${generalRoomId}` },
         (payload) => appendMsg(payload.new)
       )
-      .subscribe((status)=>{ /* opcional: console.log('realtime', status) */ });
+      .subscribe();
   }
 
   // POSTS
@@ -396,6 +441,10 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   }
 
   // PARCEIROS
+  function togglePartnerForm(){
+    const f = $('partnerForm'); if(!f) return;
+    if (f.classList.contains('hidden')) show(f); else hide(f);
+  }
   async function loadAds(){
     const now = new Date().toISOString();
     const { data, error } = await client.from('partner_ads')
@@ -412,11 +461,74 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
         <img src="${a.image_url || 'cec-logo.png'}" alt="${escapeHtml(a.title)}" onerror="this.src='cec-logo.png'">
         <div class="info">
           <div class="title">${escapeHtml(a.title)}</div>
-          <div class="sub">Morador 901 • Torre Jorge Amado</div>
+          <div class="sub">Preferência para moradores</div>
         </div>
         <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
       </div>
     `).join('');
+  }
+  async function createPartner(){
+    const title = $('adTitle').value.trim();
+    const link = $('adLink').value.trim();
+    const image = $('adImage').value.trim();
+    if(!profile){ alert('Faça login para cadastrar.'); return; }
+    if(!title){ alert('Informe o título'); return; }
+    const record = {
+      title, link_url: link||null, image_url: image||null,
+      is_active: isManager ? true : false,  // moradores: aguardando aprovação
+      priority: 10, condominium_id: condoId, owner_id: profile.id || null
+    };
+    const { error } = await client.from('partner_ads').insert(record);
+    if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
+    $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
+    if (isManager) await loadAds();
+    else alert('Enviado! Seu anúncio aguarda aprovação do síndico/manager.');
+  }
+
+  // INVOICES
+  async function loadInvoices(){
+    // Link do sistema atual (personalize)
+    const external = 'logoserv://open'; // deep link do app atual, ajuste se tiver
+    const store = 'https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv';
+    const btn = $('openExternalBills');
+    btn.href = external; btn.onclick = () => { setTimeout(()=>{ window.open(store, '_blank'); }, 1200); };
+
+    // Tentativa de ler da tabela "invoices" (se existir)
+    if (!profile) return;
+    try{
+      const { data, error } = await client.from('invoices')
+        .select('id, month, year, amount_cents, status, billet_url, unit_id')
+        .eq('unit_id', profile.unit_id)
+        .order('year',{ascending:false})
+        .order('month',{ascending:false})
+        .limit(24);
+
+      if (error) throw error;
+
+      if (!data || !data.length){
+        $('invoicesList').innerHTML = '<div class="item">Nenhuma fatura encontrada aqui. Use o botão acima para abrir no app atual.</div>';
+        return;
+      }
+      $('invoicesList').innerHTML = data.map(i=>{
+        const v = (i.amount_cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+        const st = i.status==='paid' ? '✅ Pago' : (i.status==='overdue' ? '⚠️ Vencido' : '🕘 Em aberto');
+        const link = i.billet_url ? `<a class="btn" href="${i.billet_url}" target="_blank" rel="noopener">Ver boleto/PDF</a>` : '';
+        return `<div class="item">
+          <div><strong>${String(i.month).padStart(2,'0')}/${i.year}</strong> — ${v}</div>
+          <div class="kv">${st}</div>
+          <div style="margin-top:6px">${link}</div>
+        </div>`;
+      }).join('');
+    }catch{
+      $('invoicesList').innerHTML = '<div class="item">Integração direta ainda não configurada. Use o botão acima para abrir no app atual.</div>';
+    }
+  }
+  function explainBillingIntegration(){
+    alert(
+`Integração de Faturas:
+1) Opção A (rápida): criar uma visão/endpoint no sistema atual que retorne as faturas por unidade e usarmos via Edge Function do Supabase.
+2) Opção B (db): sincronizar as faturas em uma tabela "invoices" no Supabase (unit_id, month, year, amount_cents, status, billet_url).`
+    );
   }
 
   // Helpers
@@ -446,7 +558,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       installBtn.style.display = 'none';
       installHint.innerHTML = 'No Safari: toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.';
     } else {
-      // genérico (fallback)
       installBtn.style.display = 'none';
       installHint.textContent = 'Abra o menu do navegador e escolha “Adicionar à tela inicial”.';
     }
@@ -454,50 +565,61 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   function hideInstallBanner(){ installBanner.style.display = 'none'; }
   window.hideInstallBanner = hideInstallBanner;
 
-  // Android: evento oficial
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     showInstallBanner('android');
   });
-
-  // iOS: só instrução
   window.addEventListener('load', () => {
     if (isIOS() && !isStandalone()) showInstallBanner('ios');
   });
-
-  // Android: fallback se o Chrome não emitir o evento (muito comum)
   setTimeout(() => {
     if (isAndroid() && !isStandalone() && !deferredPrompt) {
       showInstallBanner('generic');
       installHint.textContent = 'No Chrome: menu ⋮ → “Adicionar à tela inicial”.';
     }
   }, 3500);
-
-  // Botão "Instalar agora" (Android)
   installBtn.addEventListener('click', async () => {
     try{
       if (!deferredPrompt) { installHint.textContent = 'Se não abrir o pop-up: menu ⋮ do Chrome → “Adicionar à tela inicial”.'; return; }
       deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
+      await deferredPrompt.userChoice;
       deferredPrompt = null;
       hideInstallBanner();
-      if (choice.outcome !== 'accepted') {
-        installHint.textContent = 'Você pode instalar depois pelo menu ⋮ → “Adicionar à tela inicial”.';
-      }
     }catch{ installHint.textContent = 'Use o menu ⋮ do Chrome → “Adicionar à tela inicial”.'; }
   });
+
+  /* ==== EMOJI PICKER ==== */
+  const EMOJIS = "😀 😃 😄 😁 😆 😅 😂 🙂 😉 😊 😍 😘 😎 🤩 🤔 🙏 👍 👏 🙌 🤝 💡 🎉 🥳 🏆 🔧 🧹 🛠️ 🛎️ 🚗 🏠 🧑‍🔧 🔌 🔋 🧰 📦 📞 📍".split(' ');
+  const emojiGrid = $('emojiGrid');
+  const emojiPanel = $('emojiPanel');
+  const emojiToggle = $('emojiToggle');
+  const chatInput = $('chatInput');
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=e; b.style.border='none'; b.style.background='transparent'; b.style.fontSize='22px'; b.style.cursor='pointer';
+    b.onclick=()=>{ insertAtCursor(chatInput, e+' '); emojiPanel.style.display='none'; chatInput.focus(); };
+    emojiGrid.appendChild(b);
+  });
+  emojiToggle.addEventListener('click', ()=>{
+    emojiPanel.style.display = (emojiPanel.style.display==='block'?'none':'block');
+  });
+  document.addEventListener('click', (ev)=>{
+    if (!emojiPanel.contains(ev.target) && ev.target!==emojiToggle) emojiPanel.style.display='none';
+  });
+  function insertAtCursor(input, text){
+    const start = input.selectionStart || input.value.length;
+    const end = input.selectionEnd || input.value.length;
+    input.value = input.value.substring(0,start) + text + input.value.substring(end);
+    input.selectionStart = input.selectionEnd = start + text.length;
+  }
 
   </script>
 
   <!-- Registrar service worker -->
   <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
   }
   </script>
-
 </body>
 </html>
