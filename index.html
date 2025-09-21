@@ -16,6 +16,11 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"
 .header{padding:18px 16px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid #eef2f7;position:sticky;top:0;z-index:10}
 .logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
 .title{font-size:20px;font-weight:700;letter-spacing:.2px}
+.userchip{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}
+.userchip .circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
+.userchip .name{font-weight:600}
+.userchip .role{font-size:12px;color:#64748b;margin-left:4px}
+
 .container{max-width:1120px;margin:24px auto;padding:0 16px}
 .nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .nav button{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
@@ -37,8 +42,6 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:12
 @media (max-width: 900px){ .flex{flex-direction:column}.sidebar{min-width:auto} }
 .chat-box{height:300px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}
 .msg{padding:8px 10px;border-radius:12px;background:#eef2ff;margin-bottom:8px;line-height:1.35}
-.footer{padding:24px;text-align:center;color:#64748b}
-.small{font-size:12px;color:#64748b}
 hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .partner-card{display:flex;gap:12px;align-items:center}
@@ -46,12 +49,12 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 .partner-card .info{flex:1}
 .partner-card .title{font-weight:700}
 .partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
+.small{font-size:12px;color:#64748b}
 </style>
 </head>
 <body>
   <header class="header">
     <div class="logo">
-      <!-- Logo CondUnity inline (não quebra) -->
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
            xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:12px">
         <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
@@ -63,7 +66,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       </svg>
     </div>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
-    <div style="margin-left:auto" class="small" id="whoami"></div>
+    <div style="margin-left:auto" id="whoami"></div>
   </header>
 
   <div class="container">
@@ -158,8 +161,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     </div>
   </div>
 
-  <footer class="footer">CondUnity • MVP gratuito • Supabase + GitHub Pages</footer>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   // === CONFIGURE AQUI ===
@@ -180,9 +181,22 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   const hide = el => el.classList.add('hidden');
   function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
 
-  function updateAuthUI(logged){
-    if (logged){ hide($('authFields')); show($('authLogged')); }
-    else { show($('authFields')); hide($('authLogged')); }
+  function updateAuthUI(logged, displayName='', roleLabel=''){
+    if (logged){
+      hide($('authFields')); show($('authLogged'));
+      $('whoami').innerHTML =
+        `<div class="userchip">
+           <div class="circle">${initials(displayName)}</div>
+           <div class="name">${escapeHtml(displayName)}<span class="role"> • ${roleLabel}</span></div>
+         </div>`;
+    }else{
+      show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
+    }
+  }
+  const initials = (s) => {
+    s = (s||'').trim(); if(!s) return '?';
+    const parts = s.split(/\s+/).slice(0,2);
+    return parts.map(p=>p[0]?.toUpperCase()||'').join('');
   }
 
   function appendMsg(m){
@@ -201,9 +215,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
       if(error) throw error;
       session = data.session;
-      $('whoami').innerText = data.user.email || '';
       $('password').value = '';
-      updateAuthUI(true);
       await boot();
     }catch(e){
       console.error(e);
@@ -219,7 +231,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   }
   async function logout(){
     await client.auth.signOut();
-    $('whoami').innerText='';
     $('password').value='';
     updateAuthUI(false);
     location.reload();
@@ -228,6 +239,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   async function boot(){
     const { data: userData } = await client.auth.getUser();
     const uid = userData?.user?.id;
+    const email = userData?.user?.email || '';
     if(!uid){ updateAuthUI(false); return; }
 
     const { data: me, error: eProf } = await client.from('profiles')
@@ -235,20 +247,23 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       .eq('id', uid).single();
     if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
     profile = me; condoId = me.condominium_id; isManager = (me.role === 'manager' || me.role === 'admin');
-    $('roleBadge').innerText = isManager ? 'Manager' : 'Resident';
+
+    const displayName = (me?.full_name && me.full_name.trim()) || email.split('@')[0];
+    const roleLabel = isManager ? 'Manager' : 'Resident';
+    $('roleBadge').innerText = roleLabel;
+    updateAuthUI(true, displayName, roleLabel);
 
     const { data: room, error: eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
     if(eRoom){ alert('Sala de chat não encontrada'); return; }
     generalRoomId = room.id;
 
-    updateAuthUI(true);
     await loadChat();
     listenChat();
     await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
     $('profileInfo').innerHTML = `
       <div class="item">
-        <div><strong>Nome:</strong> ${me?.full_name || '-'}</div>
+        <div><strong>Nome:</strong> ${escapeHtml(displayName)}</div>
         <div><strong>Role:</strong> ${me?.role}</div>
         <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div>
       </div>`;
@@ -272,7 +287,10 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 
   async function sendMessage(){
     const text = $('chatInput').value.trim(); if(!text) return;
-    const displayName = (profile?.full_name && profile.full_name.trim()) || ($('whoami').innerText || 'Usuário');
+    const displayName =
+      (profile?.full_name && profile.full_name.trim()) ||
+      (await (await client.auth.getUser()).data.user.email.split('@')[0]);
+
     const { data, error } = await client.from('chat_messages')
       .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName })
       .select('id, content, created_at, room_id, sender_name')
@@ -282,6 +300,17 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     appendMsg(data);
   }
 
+  // Enviar no Enter (Shift+Enter = nova linha)
+  (function(){
+    const input = $('chatInput');
+    input.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  })();
+
   function listenChat(){
     if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
     chatChannel = client.channel('chat-room')
@@ -289,7 +318,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
         { event:'INSERT', schema:'public', table:'chat_messages' },
         (payload) => { const m = payload.new; if (m.room_id === generalRoomId) appendMsg(m); })
       .subscribe(()=>{});
-    // Reassina ao voltar do background
     document.addEventListener('visibilitychange', () => { if (!document.hidden) { listenChat(); } });
   }
 
@@ -407,9 +435,8 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
 
   // Sessão existente
-  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email || ''; updateAuthUI(true); await boot(); } else { updateAuthUI(false); } })();
+  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ await boot(); } else { updateAuthUI(false); } })();
 
-  // Service Worker (PWA)
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
   </script>
 </body>
