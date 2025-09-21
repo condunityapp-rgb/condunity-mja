@@ -1,65 +1,64 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CondUnity - Mansão Jorge Amado</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CondUnity - Mansão Jorge Amado</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" href="favicon.ico" />
-  <meta name="theme-color" content="#2563eb" />
-  <!-- iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="favicon.ico" />
+<meta name="theme-color" content="#2563eb" />
+<!-- iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
 
-  <style>
-    :root{--bg:#f7f9fc;--card:#ffffff;--text:#0f172a;--muted:#475569;--primary:#2563eb}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
-    .header{padding:18px 16px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid #eef2f7;position:sticky;top:0;z-index:10}
-    .logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
-    .title{font-size:20px;font-weight:700;letter-spacing:.2px}
-    .userchip{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}
-    .userchip .circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
-    .userchip .name{font-weight:600}
-    .userchip .role{font-size:12px;color:#64748b;margin-left:4px}
-    .container{max-width:1120px;margin:24px auto;padding:0 16px}
-    .nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-    .nav button{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
-    .nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,.04)}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    input,select,textarea{padding:10px 12px;border:1px solid #cbd5e1;border-radius:12px;font-size:14px}
-    input:focus,textarea:focus,select:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-    button.primary{background:var(--primary);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
-    .btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
-    .badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
-    .hidden{display:none}
-    .list{display:grid;gap:10px}
-    .item{padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
-    .kv{font-size:12px;color:var(--muted)}
-    .sidebar{min-width:300px}
-    .flex{display:flex;gap:16px}
-    .flex-1{flex:1}
-    @media (max-width: 900px){ .flex{flex-direction:column}.sidebar{min-width:auto} }
-    .chat-box{height:300px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}
-    .msg{padding:8px 10px;border-radius:12px;background:#eef2ff;margin-bottom:8px;line-height:1.35}
-    hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .partner-card{display:flex;gap:12px;align-items:center}
-    .partner-card img{width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid #e2e8f0}
-    .partner-card .info{flex:1}
-    .partner-card .title{font-weight:700}
-    .partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
-    .small{font-size:12px;color:#64748b}
-  </style>
+<style>
+:root{--bg:#f7f9fc;--card:#ffffff;--text:#0f172a;--muted:#475569;--primary:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
+.header{padding:18px 16px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid #eef2f7;position:sticky;top:0;z-index:10}
+.logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.title{font-size:20px;font-weight:700;letter-spacing:.2px}
+.userchip{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}
+.userchip .circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
+.userchip .name{font-weight:600}
+.userchip .role{font-size:12px;color:#64748b;margin-left:4px}
+.container{max-width:1120px;margin:24px auto;padding:0 16px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.nav button{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
+.nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,.04)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input,select,textarea{padding:10px 12px;border:1px solid #cbd5e1;border-radius:12px;font-size:14px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+button.primary{background:var(--primary);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
+.badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
+.hidden{display:none}
+.list{display:grid;gap:10px}
+.item{padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
+.kv{font-size:12px;color:var(--muted)}
+.sidebar{min-width:300px}
+.flex{display:flex;gap:16px}
+.flex-1{flex:1}
+@media (max-width: 900px){ .flex{flex-direction:column}.sidebar{min-width:auto} }
+.chat-box{height:300px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}
+.msg{padding:8px 10px;border-radius:12px;background:#eef2ff;margin-bottom:8px;line-height:1.35}
+hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.partner-card{display:flex;gap:12px;align-items:center}
+.partner-card img{width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid #e2e8f0}
+.partner-card .info{flex:1}
+.partner-card .title{font-weight:700}
+.partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
+.small{font-size:12px;color:#64748b}
+</style>
 </head>
 <body>
   <header class="header">
     <div class="logo">
-      <!-- logo SVG -->
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
            xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:12px">
         <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
@@ -130,6 +129,7 @@
             <a class="btn" href="https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv&hl=pt-BR" target="_blank" rel="noopener">Ir para Play Store</a>
           </div>
           <hr class="sep">
+          <!-- Interno (opcional, escondido por padrão) -->
           <div id="internalBookings" class="hidden">
             <div class="row">
               <select id="amenitySelect"></select>
@@ -167,34 +167,289 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // === CONFIGURE AQUI ===
-    const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM'; // troque pela sua chave real
-    // ======================
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // === CONFIGURE AQUI ===
+  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co'; // <-- troque se for outro projeto
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM'; // <-- sua chave
+  // ======================
+  if (!SUPABASE_URL.includes('https://') || SUPABASE_URL.includes('SEU-PROJECT')) {
+    alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (valores reais do seu projeto).');
+  }
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ... === TODO: aqui mantém exatamente o mesmo JS do seu index original (login, chat, posts, reservas, parceiros, etc.) === ...
-    // (não cortei nada, só resumi no exemplo — copie todo seu JS original para cá)
+  let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
+  let seenMsgIds = new Set();
+  let chatChannel = null;
 
-    // Enviar no Enter (Shift+Enter = nova linha)
-    (function(){
-      const input = document.getElementById('chatInput');
-      input.addEventListener('keydown', (e)=>{
-        if(e.key==='Enter' && !e.shiftKey){
-          e.preventDefault();
-          sendMessage();
-        }
-      });
-    })();
-  </script>
+  const $ = id => document.getElementById(id);
+  const show = el => el.classList.remove('hidden');
+  const hide = el => el.classList.add('hidden');
+  function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
 
-  <!-- Registrar service worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
+  function updateAuthUI(logged, displayName='', roleLabel=''){
+    if (logged){
+      hide($('authFields')); show($('authLogged'));
+      $('whoami').innerHTML =
+        `<div class="userchip">
+           <div class="circle">${initials(displayName)}</div>
+           <div class="name">${escapeHtml(displayName)}<span class="role"> • ${roleLabel}</span></div>
+         </div>`;
+    }else{
+      show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
     }
+  }
+  const initials = (s) => {
+    s = (s||'').trim(); if(!s) return '?';
+    const parts = s.split(/\s+/).slice(0,2);
+    return parts.map(p=>p[0]?.toUpperCase()||'').join('');
+  }
+
+  function appendMsg(m){
+    if (m?.id && seenMsgIds.has(m.id)) return;
+    if (m?.id) seenMsgIds.add(m.id);
+    const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
+    const div = document.createElement('div');
+    div.className='msg';
+    div.innerHTML = `<span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}`;
+    $('chatBox').appendChild(div);
+    $('chatBox').scrollTop = $('chatBox').scrollHeight;
+  }
+
+  async function login(){
+    try{
+      const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
+      if(error) throw error;
+      session = data.session;
+      $('password').value = '';
+      await boot();
+    }catch(e){
+      console.error(e);
+      alert('Falha no login: ' + (e?.message || 'Failed to fetch. Confira URL/chave do Supabase e Allowed URLs.'));
+    }
+  }
+  async function signup(){
+    try{
+      const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
+      if(error) throw error;
+      alert('Conta criada! (piloto: “Confirm email” desativado no Supabase)');
+    }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
+  }
+  async function logout(){
+    await client.auth.signOut();
+    $('password').value='';
+    updateAuthUI(false);
+    location.reload();
+  }
+
+  async function boot(){
+    const { data: userData } = await client.auth.getUser();
+    const uid = userData?.user?.id;
+    const email = userData?.user?.email || '';
+    if(!uid){ updateAuthUI(false); return; }
+
+    const { data: me, error: eProf } = await client.from('profiles')
+      .select('id, full_name, role, condominium_id, unit_id')
+      .eq('id', uid).single();
+    if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
+    profile = me; condoId = me.condominium_id; isManager = (me.role === 'manager' || me.role === 'admin');
+
+    const displayName = (me?.full_name && me.full_name.trim()) || email.split('@')[0];
+    const roleLabel = isManager ? 'Manager' : 'Resident';
+    $('roleBadge').innerText = roleLabel;
+    updateAuthUI(true, displayName, roleLabel);
+
+    const { data: room, error: eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
+    if(eRoom){ alert('Sala de chat não encontrada'); return; }
+    generalRoomId = room.id;
+
+    await loadChat();
+    listenChat();
+    await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
+
+    $('profileInfo').innerHTML = `
+      <div class="item">
+        <div><strong>Nome:</strong> ${escapeHtml(displayName)}</div>
+        <div><strong>Role:</strong> ${me?.role}</div>
+        <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div>
+      </div>`;
+    if (isManager) show($('partnerForm')); else hide($('partnerForm'));
+  }
+
+  // CHAT
+  async function loadChat(){
+    const { data, error } = await client
+      .from('chat_messages')
+      .select('id, content, created_at, room_id, sender_name')
+      .eq('room_id', generalRoomId)
+      .order('created_at',{ascending:true})
+      .limit(200);
+    if(error){ alert('Erro ao carregar chat: '+error.message); return; }
+    seenMsgIds = new Set();
+    $('chatBox').innerHTML = '';
+    (data||[]).forEach(m => appendMsg(m));
+  }
+
+  async function sendMessage(){
+    const text = $('chatInput').value.trim(); if(!text) return;
+    const displayName =
+      (profile?.full_name && profile.full_name.trim()) ||
+      (await (await client.auth.getUser()).data.user.email.split('@')[0]);
+
+    const { data, error } = await client.from('chat_messages')
+      .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName })
+      .select('id, content, created_at, room_id, sender_name')
+      .single();
+    if (error) { alert('Erro ao enviar: ' + error.message); return; }
+    $('chatInput').value='';
+    appendMsg(data);
+  }
+
+  // Enviar no Enter (Shift+Enter = nova linha)
+  (function(){
+    const input = $('chatInput');
+    input.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  })();
+
+  function listenChat(){
+    if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
+    chatChannel = client.channel('chat-room')
+      .on('postgres_changes',
+        { event:'INSERT', schema:'public', table:'chat_messages' },
+        (payload) => { const m = payload.new; if (m.room_id === generalRoomId) appendMsg(m); })
+      .subscribe(()=>{});
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { listenChat(); } });
+  }
+
+  // POSTS
+  async function loadPosts(){
+    const { data, error } = await client.from('posts')
+      .select('id,title,content,created_at')
+      .eq('condominium_id', condoId)
+      .order('created_at',{ascending:false})
+      .limit(50);
+    if(error){ $('postsList').innerHTML='<div class="item">Sem permissão para ler comunicados.</div>'; return; }
+    $('postsList').innerHTML = (data||[]).map(p=>`<div class="item"><div style="font-weight:700">${escapeHtml(p.title)}</div><div class="kv">${new Date(p.created_at).toLocaleString('pt-BR')}</div><div>${escapeHtml(p.content)}</div></div>`).join('');
+  }
+  async function createPost(){
+    const title = $('postTitle').value.trim(), content = $('postContent').value.trim();
+    if(!title || !content){ alert('Preencha título e conteúdo'); return; }
+    const { error } = await client.from('posts').insert({ condominium_id: condoId, author_id: profile.id, title, content });
+    if(error){ alert('Erro ao publicar: '+error.message); return; }
+    $('postTitle').value=''; $('postContent').value=''; await loadPosts();
+  }
+
+  // RESERVAS internas (opcional)
+  async function loadAmenities(){
+    const el = $('amenitySelect'); if(!el) return;
+    const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
+    el.innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+  }
+  async function requestBooking(){
+    const amenity_id = $('amenitySelect').value;
+    const starts_at = $('startAt').value? new Date($('startAt').value).toISOString(): null;
+    const ends_at = $('endAt').value? new Date($('endAt').value).toISOString(): null;
+    if(!amenity_id || !starts_at || !ends_at){ alert('Preencha área e horários'); return; }
+    const { error } = await client.from('bookings').insert({ condominium_id: condoId, amenity_id, requester_id: profile.id, starts_at, ends_at });
+    if(error){ alert('Erro ao solicitar: '+error.message); return; }
+    await loadBookings();
+  }
+  async function loadBookings(){
+    const list = $('bookingsList'); if(!list) return;
+    const { data } = await client.from('bookings')
+      .select('id,amenity_id,starts_at,ends_at,status')
+      .eq('condominium_id', condoId)
+      .order('starts_at',{ascending:false})
+      .limit(50);
+    list.innerHTML = (data||[]).map(b=>{
+      const actions = (isManager && b.status==='pending')
+        ? `<button onclick="setBooking('${b.id}','approved')">Aprovar</button> <button onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
+        : `<span class="badge">${b.status}</span>`;
+      return `<div class="item"><div><strong>${b.amenity_id}</strong></div><div class="kv">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div><div>${actions}</div></div>`;
+    }).join('');
+  }
+  async function setBooking(id,status){
+    const { error } = await client.from('bookings').update({ status }).eq('id', id);
+    if(error){ alert('Erro ao atualizar: '+error.message); return; }
+    await loadBookings();
+  }
+
+  // PARCEIROS
+  async function loadAds(){
+    const now = new Date().toISOString();
+    const { data, error } = await client.from('partner_ads')
+      .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
+      .eq('condominium_id', condoId)
+      .order('priority',{ascending:false});
+    if (error){ $('adsBox').innerHTML='<div class="item">Não foi possível carregar os parceiros.</div>'; return; }
+    let items = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
+    if (!items.length){
+      items = [{
+        title: 'CEC Tecnologia BA — Manutenção de Computadores e Celulares',
+        image_url: 'cec-logo.png',
+        link_url: 'https://wa.me/5571999999999',
+      }];
+    }
+    $('adsBox').innerHTML = items.map(a=>`
+      <div class="item partner-card">
+        <img src="${a.image_url || 'cec-logo.png'}" alt="${escapeHtml(a.title)}" onerror="this.src='cec-logo.png'">
+        <div class="info">
+          <div class="title">${escapeHtml(a.title)}</div>
+          <div class="sub">Morador 901 • Torre Jorge Amado</div>
+        </div>
+        <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
+      </div>
+    `).join('');
+  }
+
+  async function createPartner(){
+    const title = $('adTitle').value.trim();
+    const link = $('adLink').value.trim();
+    const image = $('adImage').value.trim();
+    if(!title){ alert('Informe o título'); return; }
+    const { error } = await client.from('partner_ads').insert({
+      title, link_url: link||null, image_url: image||null,
+      is_active: true, priority: 10, condominium_id: condoId
+    });
+    if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
+    $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
+    await loadAds();
+  }
+
+  // Abrir app LOGO (Android) / Play Store
+  function openLogoApp(){
+    const pkg = 'br.com.comunidadesmobile_logoserv';
+    const deep = 'logoserv://open';
+    const store = 'https://play.google.com/store/apps/details?id='+pkg;
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    if (isAndroid){
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none'; iframe.src = deep; document.body.appendChild(iframe);
+      setTimeout(()=>{ window.location.href = store; }, 1200);
+      setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
+    } else { window.open(store, '_blank'); }
+  }
+
+  // Helpers
+  const escapeHtml = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
+
+  // Sessão existente
+  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ await boot(); } else { updateAuthUI(false); } })();
+
   </script>
+
+  <!-- Registrar service worker (apenas UM bloco) -->
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+  </script>
+
 </body>
 </html>
