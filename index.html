@@ -26,6 +26,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"
 input,select,textarea{padding:10px;border:1px solid #cbd5e1;border-radius:10px}
 textarea{min-height:90px}
 button.primary{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+.btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer}
 .badge{padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155}
 .hidden{display:none}
 .list{display:grid;gap:8px}
@@ -38,8 +39,13 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 .msg{padding:6px 8px;border-radius:10px;background:#eef2ff;margin-bottom:6px;line-height:1.35}
 .footer{padding:24px;text-align:center;color:#64748b}
 .small{font-size:12px;color:#64748b}
-.btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer}
-.btn.full{width:100%}
+hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.partner-card{display:flex;gap:12px;align-items:center}
+.partner-card img{width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid #e2e8f0}
+.partner-card .info{flex:1}
+.partner-card .title{font-weight:600}
+.partner-card .sub{font-size:12px;color:#64748b}
 </style>
 </head>
 <body>
@@ -65,14 +71,17 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   </header>
 
   <div class="container">
-    <div class="card">
-      <div class="row">
+    <!-- LOGIN -->
+    <div class="card" id="authBox">
+      <div class="row" id="authFields">
         <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Senha">
         <button class="primary" onclick="login()">Entrar</button>
         <button class="btn" onclick="signup()">Criar conta</button>
+      </div>
+      <div class="row hidden" id="authLogged">
+        <span class="badge" id="roleBadge"></span>
         <button class="btn" onclick="logout()">Sair</button>
-        <span class="badge" id="roleBadge" title="Perfil"></span>
       </div>
       <div class="small">Dica: use os logins de teste do Supabase (síndico e morador).</div>
     </div>
@@ -111,20 +120,22 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
         <!-- BOOKINGS -->
         <section id="tab-bookings" class="card hidden">
           <h3>Reservas</h3>
-          <div class="row">
-            <select id="amenitySelect"></select>
-            <input id="startAt" type="datetime-local">
-            <input id="endAt" type="datetime-local">
-            <button class="primary" onclick="requestBooking()">Solicitar</button>
+          <p class="small">Use o aplicativo oficial do condomínio para reservas (LOGO Gestão Condominial).</p>
+          <div class="grid2">
+            <button class="btn" onclick="openLogoApp()">Abrir app LOGO (Android)</button>
+            <a class="btn" href="https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv&hl=pt-BR" target="_blank" rel="noopener">Ir para Play Store</a>
           </div>
-          <div class="small">Dica: Síndico pode aprovar/rejeitar abaixo.</div>
-
-          <!-- Integração: abrir App LOGO Gestão Condominial (Android) ou direcionar p/ Play Store -->
-          <div style="margin-top:12px">
-            <button class="btn full" onclick="openLogoApp()">Abrir app LOGO Gestão Condominial</button>
+          <hr class="sep">
+          <!-- Se quiser reativar suas reservas internas, remova a linha 'hidden' abaixo -->
+          <div id="internalBookings" class="hidden">
+            <div class="row">
+              <select id="amenitySelect"></select>
+              <input id="startAt" type="datetime-local">
+              <input id="endAt" type="datetime-local">
+              <button class="primary" onclick="requestBooking()">Solicitar</button>
+            </div>
+            <div id="bookingsList" class="list" style="margin-top:10px"></div>
           </div>
-
-          <div id="bookingsList" class="list" style="margin-top:10px"></div>
         </section>
 
         <!-- PROFILE -->
@@ -134,11 +145,18 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
         </section>
       </div>
 
-      <!-- ADS -->
+      <!-- ADS / PARCEIROS -->
       <aside class="sidebar">
         <section id="tab-ads" class="card">
           <h3>Parceiros</h3>
           <div id="adsBox" class="list"></div>
+          <div id="partnerForm" class="hidden" style="margin-top:12px">
+            <h4>Cadastrar parceiro</h4>
+            <div class="row"><input id="adTitle" class="flex-1" placeholder="Título (ex: CEC Tecnologia BA)"></div>
+            <div class="row"><input id="adLink" class="flex-1" placeholder="Link (WhatsApp, site, instagram...)"></div>
+            <div class="row"><input id="adImage" class="flex-1" placeholder="URL da imagem (logo)"></div>
+            <button class="primary" onclick="createPartner()">Publicar parceiro</button>
+          </div>
         </section>
       </aside>
     </div>
@@ -149,11 +167,11 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   // === CONFIGURE AQUI ===
-  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co'; // <-- troque
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';               // <-- troque
+  const SUPABASE_URL = 'https://SEU-PROJECT.supabase.co'; // <-- troque
+  const SUPABASE_ANON_KEY = 'SUA-ANON-KEY';               // <-- troque
   // ======================
   if (!SUPABASE_URL.includes('https://') || SUPABASE_URL.includes('SEU-PROJECT')) {
-    alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (usando os valores reais do seu projeto).');
+    alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (valores reais do seu projeto).');
   }
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -166,7 +184,17 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   const hide = el => el.classList.add('hidden');
   function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
 
-  // Renderiza 1 mensagem (sem duplicar)
+  function updateAuthUI(logged){
+    if (logged){
+      hide($('authFields'));
+      show($('authLogged'));
+    }else{
+      show($('authFields'));
+      hide($('authLogged'));
+    }
+  }
+
+  // Render 1 mensagem (evita duplicar)
   function appendMsg(m){
     if (m?.id && seenMsgIds.has(m.id)) return;
     if (m?.id) seenMsgIds.add(m.id);
@@ -180,10 +208,14 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 
   async function login(){
     try{
-      const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
+      const { data, error } = await client.auth.signInWithPassword({
+        email:$('email').value, password:$('password').value
+      });
       if(error) throw error;
       session = data.session;
       $('whoami').innerText = data.user.email || '';
+      $('password').value = ''; // limpa senha
+      updateAuthUI(true);       // esconde campos
       await boot();
     }catch(e){
       console.error(e);
@@ -194,15 +226,21 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     try{
       const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
       if(error) throw error;
-      alert('Conta criada! (no piloto, deixe "Confirm email" desativado no Supabase)');
+      alert('Conta criada! (piloto: “Confirm email” desativado no Supabase)');
     }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
   }
-  async function logout(){ await client.auth.signOut(); location.reload(); }
+  async function logout(){
+    await client.auth.signOut();
+    $('whoami').innerText='';
+    $('password').value='';
+    updateAuthUI(false);
+    location.reload();
+  }
 
   async function boot(){
     const { data: userData } = await client.auth.getUser();
     const uid = userData?.user?.id;
-    if(!uid){ alert('Sem sessão'); return; }
+    if(!uid){ updateAuthUI(false); return; }
 
     const { data: me, error: eProf } = await client.from('profiles')
       .select('id, full_name, role, condominium_id, unit_id')
@@ -215,17 +253,21 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     if(eRoom){ alert('Sala de chat não encontrada'); return; }
     generalRoomId = room.id;
 
+    updateAuthUI(true);
     await loadChat();
-    listenChat(); // inscreve no realtime
-    if(isManager) show($('postForm')); else hide($('postForm'));
+    listenChat();
     await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
+    // UI Perfil
     $('profileInfo').innerHTML = `
       <div class="item">
         <div><strong>Nome:</strong> ${me?.full_name || '-'}</div>
         <div><strong>Role:</strong> ${me?.role}</div>
         <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div>
       </div>`;
+
+    // Form para partners só para manager
+    if (isManager) show($('partnerForm')); else hide($('partnerForm'));
   }
 
   // ===== CHAT =====
@@ -249,34 +291,26 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
       ($('whoami').innerText || 'Usuário');
 
     const { data, error } = await client.from('chat_messages')
-      .insert({
-        room_id: generalRoomId,
-        content: text,
-        sender_id: profile?.id || null,
-        sender_name: displayName
-      })
+      .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName })
       .select('id, content, created_at, room_id, sender_name')
       .single();
 
     if (error) { alert('Erro ao enviar: ' + error.message); return; }
     $('chatInput').value='';
-    appendMsg(data); // mostra instantâneo
+    appendMsg(data); // instantâneo
   }
 
   function listenChat(){
-    // remove inscrição antiga (evita inscrições duplicadas)
     if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
-
-    // Assina INSERTs na tabela e filtra no cliente pela sala
     chatChannel = client.channel('chat-room')
       .on('postgres_changes',
         { event:'INSERT', schema:'public', table:'chat_messages' },
         (payload) => {
           const m = payload.new;
-          if (m.room_id !== generalRoomId) return; // só da sala "Geral"
+          if (m.room_id !== generalRoomId) return;
           appendMsg(m);
         })
-      .subscribe((status)=>{ /* console.log('realtime:', status); */ });
+      .subscribe(()=>{});
   }
 
   // ===== POSTS =====
@@ -297,10 +331,11 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     $('postTitle').value=''; $('postContent').value=''; await loadPosts();
   }
 
-  // ===== RESERVAS =====
+  // ===== RESERVAS (internas opcional) =====
   async function loadAmenities(){
+    const el = $('amenitySelect'); if(!el) return;
     const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
-    $('amenitySelect').innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+    el.innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
   }
   async function requestBooking(){
     const amenity_id = $('amenitySelect').value;
@@ -312,12 +347,13 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     await loadBookings();
   }
   async function loadBookings(){
+    const list = $('bookingsList'); if(!list) return;
     const { data } = await client.from('bookings')
       .select('id,amenity_id,starts_at,ends_at,status')
       .eq('condominium_id', condoId)
       .order('starts_at',{ascending:false})
       .limit(50);
-    $('bookingsList').innerHTML = (data||[]).map(b=>{
+    list.innerHTML = (data||[]).map(b=>{
       const actions = (isManager && b.status==='pending')
         ? `<button onclick="setBooking('${b.id}','approved')">Aprovar</button> <button onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
         : `<span class="badge">${b.status}</span>`;
@@ -330,27 +366,56 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     await loadBookings();
   }
 
-  // ===== ADS =====
+  // ===== Parceiros =====
   async function loadAds(){
     const now = new Date().toISOString();
-    const { data } = await client.from('partner_ads')
+    const { data, error } = await client.from('partner_ads')
       .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
-      .eq('condominium_id', condoId).order('priority',{ascending:false});
-    const filtered = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
-    $('adsBox').innerHTML = filtered.map(a=>`
-      <a class="item" href="${a.link_url||'#'}" target="_blank">
-        <div><strong>${escapeHtml(a.title)}</strong></div>
-        ${a.image_url ? `<img src="${a.image_url}" alt="${escapeHtml(a.title)}" style="width:100%;border-radius:8px;margin-top:6px">` : ''}
-      </a>`).join('');
+      .eq('condominium_id', condoId)
+      .order('priority',{ascending:false});
+    if (error){ $('adsBox').innerHTML='<div class="item">Não foi possível carregar os parceiros.</div>'; return; }
+    let items = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
+
+    if (!items.length){
+      // Card exemplo: CEC Tecnologia BA
+      items = [{
+        title: 'CEC Tecnologia BA — Manutenção de Computadores e Celulares',
+        image_url: 'cec-logo.png', // suba /cec-logo.png na raiz (já gerei pra você)
+        link_url: 'https://wa.me/5571999999999',
+      }];
+    }
+
+    $('adsBox').innerHTML = items.map(a=>`
+      <div class="item partner-card">
+        <img src="${a.image_url || 'cec-logo.png'}" alt="${escapeHtml(a.title)}" onerror="this.src='cec-logo.png'">
+        <div class="info">
+          <div class="title">${escapeHtml(a.title)}</div>
+          <div class="sub">Morador 901 • Torre Jorge Amado</div>
+        </div>
+        <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
+      </div>
+    `).join('');
   }
 
-  // ===== Abrir app LOGO (Android) ou Play Store =====
+  async function createPartner(){
+    const title = $('adTitle').value.trim();
+    const link = $('adLink').value.trim();
+    const image = $('adImage').value.trim();
+    if(!title){ alert('Informe o título'); return; }
+    const { error } = await client.from('partner_ads').insert({
+      title, link_url: link||null, image_url: image||null,
+      is_active: true, priority: 10, condominium_id: condoId
+    });
+    if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
+    $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
+    await loadAds();
+  }
+
+  // ===== Abrir app LOGO (Android) / Play Store =====
   function openLogoApp(){
     const pkg = 'br.com.comunidadesmobile_logoserv';
-    const deep = 'logoserv://open'; // tentativa de esquema fictício
+    const deep = 'logoserv://open'; // tentativa de deep-link; se não existir, cai na Play Store
     const store = 'https://play.google.com/store/apps/details?id='+pkg;
-
-    // Android: tenta abrir o esquema; se falhar, vai pra loja
     const isAndroid = /Android/i.test(navigator.userAgent);
     if (isAndroid){
       const iframe = document.createElement('iframe');
@@ -360,7 +425,6 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
       setTimeout(()=>{ window.location.href = store; }, 1200);
       setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
     } else {
-      // Outras plataformas: manda para a loja (ou página informativa)
       window.open(store, '_blank');
     }
   }
@@ -370,7 +434,7 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
 
   // Sessão existente
-  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email || ''; await boot(); } })();
+  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email || ''; updateAuthUI(true); await boot(); } else { updateAuthUI(false); } })();
 
   // Service Worker (PWA)
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
