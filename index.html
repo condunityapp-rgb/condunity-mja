@@ -55,17 +55,17 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 .partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
 .small{font-size:12px;color:#64748b}
 
-/* --- Banner de instalação --- */
+/* Banner de instalação */
 .install-banner{
-  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 50;
-  background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px;
-  box-shadow:0 10px 24px rgba(15,23,42,.12); display:none;
+  position:fixed;left:12px;right:12px;bottom:12px;z-index:50;
+  background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:12px 14px;
+  box-shadow:0 10px 24px rgba(15,23,42,.12);display:none
 }
-.install-banner .title {font-weight:700}
-.install-banner .row{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-.install-banner .hint{font-size:12px; color:#64748b}
-.install-banner .actions{display:flex; gap:8px}
-.install-banner .xbtn{background:transparent; border:none; cursor:pointer; font-size:18px; line-height:1}
+.install-banner .title{font-weight:700}
+.install-banner .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.install-banner .hint{font-size:12px;color:#64748b}
+.install-banner .actions{display:flex;gap:8px}
+.install-banner .xbtn{background:transparent;border:none;cursor:pointer;font-size:18px;line-height:1}
 </style>
 </head>
 <body>
@@ -141,7 +141,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
             <a class="btn" href="https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv&hl=pt-BR" target="_blank" rel="noopener">Ir para Play Store</a>
           </div>
           <hr class="sep">
-          <!-- Interno (opcional, escondido por padrão) -->
           <div id="internalBookings" class="hidden">
             <div class="row">
               <select id="amenitySelect"></select>
@@ -193,23 +192,28 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  // === CONFIGURE AQUI ===
+  // === CONFIG SUPABASE ===
   const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-  // ======================
-  if (!SUPABASE_URL.includes('https://') || SUPABASE_URL.includes('SEU-PROJECT')) {
-    alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (valores reais do seu projeto).');
-  }
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true },
+    realtime: { params: { eventsPerSecond: 15 } }
+  });
 
-  let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
-  let seenMsgIds = new Set();
+  let profile=null, condoId=null, generalRoomId=null, isManager=false;
   let chatChannel = null;
+  const seenMsgIds = new Set();
 
   const $ = id => document.getElementById(id);
   const show = el => el.classList.remove('hidden');
   const hide = el => el.classList.add('hidden');
-  function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
+
+  function openTab(k){
+    ['chat','posts','bookings','ads','profile'].forEach(t=>{
+      const s=$('tab-'+t), b=$('tabBtn-'+t);
+      if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')}
+    });
+  }
 
   function updateAuthUI(logged, displayName='', roleLabel=''){
     if (logged){
@@ -223,19 +227,21 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
     }
   }
+
   const initials = (s) => {
     s = (s||'').trim(); if(!s) return '?';
     const parts = s.split(/\s+/).slice(0,2);
     return parts.map(p=>p[0]?.toUpperCase()||'').join('');
-  }
+  };
 
   function appendMsg(m){
-    if (m?.id && seenMsgIds.has(m.id)) return;
-    if (m?.id) seenMsgIds.add(m.id);
+    if (!m) return;
+    if (m.id && seenMsgIds.has(m.id)) return;
+    if (m.id) seenMsgIds.add(m.id);
     const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
     const div = document.createElement('div');
     div.className='msg';
-    div.innerHTML = `<span class="kv">${who}${new Date(m.created_at).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content)}`;
+    div.innerHTML = `<span class="kv">${who}${new Date(m.created_at||Date.now()).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content||'')}`;
     $('chatBox').appendChild(div);
     $('chatBox').scrollTop = $('chatBox').scrollHeight;
   }
@@ -244,19 +250,15 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     try{
       const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
       if(error) throw error;
-      session = data.session;
       $('password').value = '';
       await boot();
-    }catch(e){
-      console.error(e);
-      alert('Falha no login: ' + (e?.message || 'Failed to fetch. Confira URL/chave do Supabase e Allowed URLs.'));
-    }
+    }catch(e){ alert('Falha no login: ' + (e?.message || e)); }
   }
   async function signup(){
     try{
       const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
       if(error) throw error;
-      alert('Conta criada! (piloto: “Confirm email” desativado no Supabase)');
+      alert('Conta criada!');
     }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
   }
   async function logout(){
@@ -288,7 +290,8 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     generalRoomId = room.id;
 
     await loadChat();
-    listenChat();
+    listenChat(); // registra UMA vez
+
     await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
     $('profileInfo').innerHTML = `
@@ -300,7 +303,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     if (isManager) show($('partnerForm')); else hide($('partnerForm'));
   }
 
-  // CHAT
+  // CHAT: carga inicial
   async function loadChat(){
     const { data, error } = await client
       .from('chat_messages')
@@ -309,45 +312,34 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
       .order('created_at',{ascending:true})
       .limit(200);
     if(error){ alert('Erro ao carregar chat: '+error.message); return; }
-    seenMsgIds = new Set();
+    seenMsgIds.clear();
     $('chatBox').innerHTML = '';
     (data||[]).forEach(m => appendMsg(m));
   }
 
+  // CHAT: envio otimista + filtros
   async function sendMessage(){
     const text = $('chatInput').value.trim(); if(!text) return;
-    const displayName =
-      (profile?.full_name && profile.full_name.trim()) ||
-      (await (await client.auth.getUser()).data.user.email.split('@')[0]);
+    const displayName = (profile?.full_name && profile.full_name.trim()) || (await (await client.auth.getUser()).data.user.email.split('@')[0]);
 
-    const { data, error } = await client.from('chat_messages')
-      .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName })
-      .select('id, content, created_at, room_id, sender_name')
-      .single();
-    if (error) { alert('Erro ao enviar: ' + error.message); return; }
+    // Otimista: mostra na hora
+    const temp = { id: 'tmp-'+Math.random().toString(36).slice(2), content: text, created_at: new Date().toISOString(), sender_name: displayName };
+    appendMsg(temp);
+
     $('chatInput').value='';
-    appendMsg(data);
+    const { error } = await client.from('chat_messages')
+      .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName });
+    if (error) { alert('Erro ao enviar: ' + error.message); await loadChat(); } // ressincroniza se der erro
   }
-
-  // Enviar no Enter (Shift+Enter = nova linha)
-  (function(){
-    const input = $('chatInput');
-    input.addEventListener('keydown', (e)=>{
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-  })();
 
   function listenChat(){
     if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
-    chatChannel = client.channel('chat-room')
+    chatChannel = client.channel('room:'+generalRoomId)
       .on('postgres_changes',
-        { event:'INSERT', schema:'public', table:'chat_messages' },
-        (payload) => { const m = payload.new; if (m.room_id === generalRoomId) appendMsg(m); })
-      .subscribe(()=>{});
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) { listenChat(); } });
+        { event:'INSERT', schema:'public', table:'chat_messages', filter: `room_id=eq.${generalRoomId}` },
+        (payload) => appendMsg(payload.new)
+      )
+      .subscribe((status)=>{ /* opcional: console.log('realtime', status) */ });
   }
 
   // POSTS
@@ -368,7 +360,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     $('postTitle').value=''; $('postContent').value=''; await loadPosts();
   }
 
-  // RESERVAS internas (opcional)
+  // RESERVAS (interno opcional)
   async function loadAmenities(){
     const el = $('amenitySelect'); if(!el) return;
     const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
@@ -413,11 +405,7 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     if (error){ $('adsBox').innerHTML='<div class="item">Não foi possível carregar os parceiros.</div>'; return; }
     let items = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
     if (!items.length){
-      items = [{
-        title: 'CEC Tecnologia BA — Manutenção de Computadores e Celulares',
-        image_url: 'cec-logo.png',
-        link_url: 'https://wa.me/5571999999999',
-      }];
+      items = [{ title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares', image_url:'cec-logo.png', link_url:'https://wa.me/5571999999999' }];
     }
     $('adsBox').innerHTML = items.map(a=>`
       <div class="item partner-card">
@@ -431,34 +419,6 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     `).join('');
   }
 
-  async function createPartner(){
-    const title = $('adTitle').value.trim();
-    const link = $('adLink').value.trim();
-    const image = $('adImage').value.trim();
-    if(!title){ alert('Informe o título'); return; }
-    const { error } = await client.from('partner_ads').insert({
-      title, link_url: link||null, image_url: image||null,
-      is_active: true, priority: 10, condominium_id: condoId
-    });
-    if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
-    $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
-    await loadAds();
-  }
-
-  // Abrir app LOGO (Android) / Play Store
-  function openLogoApp(){
-    const pkg = 'br.com.comunidadesmobile_logoserv';
-    const deep = 'logoserv://open';
-    const store = 'https://play.google.com/store/apps/details?id='+pkg;
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    if (isAndroid){
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none'; iframe.src = deep; document.body.appendChild(iframe);
-      setTimeout(()=>{ window.location.href = store; }, 1200);
-      setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
-    } else { window.open(store, '_blank'); }
-  }
-
   // Helpers
   const escapeHtml = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
@@ -466,74 +426,71 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
   // Sessão existente
   (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ await boot(); } else { updateAuthUI(false); } })();
 
-  /* ===== INSTALAÇÃO PWA (Android + iOS) ===== */
+  /* ==== INSTALAÇÃO PWA (Android + iOS) ==== */
   let deferredPrompt = null;
   const installBanner = document.getElementById('installBanner');
   const installBtn = document.getElementById('installBtn');
   const installHint = document.getElementById('installHint');
 
-  function isStandalone(){
-    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
-           || (window.navigator.standalone === true);
-  }
+  function isStandalone(){ return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true); }
   function isIOS(){ return /iPhone|iPad|iPod/i.test(navigator.userAgent); }
   function isAndroid(){ return /Android/i.test(navigator.userAgent); }
 
   function showInstallBanner(mode){
-    if (isStandalone()) return; // já instalado
+    if (isStandalone()) return;
     installBanner.style.display = 'block';
     if (mode === 'android'){
       installBtn.style.display = 'inline-block';
       installHint.textContent = 'Toque em “Instalar agora” para adicionar o app à tela inicial.';
     } else if (mode === 'ios'){
       installBtn.style.display = 'none';
-      // instrução curta e direta para iOS
       installHint.innerHTML = 'No Safari: toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.';
+    } else {
+      // genérico (fallback)
+      installBtn.style.display = 'none';
+      installHint.textContent = 'Abra o menu do navegador e escolha “Adicionar à tela inicial”.';
     }
   }
-  function hideInstallBanner(){
-    installBanner.style.display = 'none';
-  }
+  function hideInstallBanner(){ installBanner.style.display = 'none'; }
   window.hideInstallBanner = hideInstallBanner;
 
-  // Android: capturar o evento e mostrar o botão
+  // Android: evento oficial
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     showInstallBanner('android');
   });
 
-  // iOS: sem evento — mostrar instruções se não estiver instalado
+  // iOS: só instrução
   window.addEventListener('load', () => {
-    if (!deferredPrompt && isIOS() && !isStandalone()){
-      showInstallBanner('ios');
-    }
+    if (isIOS() && !isStandalone()) showInstallBanner('ios');
   });
 
-  // Ação do botão "Instalar agora" (Android)
+  // Android: fallback se o Chrome não emitir o evento (muito comum)
+  setTimeout(() => {
+    if (isAndroid() && !isStandalone() && !deferredPrompt) {
+      showInstallBanner('generic');
+      installHint.textContent = 'No Chrome: menu ⋮ → “Adicionar à tela inicial”.';
+    }
+  }, 3500);
+
+  // Botão "Instalar agora" (Android)
   installBtn.addEventListener('click', async () => {
     try{
-      if (!deferredPrompt) {
-        // fallback: abre menu do Chrome
-        installHint.textContent = 'Se não aparecer o pop-up, use o menu ⋮ do Chrome → “Adicionar à tela inicial”.';
-        return;
-      }
+      if (!deferredPrompt) { installHint.textContent = 'Se não abrir o pop-up: menu ⋮ do Chrome → “Adicionar à tela inicial”.'; return; }
       deferredPrompt.prompt();
       const choice = await deferredPrompt.userChoice;
       deferredPrompt = null;
       hideInstallBanner();
       if (choice.outcome !== 'accepted') {
-        // usuário cancelou; deixa instrução
-        installHint.textContent = 'Para instalar depois: menu ⋮ do Chrome → “Adicionar à tela inicial”.';
+        installHint.textContent = 'Você pode instalar depois pelo menu ⋮ → “Adicionar à tela inicial”.';
       }
-    }catch(err){
-      installHint.textContent = 'Se não aparecer o pop-up: menu ⋮ do Chrome → “Adicionar à tela inicial”.';
-    }
+    }catch{ installHint.textContent = 'Use o menu ⋮ do Chrome → “Adicionar à tela inicial”.'; }
   });
 
   </script>
 
-  <!-- Registrar service worker (apenas UM bloco) -->
+  <!-- Registrar service worker -->
   <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
