@@ -1,0 +1,13 @@
+<svg width="512" height="512" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cuGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1d4ed8"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="7" fill="url(#cuGrad)"/>
+  <rect x="7" y="15" width="8" height="16" rx="2" fill="white" opacity=".92"/>
+  <rect x="16" y="10" width="8" height="21" rx="2" fill="white" opacity=".92"/>
+  <rect x="25" y="17" width="8" height="14" rx="2" fill="white" opacity=".92"/>
+  <path d="M12 15 v9 c0 5 4 7 8 7s8-2 8-7v-9" stroke="#0ea5e9" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
