@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CondUnity - Mansão Jorge Amado</title>
 
-<!-- PWA / Ícone -->
+<!-- PWA / Ícones -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
 <link rel="icon" sizes="192x192" href="icons/icon-192.png">
@@ -38,11 +38,13 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 .msg{padding:6px 8px;border-radius:10px;background:#eef2ff;margin-bottom:6px;line-height:1.35}
 .footer{padding:24px;text-align:center;color:#64748b}
 .small{font-size:12px;color:#64748b}
+.btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer}
+.btn.full{width:100%}
 </style>
 </head>
 <body>
   <header class="header">
-    <!-- Ícone/Logo CondUnity -->
+    <!-- Ícone/Logo CondUnity (inline SVG) -->
     <div class="logo">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
            xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:10px">
@@ -68,8 +70,8 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
         <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Senha">
         <button class="primary" onclick="login()">Entrar</button>
-        <button onclick="signup()">Criar conta</button>
-        <button onclick="logout()">Sair</button>
+        <button class="btn" onclick="signup()">Criar conta</button>
+        <button class="btn" onclick="logout()">Sair</button>
         <span class="badge" id="roleBadge" title="Perfil"></span>
       </div>
       <div class="small">Dica: use os logins de teste do Supabase (síndico e morador).</div>
@@ -116,6 +118,12 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
             <button class="primary" onclick="requestBooking()">Solicitar</button>
           </div>
           <div class="small">Dica: Síndico pode aprovar/rejeitar abaixo.</div>
+
+          <!-- Integração: abrir App LOGO Gestão Condominial (Android) ou direcionar p/ Play Store -->
+          <div style="margin-top:12px">
+            <button class="btn full" onclick="openLogoApp()">Abrir app LOGO Gestão Condominial</button>
+          </div>
+
           <div id="bookingsList" class="list" style="margin-top:10px"></div>
         </section>
 
@@ -140,10 +148,13 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  // === SUAS CHAVES (use as que já funcionam) ===
-  const SUPABASE_URL = 'https://SEU-PROJECT.supabase.co';
-  const SUPABASE_ANON_KEY = 'SUA-ANON-KEY';
-  // =============================================
+  // === CONFIGURE AQUI ===
+  const SUPABASE_URL = 'https://SEU-PROJECT.supabase.co'; // <-- troque
+  const SUPABASE_ANON_KEY = 'SUA-ANON-KEY';               // <-- troque
+  // ======================
+  if (!SUPABASE_URL.includes('https://') || SUPABASE_URL.includes('SEU-PROJECT')) {
+    alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (usando os valores reais do seu projeto).');
+  }
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
@@ -155,7 +166,7 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   const hide = el => el.classList.add('hidden');
   function openTab(k){ ['chat','posts','bookings','ads','profile'].forEach(t=>{ const s=$('tab-'+t), b=$('tabBtn-'+t); if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }); }
 
-  // Render 1 mensagem (sem duplicar)
+  // Renderiza 1 mensagem (sem duplicar)
   function appendMsg(m){
     if (m?.id && seenMsgIds.has(m.id)) return;
     if (m?.id) seenMsgIds.add(m.id);
@@ -168,16 +179,23 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
   }
 
   async function login(){
-    const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
-    if(error){ alert(error.message); return; }
-    session = data.session;
-    $('whoami').innerText = data.user.email;
-    await boot();
+    try{
+      const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
+      if(error) throw error;
+      session = data.session;
+      $('whoami').innerText = data.user.email || '';
+      await boot();
+    }catch(e){
+      console.error(e);
+      alert('Falha no login: ' + (e?.message || 'Failed to fetch. Confira URL/chave do Supabase e Allowed URLs.'));
+    }
   }
   async function signup(){
-    const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
-    if(error){ alert(error.message); return; }
-    alert('Conta criada! (no piloto, deixe "Confirm email" desativado no Supabase)');
+    try{
+      const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
+      if(error) throw error;
+      alert('Conta criada! (no piloto, deixe "Confirm email" desativado no Supabase)');
+    }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
   }
   async function logout(){ await client.auth.signOut(); location.reload(); }
 
@@ -249,7 +267,7 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
     // remove inscrição antiga (evita inscrições duplicadas)
     if (chatChannel) { client.removeChannel(chatChannel); chatChannel = null; }
 
-    // assina INSERTs na tabela toda e filtra por room_id
+    // Assina INSERTs na tabela e filtra no cliente pela sala
     chatChannel = client.channel('chat-room')
       .on('postgres_changes',
         { event:'INSERT', schema:'public', table:'chat_messages' },
@@ -326,12 +344,33 @@ button.primary{background:var(--primary);color:#fff;border:none;border-radius:10
       </a>`).join('');
   }
 
+  // ===== Abrir app LOGO (Android) ou Play Store =====
+  function openLogoApp(){
+    const pkg = 'br.com.comunidadesmobile_logoserv';
+    const deep = 'logoserv://open'; // tentativa de esquema fictício
+    const store = 'https://play.google.com/store/apps/details?id='+pkg;
+
+    // Android: tenta abrir o esquema; se falhar, vai pra loja
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    if (isAndroid){
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = deep;
+      document.body.appendChild(iframe);
+      setTimeout(()=>{ window.location.href = store; }, 1200);
+      setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
+    } else {
+      // Outras plataformas: manda para a loja (ou página informativa)
+      window.open(store, '_blank');
+    }
+  }
+
   // Helpers
   const escapeHtml = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
 
   // Sessão existente
-  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email; await boot(); } })();
+  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ $('whoami').innerText = data.session.user.email || ''; await boot(); } })();
 
   // Service Worker (PWA)
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
