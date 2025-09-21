@@ -54,6 +54,18 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 .partner-card .title{font-weight:700}
 .partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
 .small{font-size:12px;color:#64748b}
+
+/* --- Banner de instalação --- */
+.install-banner{
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 50;
+  background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px;
+  box-shadow:0 10px 24px rgba(15,23,42,.12); display:none;
+}
+.install-banner .title {font-weight:700}
+.install-banner .row{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+.install-banner .hint{font-size:12px; color:#64748b}
+.install-banner .actions{display:flex; gap:8px}
+.install-banner .xbtn{background:transparent; border:none; cursor:pointer; font-size:18px; line-height:1}
 </style>
 </head>
 <body>
@@ -165,11 +177,25 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
     </div>
   </div>
 
+  <!-- Banner de instalação -->
+  <div id="installBanner" class="install-banner" role="region" aria-live="polite">
+    <div class="row">
+      <div>
+        <div class="title">Instale o CondUnity no seu aparelho</div>
+        <div id="installHint" class="hint"></div>
+      </div>
+      <div class="actions">
+        <button id="installBtn" class="primary">Instalar agora</button>
+        <button class="xbtn" aria-label="Fechar" onclick="hideInstallBanner()">✕</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   // === CONFIGURE AQUI ===
-  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co'; // <-- troque se for outro projeto
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM'; // <-- sua chave
+  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
   // ======================
   if (!SUPABASE_URL.includes('https://') || SUPABASE_URL.includes('SEU-PROJECT')) {
     alert('⚠️ Configure SUPABASE_URL/SUPABASE_ANON_KEY no index.html (valores reais do seu projeto).');
@@ -439,6 +465,71 @@ hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
 
   // Sessão existente
   (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ await boot(); } else { updateAuthUI(false); } })();
+
+  /* ===== INSTALAÇÃO PWA (Android + iOS) ===== */
+  let deferredPrompt = null;
+  const installBanner = document.getElementById('installBanner');
+  const installBtn = document.getElementById('installBtn');
+  const installHint = document.getElementById('installHint');
+
+  function isStandalone(){
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+           || (window.navigator.standalone === true);
+  }
+  function isIOS(){ return /iPhone|iPad|iPod/i.test(navigator.userAgent); }
+  function isAndroid(){ return /Android/i.test(navigator.userAgent); }
+
+  function showInstallBanner(mode){
+    if (isStandalone()) return; // já instalado
+    installBanner.style.display = 'block';
+    if (mode === 'android'){
+      installBtn.style.display = 'inline-block';
+      installHint.textContent = 'Toque em “Instalar agora” para adicionar o app à tela inicial.';
+    } else if (mode === 'ios'){
+      installBtn.style.display = 'none';
+      // instrução curta e direta para iOS
+      installHint.innerHTML = 'No Safari: toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.';
+    }
+  }
+  function hideInstallBanner(){
+    installBanner.style.display = 'none';
+  }
+  window.hideInstallBanner = hideInstallBanner;
+
+  // Android: capturar o evento e mostrar o botão
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner('android');
+  });
+
+  // iOS: sem evento — mostrar instruções se não estiver instalado
+  window.addEventListener('load', () => {
+    if (!deferredPrompt && isIOS() && !isStandalone()){
+      showInstallBanner('ios');
+    }
+  });
+
+  // Ação do botão "Instalar agora" (Android)
+  installBtn.addEventListener('click', async () => {
+    try{
+      if (!deferredPrompt) {
+        // fallback: abre menu do Chrome
+        installHint.textContent = 'Se não aparecer o pop-up, use o menu ⋮ do Chrome → “Adicionar à tela inicial”.';
+        return;
+      }
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      hideInstallBanner();
+      if (choice.outcome !== 'accepted') {
+        // usuário cancelou; deixa instrução
+        installHint.textContent = 'Para instalar depois: menu ⋮ do Chrome → “Adicionar à tela inicial”.';
+      }
+    }catch(err){
+      installHint.textContent = 'Se não aparecer o pop-up: menu ⋮ do Chrome → “Adicionar à tela inicial”.';
+    }
+  });
 
   </script>
 
