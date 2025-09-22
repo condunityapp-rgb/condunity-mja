@@ -1,899 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CondUnity • Mansão Jorge Amado</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9" />
 
-<!-- PWA -->
-<link rel="manifest" href="./manifest.json" />
-<link rel="icon" href="favicon.ico" />
-<meta name="theme-color" content="#2563eb" />
-<link rel="apple-touch-icon" href="./icon-192.png" />
+    <!-- Manifest PWA e ícones -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="icon" href="/icons/icon-192.png" />
 
-<!-- Twemoji para emojis consistentes -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
+    <title>Condunity</title>
 
-<style>
-:root{
-  --bg:#f6f8fc;
-  --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
-             radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
-  --card:#ffffff;
-  --muted:#667085;
-  --text:#0f172a;
-  --border:#e5e7eb;
-  --primary:#2563eb;
-  --primary-2:#1e40af;
-  --radius:16px;
-  --shadow:0 10px 30px rgba(15,23,42,.08);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  color:var(--text);
-  background:var(--bg);
-  background-image:var(--bg-grad);
-}
+    <style>
+      /* Banner PWA (só aparece se o app NÃO estiver instalado) */
+      #install-banner {
+        position: fixed;
+        bottom: 16px; left: 50%; transform: translateX(-50%);
+        max-width: 680px; width: calc(100% - 32px);
+        background: #111827; color: #fff;
+        border-radius: 16px; padding: 12px 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        display: none; z-index: 50;
+      }
+      #install-banner .row { display: flex; align-items: center; gap: 8px; }
+      #install-banner button { border: 0; border-radius: 12px; padding: 8px 12px; cursor: pointer; }
+      #btn-install { background: #10b981; color: #fff; }
+      #btn-dismiss { background: #374151; color: #fff; }
+    </style>
 
-/* Topbar */
-.topbar{
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; gap:12px;
-  padding:10px 12px;
-  background:linear-gradient(180deg,#2150d9 0%, #2563eb 100%);
-  color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15);
-}
-.brand{display:flex; align-items:center; gap:10px}
-.brand svg{width:32px;height:32px;display:block;border-radius:10px}
-.brand .title{font-weight:800;letter-spacing:.2px;font-size:16px}
-.topbar .right{margin-left:auto; display:flex; align-items:center; gap:8px}
-.userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px}
-.u-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
-.userchip .name{font-weight:700;font-size:13px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.btn{padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);cursor:pointer;font-weight:600}
-.btn.sm{padding:6px 10px;font-size:12px}
-.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
-.btn.ghost{background:#f8fafc}
-.btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
+    <script>
+      // ==========================================================
+      // ENV RÁPIDA (evita erro de VITE_* indefinida em tempo de execução)
+      // Preencha com os dados do seu projeto Supabase.
+      // Se você usa Vite com .env, pode deixar aqui vazio.
+      // ==========================================================
+      window.ENV = window.ENV || {
+        VITE_SUPABASE_URL: "https://kqkahzfzxbzqwjtkyqhe.supabase.co",      // ex.: "https://SEU-PROJ.supabase.co"
+        VITE_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM"  // ex.: "eyJhbGciOi..."
+      };
 
-/* Install pill */
-.install-pill{
-  position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%);
-  display:none; gap:10px; align-items:center;
-  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.15)
-}
-.install-pill .t{font-weight:800}
-.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
-.install-pill .x{background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer}
+      // ==========================================================
+      // Banner de instalação PWA
+      // Mostra somente quando o navegador dispara o beforeinstallprompt
+      // e quando o app não está em modo standalone (já instalado).
+      // ==========================================================
+      let deferredPrompt = null;
+      function showInstallBanner() {
+        const banner = document.getElementById('install-banner');
+        if (!banner) return;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (isStandalone) return; // já instalado → não mostra
+        banner.style.display = 'block';
+      }
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallBanner();
+      });
+      window.addEventListener('appinstalled', () => {
+        const banner = document.getElementById('install-banner');
+        if (banner) banner.style.display = 'none';
+        deferredPrompt = null;
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        const btnInstall = document.getElementById('btn-install');
+        const btnDismiss = document.getElementById('btn-dismiss');
+        if (btnInstall) {
+          btnInstall.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice; // { outcome: 'accepted' | 'dismissed', platform }
+            deferredPrompt = null;
+          });
+        }
+        if (btnDismiss) {
+          btnDismiss.addEventListener('click', () => {
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.style.display = 'none';
+          });
+        }
+      });
 
-/* layout */
-.wrap{max-width:1100px;margin:14px auto;padding:0 12px}
-.grid{display:grid;grid-template-columns:1fr; gap:12px}
-@media (min-width: 980px){ .grid{grid-template-columns:1.8fr 1fr} }
-
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-.section{padding:14px}
-.section h3{margin:0 0 10px 0}
-.sub{font-size:12px;color:var(--muted)}
-
-/* tabs */
-.tabs{
-  display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;
-  background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)
-}
-.tabs button{
-  padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text);
-  font-weight:800;white-space:nowrap
-}
-.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
-
-/* inputs */
-input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
-input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.18)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-
-/* chat */
-.chat-wrap{display:flex;flex-direction:column;height:62vh}
-@media (min-width: 980px){ .chat-wrap{height:60vh} }
-.chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
-.chat-box{flex:1; overflow:auto; padding:10px;border:1px solid var(--border);border-radius:12px;background:#f7f9ff}
-.msg{position:relative; max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.45; box-shadow:0 4px 14px rgba(15,23,42,.06)}
-.msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
-.msg.you{background:#e8efff}
-.msg.other{background:#eef2ff}
-.msg .edited{font-size:11px;color:#64748b;margin-left:6px}
-.msg .menu{
-  position:absolute; right:6px; top:6px;
-  background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
-  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5
-}
-.msg .menu button{background:#fff;border:none;text-align:left;padding:10px 12px;cursor:pointer;font-weight:600}
-.msg .menu button:hover{background:#f1f5f9}
-.msg .kebab{
-  position:absolute; right:6px; top:6px;
-  border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800
-}
-.compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
-textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; background:#fff; font-size:15px}
-.emoji-btn{font-size:20px;padding:6px 10px}
-
-/* emojis */
-.emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
-.emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
-.emoji-grid img{width:20px;height:20px}
-
-/* parceiros PRO 2.0 */
-.showcase{
-  background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
-              radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
-  border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;
-}
-.hero{
-  display:flex; gap:10px; align-items:center; padding:14px;
-  border-radius:12px;
-  background:linear-gradient(120deg,#e8f3ff 0%,#ecfeff 100%);
-  border:1px dashed #93c5fd;
-}
-.hero h4{margin:0;font-size:16px}
-.badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
-.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
-.kpis .k{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-weight:700}
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px}
-.tools input{flex:1}
-.tools select{min-width:140px}
-.carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
-.card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center; position:relative}
-.card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
-.card-p .title{font-weight:800}
-.card-p .meta{font-size:12px;color:var(--muted)}
-.ribbon{position:absolute; top:10px; left:-6px; background:#fde68a; color:#92400e; font-weight:800; font-size:11px; padding:2px 8px; border-radius:6px}
-.p-grid{display:grid;gap:10px;grid-template-columns:1fr}
-@media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
-.badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
-.star{color:#f59e0b}
-
-/* modal parceiro */
-.modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60; }
-.modal .box{ width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); padding:14px; }
-.modal .row{margin-top:6px}
-
-.hidden{display:none}
-.small{font-size:12px;color:var(--muted)}
-.kv{font-size:12px;color:var(--muted)}
-a.link{color:#1f4fd7;text-decoration:none}
-a.link:hover{text-decoration:underline}
-.approval{
-  margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;
-  background:#fffbeb; color:#92400e; font-weight:600;
-}
-</style>
-</head>
-<body>
-
-<!-- PILL de instalar -->
-<div class="install-pill" id="installPill">
-  <span class="t">Instale o app CondUnity</span>
-  <button class="a" id="installDo">Instalar</button>
-  <button class="x" id="installX" aria-label="Fechar">×</button>
-</div>
-
-<!-- top -->
-<div class="topbar">
-  <div class="brand">
-    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-      <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
-      <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
-      <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
-      <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
-    </svg>
-    <div class="title">CondUnity • Mansão Jorge Amado</div>
-  </div>
-  <div class="right">
-    <div class="userchip" id="userChip" style="display:none">
-      <div class="u-circle" id="chipIni">?</div>
-      <div class="name" id="chipName">Usuário</div>
-    </div>
-    <button id="btnSignoutTop" class="btn sm" style="display:none" onclick="logout()">Sair</button>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <!-- Login -->
-  <div class="card section" id="authBox" style="display:none">
-    <div class="row">
-      <input id="email" placeholder="Email" style="min-width:220px">
-      <input id="password" type="password" placeholder="Senha" style="min-width:160px">
-    </div>
-    <div class="row" style="margin-top:8px">
-      <button class="btn primary" onclick="login()">Entrar</button>
-      <button class="btn" onclick="signup()">Criar conta</button>
-    </div>
-    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.</div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
-    <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
-    <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
-    <button id="tabBtn-fin" onclick="openTab('fin')">Financeiro</button>
-    <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
-  </div>
-
-  <div id="approvalBanner" class="approval hidden">
-    Sua conta está aguardando aprovação. Você já pode ver a vitrine de parceiros. Chat e integrações liberam após aprovação.
-  </div>
-
-  <div class="grid">
-
-    <!-- Coluna principal -->
-    <div>
-      <div class="card section" id="tab-chat">
-        <div class="chat-head"><h3 style="margin:0">Chat Geral do Condomínio</h3></div>
-
-        <div class="chat-wrap">
-          <div id="chatBox" class="chat-box"></div>
-
-          <div class="compose">
-            <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
-            <textarea id="chatInput" class="input" aria-label="Mensagem"></textarea>
-            <button class="btn primary" onclick="sendMessage()">Enviar</button>
-          </div>
-
-          <div id="emojiPanel" class="hidden" style="margin-top:8px">
-            <div class="emoji-grid" id="emojiGrid"></div>
+      // ==========================================================
+      // Service Worker (PWA)
+      // ==========================================================
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(console.error);
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Banner de instalação → aparece só quando houver evento e não estiver instalado -->
+    <div id="install-banner">
+      <div class="row" style="justify-content: space-between;">
+        <div class="row" style="gap:12px">
+          <img src="/icons/icon-72.png" alt="" width="36" height="36" style="border-radius:8px" />
+          <div>
+            <div style="font-weight:700;line-height:1">Instalar o Condunity</div>
+            <div style="opacity:.8;font-size:12px">Acesso rápido na tela inicial</div>
           </div>
         </div>
-      </div>
-
-      <div class="card section hidden" id="tab-posts">
-        <h3>Comunicados</h3>
-        <div id="postsList"></div>
-        <div id="postForm" class="hidden" style="margin-top:12px">
-          <div class="row">
-            <input id="postTitle" placeholder="Título">
-            <textarea id="postContent" placeholder="Conteúdo"></textarea>
-          </div>
-          <div style="margin-top:8px"><button class="btn primary" onclick="createPost()">Publicar comunicado</button></div>
-        </div>
-      </div>
-
-      <div class="card section hidden" id="tab-bookings">
-        <h3>Reservas</h3>
-        <p class="sub">Integração com o app oficial do condomínio.</p>
-        <div class="row" style="margin-bottom:8px">
-          <button class="btn" onclick="openLogoApp()">Abrir app LOGO (Android)</button>
-          <a class="btn" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv&hl=pt-BR">Ir para Play Store</a>
-        </div>
-        <div id="internalBookings" class="hidden">
-          <div class="row">
-            <select id="amenitySelect"></select>
-            <input id="startAt" type="datetime-local">
-            <input id="endAt" type="datetime-local">
-            <button class="btn primary" onclick="requestBooking()">Solicitar</button>
-          </div>
-          <div id="bookingsList" style="margin-top:10px"></div>
-        </div>
-      </div>
-
-      <div class="card section hidden" id="tab-fin">
-        <h3>Financeiro</h3>
-        <p class="sub">Acesse suas faturas/boletos no sistema atual do condomínio.</p>
         <div class="row">
-          <a class="btn primary" id="btnFinance" target="_blank" rel="noopener" href="#">Abrir Financeiro</a>
+          <button id="btn-dismiss">Agora não</button>
+          <button id="btn-install">Instalar</button>
         </div>
       </div>
     </div>
 
-    <!-- Lateral: Parceiros -->
-    <div>
-      <div class="card section" id="tab-ads">
-        <h3>Parceiros</h3>
+    <!-- Raiz da aplicação React -->
+    <div id="root"></div>
 
-        <div class="showcase">
-          <div class="hero">
-            <div>
-              <div class="badge">Preferência para moradores</div>
-              <h4>Divulgue seu negócio no CondUnity</h4>
-              <div class="small">Destaque premium, contato 1-clique, favoritos e compartilhamento.</div>
-            </div>
-            <div class="kpis">
-              <div class="k">+5k views/mês</div>
-              <div class="k">+25 leads/mês</div>
-              <div class="k">0% comissão</div>
-            </div>
-          </div>
-
-          <div class="tools">
-            <input id="adSearch" placeholder="Pesquisar (ex: elétrica, celular…)" oninput="filterAds()">
-            <select id="adCat" onchange="filterAds()">
-              <option value="">Categoria: Todas</option>
-              <option value="tecnologia">Tecnologia</option>
-              <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde & Bem-estar</option>
-              <option value="alimentos">Alimentos & Bebidas</option>
-              <option value="servicos">Serviços</option>
-            </select>
-            <select id="adSort" onchange="filterAds()">
-              <option value="priority">Ordenar: Destaque</option>
-              <option value="az">A–Z</option>
-              <option value="rating">Melhor avaliação</option>
-            </select>
-            <button class="btn primary" onclick="openPartnerForm()">Quero divulgar</button>
-          </div>
-
-          <div style="margin:10px 2px 6px; font-weight:700">Destaques</div>
-          <div class="carousel" id="adsCarousel"></div>
-
-          <div style="margin:10px 2px 6px; font-weight:700">Todos os parceiros</div>
-          <div class="p-grid" id="adsBox"></div>
-        </div>
-
-        <div id="partnerForm" class="hidden" style="margin-top:12px">
-          <h4>Novo parceiro</h4>
-          <div class="row">
-            <input id="adTitle" placeholder="Título (ex: CEC Tecnologia BA)">
-            <input id="adLink"  placeholder="Link (WhatsApp: https://wa.me/55DDDNUM / Site / Instagram…)">
-            <input id="adImage" placeholder="URL da imagem (logo quadrada)">
-          </div>
-          <div class="row">
-            <select id="adCategory">
-              <option value="">Categoria</option>
-              <option value="tecnologia">Tecnologia</option>
-              <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde & Bem-estar</option>
-              <option value="alimentos">Alimentos & Bebidas</option>
-              <option value="servicos">Serviços</option>
-            </select>
-            <input id="adRating" type="number" min="3" max="5" step="0.1" placeholder="Nota (3–5)">
-            <label class="small"><input id="adVerified" type="checkbox"> Verificado</label>
-          </div>
-          <div style="margin-top:8px"><button class="btn primary" onclick="createPartner()">Publicar parceiro</button></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Parceiro -->
-<div class="modal" id="partnerModal" onclick="if(event.target===this)closePartnerModal()">
-  <div class="box">
-    <div style="display:flex;gap:10px;align-items:center">
-      <img id="pmImg" src="" alt="" style="width:64px;height:64px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
-      <div>
-        <h4 id="pmTitle">Parceiro</h4>
-        <div class="small"><span id="pmCat" class="badge-blue"></span> • <span id="pmStars"></span> <span id="pmVerified"></span></div>
-      </div>
-      <button class="btn ghost" style="margin-left:auto" onclick="closePartnerModal()">Fechar</button>
-    </div>
-    <div class="row">
-      <a id="pmWhats" class="btn primary" target="_blank" rel="noopener">Falar no WhatsApp</a>
-      <a id="pmSite" class="btn" target="_blank" rel="noopener">Visitar site</a>
-      <button class="btn" onclick="sharePartner()">Compartilhar</button>
-      <button class="btn" id="pmFav" onclick="toggleFav()">☆ Favoritar</button>
-      <button class="btn" onclick="quotePartner()">Pedir orçamento</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-/* CONFIG */
-const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-const URL_FINANCEIRO  = 'https://portal.logo.com.br';
-const SITE_URL = 'https://condunityapp-rgb.github.io/condunity-mja/';
-
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-/* Estado */
-let profile=null, condoId=null, generalRoomId=null, isManager=false, approved=true;
-let seenMsgIds = new Set();
-let chatChannel=null, pollingTimer=null, lastSeenAt=null;
-let _adsFull=[], _favSet=new Set(), _currentPartner=null;
-
-/* Helpers */
-const $=id=>document.getElementById(id);
-const show=el=>el.classList.remove('hidden');
-const hide=el=>el.classList.add('hidden');
-function initials(s){ s=(s||'').trim(); if(!s) return '?'; const p=s.split(/\s+/).slice(0,2); return p.map(x=>x[0]?.toUpperCase()||'').join(''); }
-function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function fmt(s){ try{return new Date(s).toLocaleString('pt-BR')}catch{return s} }
-function firstName(full){ const t=(full||'').trim(); if(!t) return ''; return t.split(/\s+/)[0]; }
-function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el,{folder:'svg',ext:'.svg'}); } }
-
-/* Tabs */
-function openTab(k){
-  ['chat','posts','bookings','fin','ads'].forEach(t=>{
-    const s=$('tab-'+t), b=$('tabBtn-'+(t==='fin'?'fin':t));
-    if(!s||!b) return;
-    if(t===k){ show(s); b.classList.add('active'); } else { hide(s); b.classList.remove('active'); }
-  });
-}
-
-/* Auth */
-async function login(){
-  try{
-    const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
-    if(error) throw error;
-    $('password').value='';
-    await boot();
-  }catch(e){ alert('Falha no login: '+(e?.message||e)); }
-}
-async function signup(){
-  try{
-    const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
-    if(error) throw error; alert('Conta criada! Aguarde aprovação do síndico/adm.');
-  }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
-}
-async function logout(){ await client.auth.signOut(); location.reload(); }
-
-function paintUserChip(name){
-  $('chipIni').textContent = initials(name);
-  $('chipName').textContent = firstName(name);
-  $('userChip').style.display='flex';
-  $('btnSignoutTop').style.display='inline-flex';
-  try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
-}
-
-/* Gate de aprovação: se a coluna approved não existir, considera aprovado */
-function applyApprovalGate(){
-  if(approved){ hide($('approvalBanner')); return; }
-  show($('approvalBanner'));
-  // restringe chat/comunicados/reservas/financeiro, mantém Parceiros
-  hide($('tab-chat')); hide($('tab-posts')); hide($('tab-bookings')); hide($('tab-fin'));
-  openTab('ads');
-}
-
-async function boot(){
-  const { data: auth } = await client.auth.getUser();
-  const uid = auth?.user?.id;
-  const email = auth?.user?.email || '';
-  if(!uid){ $('authBox').style.display='block'; $('userChip').style.display='none'; $('btnSignoutTop').style.display='none'; return; }
-  $('authBox').style.display='none';
-
-  const { data: me, error:eProf } = await client.from('profiles')
-    .select('id, full_name, role, condominium_id, unit_id, approved')
-    .eq('id', uid).single();
-  if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
-  profile = me; condoId = me.condominium_id; isManager = (me.role==='manager'||me.role==='admin');
-  approved = (typeof me.approved === 'boolean') ? me.approved : true; // fallback
-  applyApprovalGate();
-
-  const name = (me?.full_name?.trim()) || email.split('@')[0];
-  paintUserChip(name);
-
-  const { data: room, error:eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
-  if(eRoom){ alert('Sala de chat não encontrada'); return; }
-  generalRoomId = room.id;
-
-  $('btnFinance').href = URL_FINANCEIRO;
-
-  await loadChat();
-  subscribeChatRealtime();
-  await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
-
-  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) subscribeChatRealtime(); });
-  window.addEventListener('online', subscribeChatRealtime);
-  window.addEventListener('offline', ()=>{ startPolling(); });
-
-  if(isManager) show($('partnerForm')); else hide($('partnerForm'));
-}
-
-/* Chat (sem depender de updated_at) */
-let _editingId=null, lastSeenAt=null;
-function makeMsgMenu(id, you){
-  const div=document.createElement('div'); div.className='menu';
-  if(you){
-    const btnEdit=document.createElement('button'); btnEdit.textContent='✏️ Editar';
-    btnEdit.onclick=()=>{ div.style.display='none'; startEditMessage(id); };
-    const btnDel=document.createElement('button'); btnDel.textContent='🗑️ Apagar';
-    btnDel.onclick=()=>{ div.style.display='none'; deleteMessage(id); };
-    div.appendChild(btnEdit); div.appendChild(btnDel);
-  }
-  return div;
-}
-function makeMsgBubble(m){
-  const you = (profile?.id && m.sender_id && profile.id===m.sender_id);
-  const edited = m.updated_at && m.updated_at !== m.created_at;
-  const div = document.createElement('div');
-  div.className = 'msg ' + (you?'you':'other');
-  div.dataset.id = m.id;
-  div.innerHTML = `
-    <button class="kebab" ${you?'':'style="display:none"'} aria-label="Mais ações" title="Mais ações">⋯</button>
-    <div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${edited?'<span class="edited">(editada)</span>':''}</div>
-    <span class="__msg">${escapeHtml(m.content)}</span>`;
-  const menu=makeMsgMenu(m.id, you);
-  div.appendChild(menu);
-  const kebab=div.querySelector('.kebab');
-  if(kebab){
-    kebab.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = menu.style.display==='flex' ? 'none' : 'flex'; });
-    // long-press mobile
-    let t=null;
-    div.addEventListener('touchstart', ()=>{ t=setTimeout(()=>{ menu.style.display='flex'; },500); });
-    div.addEventListener('touchend', ()=>{ if(t) clearTimeout(t); });
-  }
-  document.addEventListener('click', ()=>{ menu.style.display='none'; });
-  renderEmojiIn(div);
-  return div;
-}
-async function loadChat(){
-  const { data, error } = await client.from('chat_messages')
-    .select('*')
-    .eq('room_id', generalRoomId)
-    .order('created_at',{ascending:true})
-    .limit(300);
-  if(error){ $('chatBox').innerHTML='<div class="small">Erro ao carregar chat.</div>'; return; }
-  seenMsgIds = new Set();
-  const box = $('chatBox'); box.innerHTML='';
-  (data||[]).forEach(m=>{ if(m?.id) seenMsgIds.add(m.id); box.appendChild(makeMsgBubble(m)); });
-  box.scrollTop = box.scrollHeight;
-  const last = (data||[]).slice(-1)[0]; if(last) lastSeenAt = last.created_at;
-}
-function appendMsg(m){
-  if(!m || !m.id || seenMsgIds.has(m.id)) return;
-  seenMsgIds.add(m.id);
-  $('chatBox').appendChild(makeMsgBubble(m));
-  $('chatBox').scrollTop = $('chatBox').scrollHeight;
-  lastSeenAt = m.created_at || lastSeenAt;
-}
-function patchMsg(m){
-  const el = document.querySelector(`.msg[data-id="${m.id}"]`); if(!el) return;
-  const edited = m.updated_at && m.updated_at !== m.created_at;
-  const meta = el.querySelector('.meta');
-  if(meta){ meta.innerHTML = `${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${edited?'<span class="edited">(editada)</span>':''}`; }
-  el.querySelector('span.__msg').textContent = m.content;
-  renderEmojiIn(el);
-}
-async function sendMessage(){
-  if(!approved){ alert('Aguarde aprovação para usar o chat.'); return; }
-  const text = $('chatInput').value.trim(); if(!text) return;
-  const user = (await client.auth.getUser()).data.user;
-  const displayName = (profile?.full_name?.trim()) || (user?.email?.split('@')[0] || 'Morador');
-  const { data, error } = await client.from('chat_messages')
-    .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || user?.id || null, sender_name: displayName })
-    .select('*').single();
-  if(error){ alert('Erro ao enviar: '+error.message); return; }
-  $('chatInput').value=''; appendMsg(data); setTimeout(refreshSince, 300);
-}
-function startEditMessage(id){
-  const el = document.querySelector(`.msg[data-id="${id}"]`); if(!el) return;
-  _editingId=id;
-  const msgSpan = el.querySelector('span.__msg');
-  const old = msgSpan.textContent;
-  const ta=document.createElement('textarea');
-  ta.value=old; ta.style.width='100%'; ta.style.minHeight='46px'; ta.style.border='1px solid var(--border)'; ta.style.borderRadius='10px'; ta.style.padding='8px 10px';
-  msgSpan.replaceWith(ta);
-  const actions=document.createElement('div'); actions.style.marginTop='6px';
-  actions.innerHTML=`<button class="btn sm primary">Salvar</button> <button class="btn sm ghost">Cancelar</button>`;
-  el.appendChild(actions);
-  const [btnSave, btnCancel]=actions.querySelectorAll('button');
-  btnSave.onclick=()=>applyEditMessage(id, ta.value.trim(), el, actions);
-  btnCancel.onclick=()=>{ ta.replaceWith(msgSpan); actions.remove(); _editingId=null; };
-}
-async function applyEditMessage(id, newText, el, actions){
-  if(!newText){ alert('A mensagem não pode ficar vazia.'); return; }
-  const { data, error } = await client.from('chat_messages')
-    .update({ content: newText })
-    .eq('id', id)
-    .select('*').single();
-  if(error){ alert('Não foi possível editar. Verifique a permissão de UPDATE no Supabase.'); return; }
-  patchMsg(data);
-  const ta = el.querySelector('textarea'); if(ta){
-    const span=document.createElement('span'); span.className='__msg'; span.textContent=newText; ta.replaceWith(span);
-  }
-  if(actions) actions.remove();
-  _editingId=null;
-}
-async function deleteMessage(id){
-  if(!confirm('Apagar esta mensagem?')) return;
-  const { error } = await client.from('chat_messages').delete().eq('id', id);
-  if(error){ alert('Não foi possível apagar. Verifique a permissão de DELETE.'); return; }
-  const el = document.querySelector(`.msg[data-id="${id}"]`);
-  if(el){ el.remove(); }
-  seenMsgIds.delete(id);
-}
-(function(){
-  const input=$('chatInput');
-  input.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter' && !e.shiftKey){
-      e.preventDefault();
-      if(_editingId){
-        const el=document.querySelector(`.msg[data-id="${_editingId}"]`);
-        const ta=el?.querySelector('textarea');
-        if(ta){ applyEditMessage(_editingId, ta.value.trim(), el, el.querySelector('div')); }
-      } else { sendMessage(); }
-    }
-  });
-})();
-
-/* Realtime robusto */
-function subscribeChatRealtime(){
-  stopPolling();
-  if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
-
-  chatChannel = client.channel('realtime:chat_messages:'+generalRoomId, { config:{ broadcast:{ack:true}}});
-  chatChannel.on('postgres_changes',
-    { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
-    payload => appendMsg(payload.new)
-  );
-  chatChannel.on('postgres_changes',
-    { event:'DELETE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
-    payload => { const id=payload?.old?.id; if(id){ const el=document.querySelector(`.msg[data-id="${id}"]`); if(el) el.remove(); seenMsgIds.delete(id); } }
-  );
-  chatChannel.on('postgres_changes',
-    { event:'UPDATE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
-    payload => { if(payload?.new) patchMsg(payload.new); }
-  );
-
-  let hb = setInterval(()=>{ try{ chatChannel.send({type:'broadcast', event:'hb', payload:{t:Date.now()}});}catch{} }, 15000);
-
-  chatChannel.subscribe(status=>{
-    if(status==='SUBSCRIBED'){ stopPolling(); }
-    if(status==='CLOSED'||status==='TIMED_OUT'||status==='CHANNEL_ERROR'){ startPolling(); }
-  });
-
-  let watchdog = setTimeout(()=>startPolling(), 20000);
-  chatChannel.on('broadcast', {event:'hb'}, ()=>{ clearTimeout(watchdog); watchdog=setTimeout(()=>startPolling(), 20000); });
-}
-async function refreshSince(){
-  const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
-  const { data } = await client.from('chat_messages')
-    .select('*')
-    .eq('room_id', generalRoomId).gt('created_at', since)
-    .order('created_at',{ascending:true}).limit(50);
-  (data||[]).forEach(m=>appendMsg(m));
-}
-function startPolling(){ if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 1500); } }
-function stopPolling(){ if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; } }
-
-/* Emojis */
-const EMOJIS=["😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😎","😢","😭","😡","👍","👎","👏","🙏","💪","🔥","🎉","✨","🌟","💡","📌","📎","📲","🏠","🚗","🍕","🍔","☕"];
-function renderEmojiGrid(){
-  const grid=$('emojiGrid'); grid.innerHTML='';
-  EMOJIS.forEach(ch=>{
-    const btn=document.createElement('button');
-    btn.textContent=ch; grid.appendChild(btn);
-    btn.onclick=()=>{ const t=$('chatInput'); t.value=(t.value||'')+ch; t.focus(); };
-  });
-  if(window.twemoji){ twemoji.parse(grid,{folder:'svg',ext:'.svg'}); }
-}
-function toggleEmoji(){ const p=$('emojiPanel'); p.classList.toggle('hidden'); if(!p.dataset.rendered){ renderEmojiGrid(); p.dataset.rendered='1'; } }
-
-/* Posts */
-async function loadPosts(){
-  const { data, error } = await client.from('posts')
-    .select('id,title,content,created_at').eq('condominium_id', condoId)
-    .order('created_at',{ascending:false}).limit(50);
-  if(error){ $('postsList').innerHTML='<div class="small">Sem permissão para ler comunicados.</div>'; return; }
-  $('postsList').innerHTML=(data||[]).map(p=>`
-    <div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);">
-      <div style="font-weight:700">${escapeHtml(p.title)}</div>
-      <div class="small">${fmt(p.created_at)}</div>
-      <div style="margin-top:4px"><span class="__msg">${escapeHtml(p.content)}</span></div>
-    </div>`).join('');
-  if(isManager) show($('postForm')); else hide($('postForm'));
-  renderEmojiIn($('postsList'));
-}
-async function createPost(){
-  const title=$('postTitle').value.trim(), content=$('postContent').value.trim();
-  if(!title||!content){ alert('Preencha título e conteúdo'); return; }
-  const { error } = await client.from('posts').insert({ condominium_id: condoId, author_id: profile.id, title, content });
-  if(error){ alert('Erro ao publicar: '+error.message); return; }
-  $('postTitle').value=''; $('postContent').value=''; loadPosts();
-}
-
-/* Reservas */
-async function loadAmenities(){
-  const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
-  $('amenitySelect').innerHTML=(data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
-}
-async function requestBooking(){
-  const amenity_id=$('amenitySelect').value;
-  const starts_at=$('startAt').value? new Date($('startAt').value).toISOString():null;
-  const ends_at=$('endAt').value? new Date($('endAt').value).toISOString():null;
-  if(!amenity_id||!starts_at||!ends_at){ alert('Preencha área e horários'); return; }
-  const { error } = await client.from('bookings').insert({ condominium_id:condoId, amenity_id, requester_id: profile.id, starts_at, ends_at });
-  if(error){ alert('Erro ao solicitar: '+error.message); return; }
-  loadBookings();
-}
-async function loadBookings(){
-  const list=$('bookingsList'); if(!list) return;
-  const { data } = await client.from('bookings')
-    .select('id,amenity_id,starts_at,ends_at,status')
-    .eq('condominium_id',condoId).order('starts_at',{ascending:false}).limit(50);
-  list.innerHTML=(data||[]).map(b=>{
-    const actions=(isManager && b.status==='pending')
-      ? `<button class="btn" onclick="setBooking('${b.id}','approved')">Aprovar</button>
-         <button class="btn warn" onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
-      : `<span class="btn ghost sm">${b.status}</span>`;
-    return `<div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div><strong>${escapeHtml(b.amenity_id)}</strong><div class="small">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div></div>
-      <div>${actions}</div></div>`;
-  }).join('');
-}
-async function setBooking(id,status){
-  const { error } = await client.from('bookings').update({ status }).eq('id', id);
-  if(error){ alert('Erro ao atualizar: '+error.message); return; }
-  loadBookings();
-}
-
-/* Parceiros */
-function stars(r=5){ r=Math.max(3, Math.min(5, Number(r)||5)); let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; } return s; }
-function catFromTitle(t=''){ t=t.toLowerCase();
-  if(t.includes('tec')||t.includes('celular')||t.includes('comput')) return 'tecnologia';
-  if(t.includes('manuten')||t.includes('conserto')||t.includes('reparo')) return 'manutencao';
-  if(t.includes('clin')||t.includes('saúde')||t.includes('estética')) return 'saude';
-  if(t.includes('lanch')||t.includes('rest')||t.includes('pizza')||t.includes('açaí')) return 'alimentos';
-  return 'servicos';
-}
-function pCard(a,wide=false,idx=0){
-  const rating = a.rating || 5;
-  const cat = a.category || catFromTitle(a.title||'');
-  const verified = a.verified ? `<span class="badge-blue">Verificado</span>` : '';
-  const inner = `
-    ${idx<3?'<div class="ribbon">Top do mês</div>':''}
-    <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" alt="">
-    <div style="flex:1">
-      <div class="title">${escapeHtml(a.title||'Parceiro')}</div>
-      <div class="meta">${verified} <span class="badge-blue" style="margin-left:6px">${cat}</span></div>
-      <div style="margin-top:4px">${stars(rating)}</div>
-      <div class="small" style="margin-top:6px">Clique para ver detalhes</div>
-    </div>
-    <button class="btn sm" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>Abrir</button>
-  `;
-  return wide
-    ? `<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);position:relative">${inner}</div>`
-    : `<div class="card-p" style="cursor:pointer" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>${inner}</div>`;
-}
-async function loadAds(){
-  const now=new Date().toISOString();
-  const { data, error } = await client.from('partner_ads')
-    .select('title,image_url,link_url,priority,starts_at,ends_at,is_active,category,rating,verified')
-    .eq('condominium_id',condoId).order('priority',{ascending:false});
-  if(error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
-  let items=(data||[]).filter(a=>a.is_active&&(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
-  if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999',category:'tecnologia',rating:5,verified:true}]; }
-  _adsFull = items.map(a=>({...a, category: a.category || catFromTitle(a.title||'') , rating: a.rating || 5 }));
-  renderAds(_adsFull);
-}
-function renderAds(items){
-  $('adsCarousel').innerHTML = items.slice(0,6).map((x,i)=>pCard(x,false,i)).join('');
-  $('adsBox').innerHTML = items.map((x,i)=>pCard(x,true,i)).join('');
-}
-function filterAds(){
-  const q = ($('adSearch').value||'').toLowerCase();
-  const sort = $('adSort').value;
-  const cat = $('adCat').value;
-  let items = _adsFull.filter(a => (a.title||'').toLowerCase().includes(q));
-  if(cat) items = items.filter(a=> (a.category||'')===cat);
-  if(sort==='az'){ items = items.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||'')); }
-  if(sort==='rating'){ items = items.slice().sort((a,b)=> (b.rating||0)-(a.rating||0)); }
-  renderAds(items);
-}
-
-/* Modal Parceiro */
-function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
-async function createPartner(){
-  const title=$('adTitle').value.trim();
-  const link=$('adLink').value.trim();
-  const image=$('adImage').value.trim();
-  const category=$('adCategory').value || null;
-  const rating= Number($('adRating').value) || null;
-  const verified= $('adVerified').checked;
-  if(!title){ alert('Informe o título'); return; }
-  const { error } = await client.from('partner_ads').insert({
-    title, link_url: link||null, image_url: image||null,
-    is_active: true, priority: 10, condominium_id: condoId,
-    category, rating, verified
-  });
-  if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
-  $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
-  $('adCategory').value=''; $('adRating').value=''; $('adVerified').checked=false;
-  loadAds();
-}
-function openPartnerModal(a){
-  _currentPartner = a;
-  $('pmImg').src = a.image_url || 'cec-logo.png';
-  $('pmTitle').textContent = a.title || 'Parceiro';
-  $('pmCat').textContent = a.category || (a.title?catFromTitle(a.title):'serviços');
-  $('pmVerified').innerHTML = a.verified ? '• <span class="badge-blue">Verificado</span>' : '';
-  $('pmStars').innerHTML = stars(a.rating||5);
-  const wa = (a.link_url||'').includes('wa.me') ? a.link_url : '';
-  $('pmWhats').style.display = wa ? 'inline-flex' : 'none';
-  $('pmWhats').href = wa || '#';
-  $('pmSite').style.display = wa ? 'none' : (a.link_url ? 'inline-flex' : 'none');
-  if(a.link_url && !wa) $('pmSite').href = a.link_url;
-  const fav = (_favSet||new Set()).has(a.title||'');
-  $('pmFav').textContent = fav ? '★ Favorito' : '☆ Favoritar';
-  $('partnerModal').style.display='grid';
-}
-function closePartnerModal(){ $('partnerModal').style.display='none'; _currentPartner=null; }
-async function sharePartner(){
-  if(!_currentPartner) return;
-  const text = `Conheça ${_currentPartner.title} no CondUnity! ${_currentPartner.link_url||''} — ${SITE_URL}`;
-  try{
-    if(navigator.share){ await navigator.share({ title:_currentPartner.title, text, url: SITE_URL }); }
-    else { await navigator.clipboard.writeText(text); alert('Copiado para a área de transferência!'); }
-  }catch{}
-}
-function toggleFav(){
-  if(!_currentPartner) return;
-  const key=_currentPartner.title||'';
-  if(_favSet.has(key)) _favSet.delete(key); else _favSet.add(key);
-  try{ localStorage.setItem('cu:favs', JSON.stringify(Array.from(_favSet))); }catch{}
-  $('pmFav').textContent = _favSet.has(key) ? '★ Favorito' : '☆ Favoritar';
-}
-function quotePartner(){
-  if(!_currentPartner) return;
-  const name = $('chipName').textContent || 'Morador';
-  const msg = encodeURIComponent(`Olá! Sou ${name} do Mansão Jorge Amado (CondUnity). Gostaria de um orçamento com vocês.`);
-  let url = _currentPartner.link_url||'';
-  if(url.includes('wa.me')){ if(!url.includes('?text=')) url += (url.includes('?')?'&':'?') + 'text=' + msg; }
-  else { url = 'https://wa.me/?text='+msg+' '+encodeURIComponent(_currentPartner.title||''); }
-  window.open(url,'_blank','noopener');
-}
-
-/* Integração LOGO */
-function openLogoApp(){
-  const pkg='br.com.comunidadesmobile_logoserv';
-  const deep='logoserv://open';
-  const store='https://play.google.com/store/apps/details?id='+pkg;
-  const isAndroid=/Android/i.test(navigator.userAgent);
-  if(isAndroid){
-    const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=deep; document.body.appendChild(iframe);
-    setTimeout(()=>{ window.location.href=store; }, 1200);
-    setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
-  } else { window.open(store,'_blank'); }
-}
-
-/* PWA: convite de instalação */
-let _deferredPrompt=null;
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
-function maybeShowInstall(){
-  if(isStandalone()) return;                       // já instalado
-  if(localStorage.getItem('cu:pwaDismissed')==='1') return; // usuário dispensou
-  const pill=$('installPill'); pill.style.display='flex';
-}
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault(); _deferredPrompt=e; maybeShowInstall();
-});
-$('installDo').addEventListener('click', async ()=>{
-  if(!_deferredPrompt) { window.location.href = SITE_URL; return; }
-  _deferredPrompt.prompt();
-  const { outcome } = await _deferredPrompt.userChoice;
-  _deferredPrompt=null;
-  $('installPill').style.display='none';
-  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }
-});
-$('installX').addEventListener('click', ()=>{
-  localStorage.setItem('cu:pwaDismissed','1');
-  $('installPill').style.display='none';
-});
-window.addEventListener('appinstalled', ()=>{ $('installPill').style.display='none'; localStorage.removeItem('cu:pwaDismissed'); });
-window.addEventListener('load', ()=>{ if(!_deferredPrompt) setTimeout(maybeShowInstall, 1500); });
-
-/* Start */
-(async()=>{
-  const { data } = await client.auth.getSession();
-  if(data.session){ await boot(); } else { $('authBox').style.display='block'; }
-})();
-</script>
-
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
-}
-</script>
-</body>
+    <!-- Entrada da aplicação (Vite) -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
