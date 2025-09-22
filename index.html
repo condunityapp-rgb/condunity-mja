@@ -3,557 +3,643 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CondUnity - Mansão Jorge Amado</title>
+<title>CondUnity • Mansão Jorge Amado</title>
 
 <!-- PWA -->
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" href="favicon.ico" />
-<meta name="theme-color" content="#2563eb" />
+<meta name="theme-color" content="#1f4fd7" />
 <!-- iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="apple-touch-icon" href="./icon-192.png" />
 
 <style>
-:root{--bg:#f7f9fc;--card:#ffffff;--text:#0f172a;--muted:#475569;--primary:#2563eb}
+/* ====== Design System (novo) ====== */
+:root{
+  --bg:#0b1220;            /* fundo geral (escuro elegante) */
+  --bg-soft:#0f172a;       /* blocos */
+  --card:#0d1a34cc;        /* glass */
+  --card-strong:#0d1a34f2; /* glass mais forte */
+  --border:#1f2a44;        /* linhas */
+  --text:#e6ebff;          /* texto */
+  --muted:#9fb0d6;         /* subtítulo */
+  --primary:#2563eb;       /* azul CondUnity */
+  --primary-2:#1f4fd7;
+  --accent:#22d3ee;        /* ciano */
+  --ok:#10b981;
+  --warn:#f59e0b;
+  --shadow:0 10px 40px rgba(0,0,0,.35);
+  --radius:16px;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
-.header{padding:18px 16px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid #eef2f7;position:sticky;top:0;z-index:10}
-.logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
-.title{font-size:20px;font-weight:700;letter-spacing:.2px}
-.userchip{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px}
-.userchip .circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
-.userchip .name{font-weight:600}
-.userchip .role{font-size:12px;color:#64748b;margin-left:4px}
-.container{max-width:1120px;margin:24px auto;padding:0 16px}
-.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.nav button{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
-.nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,.04)}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-input,select,textarea{padding:10px 12px;border:1px solid #cbd5e1;border-radius:12px;font-size:14px}
-input:focus,textarea:focus,select:focus{outline:none;border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-button.primary{background:var(--primary);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
-.btn{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600}
-.badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at -10% -10%, #0e1a38 10%, transparent 50%),
+    radial-gradient(1000px 800px at 110% -10%, #0b3a5a 10%, transparent 55%),
+    linear-gradient(180deg,#0a1020 0%, #0a1020 100%);
+}
+
+/* ====== Topbar ====== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  background:linear-gradient(180deg,rgba(13,27,64,.92),rgba(13,27,64,.65));
+  border-bottom:1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+.brand{display:flex; align-items:center; gap:12px}
+.brand svg{width:36px;height:36px;display:block;border-radius:12px}
+.brand .title{font-weight:800;letter-spacing:.2px}
+.topbar .who{margin-left:auto}
+
+/* ====== Layout ====== */
+.wrap{max-width:1200px;margin:22px auto;padding:0 16px}
+.badge{display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--border); color:var(--muted);
+  padding:6px 10px;border-radius:999px; font-size:12px;background:#0c1731;}
+.grid{display:grid;grid-template-columns:2fr 1.1fr; gap:16px}
+@media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+/* ====== Cards ====== */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.section{padding:16px}
+.section h3{margin:0 0 12px 0}
+.sub{font-size:12px;color:var(--muted)}
+
+/* ====== Tabs ====== */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.tabs button{
+  padding:10px 14px;border:1px solid var(--border);border-radius:999px;
+  background:#0c1731; color:var(--text); font-weight:600; cursor:pointer;
+}
+.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent}
+
+/* ====== Chat ====== */
+.chat-wrap{display:flex;flex-direction:column;height:520px}
+.chat-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.chat-box{
+  flex:1; overflow:auto; padding:10px;border:1px solid var(--border);
+  border-radius:12px;background:#0b142b;
+}
+.msg{max-width:90%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
+.msg.you{background:#0d234a}
+.msg.other{background:#132a54}
+.compose{
+  display:flex; gap:8px; margin-top:10px; align-items:flex-end;
+  position:sticky; bottom:0;
+}
+textarea.input{
+  flex:1; min-height:46px; max-height:140px; resize:vertical;
+  padding:10px 12px;border:1px solid var(--border); border-radius:12px;
+  background:#0b162f;color:var(--text); font-size:14px;
+}
+textarea.input:focus{outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25); border-color:#3757a6}
+.btn{padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:#0c1731;color:var(--text);cursor:pointer;font-weight:600}
+.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent}
+.btn.ghost{background:#0b162f}
+.emoji-btn{font-size:20px;padding:6px 10px}
+
+/* ===== Partners ===== */
+.partner-cta{
+  background:linear-gradient(180deg,rgba(34,211,238,.12),rgba(34,211,238,.06));
+  border:1px dashed #2aa1b5; border-radius:12px; padding:12px; margin-bottom:12px;
+}
+.partner-card{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#0b162f}
+.partner-card img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
+
+/* ===== Utility ===== */
 .hidden{display:none}
-.list{display:grid;gap:10px}
-.item{padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
 .kv{font-size:12px;color:var(--muted)}
-.sidebar{min-width:300px}
-.flex{display:flex;gap:16px}
-.flex-1{flex:1}
-@media (max-width: 900px){ .flex{flex-direction:column}.sidebar{min-width:auto} }
-.chat-box{height:300px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}
-.msg{padding:8px 10px;border-radius:12px;background:#eef2ff;margin-bottom:8px;line-height:1.35}
-hr.sep{border:0;border-top:1px solid #e2e8f0;margin:12px 0}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.partner-card{display:flex;gap:12px;align-items:center}
-.partner-card img{width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid #e2e8f0}
-.partner-card .info{flex:1}
-.partner-card .title{font-weight:700}
-.partner-card .sub{font-size:12px;color:#64748b;margin-top:2px}
-.small{font-size:12px;color:#64748b}
-
-/* Banner de instalação */
-.install-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:50;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:12px 14px;box-shadow:0 10px 24px rgba(15,23,42,.12);display:none}
-.install-banner .title{font-weight:700}
-.install-banner .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.install-banner .hint{font-size:12px;color:#64748b}
-.install-banner .actions{display:flex;gap:8px}
-.install-banner .xbtn{background:transparent;border:none;cursor:pointer;font-size:18px;line-height:1}
-
-/* Emoji picker simples */
-.emoji-toggle{border:1px solid #e2e8f0;background:#fff;border-radius:12px;padding:0 10px;font-size:20px;cursor:pointer}
-.emoji-panel{position:absolute;bottom:54px;right:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px;display:none;box-shadow:0 8px 20px rgba(15,23,42,.12);max-width:280px}
-.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;font-size:22px}
-.chat-row{display:flex;gap:8px;align-items:center;position:relative}
+.hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+a.link{color:#a7c0ff;text-decoration:none}
+a.link:hover{text-decoration:underline}
+.small{font-size:12px;color:var(--muted)}
+.userchip{display:flex;align-items:center;gap:8px;background:#0c1731;border:1px solid var(--border);border-radius:999px;padding:6px 10px}
+.u-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
 </style>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:12px">
-        <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-        <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
-        <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".9"/>
-        <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".9"/>
-        <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".9"/>
-        <path d="M11 14 v9 c0 5 4 7 9 7s9-2 9-7v-9" stroke="#0ea5e9" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-    </div>
+
+<!-- ===== Topbar ===== -->
+<div class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
+      <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
+      <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
+      <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
+      <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
+    </svg>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
-    <div style="margin-left:auto" id="whoami"></div>
-  </header>
+  </div>
+  <div class="who" id="whoami"></div>
+</div>
 
-  <div class="container">
-    <!-- LOGIN -->
-    <div class="card" id="authBox">
-      <div class="row" id="authFields">
-        <input id="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Senha">
-        <button class="primary" onclick="login()">Entrar</button>
-        <button class="btn" onclick="signup()">Criar conta</button>
-      </div>
-      <div class="row hidden" id="authLogged">
-        <span class="badge" id="roleBadge"></span>
-        <button class="btn" onclick="logout()">Sair</button>
-      </div>
-      <div class="small">Dica: use os logins de teste do Supabase (síndico e morador).</div>
+<div class="wrap">
+
+  <!-- Auth -->
+  <div class="card section" id="authBox">
+    <div class="badge">Dica: use os logins de teste do Supabase (síndico e morador).</div>
+    <div class="hidden" id="authLogged" style="margin-top:10px">
+      <span class="badge" id="roleBadge"></span>
+      <button class="btn" onclick="logout()">Sair</button>
     </div>
-
-    <div class="nav">
-      <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
-      <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
-      <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
-      <button id="tabBtn-finance" onclick="openTab('finance')">Financeiro</button>
-      <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
-      <button id="tabBtn-profile" onclick="openTab('profile')">Perfil</button>
+    <div id="authFields" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px">
+      <input id="email" placeholder="Email" class="btn ghost" style="min-width:220px">
+      <input id="password" type="password" placeholder="Senha" class="btn ghost" style="min-width:160px">
+      <button class="btn primary" onclick="login()">Entrar</button>
+      <button class="btn" onclick="signup()">Criar conta</button>
     </div>
+  </div>
 
-    <div class="flex">
-      <div class="flex-1">
-        <!-- CHAT -->
-        <section id="tab-chat" class="card">
-          <h3 style="display:flex;align-items:center;gap:10px">
-            Chat Geral do Condomínio
-            <button class="btn" id="notifyBtn" style="margin-left:auto">🔔 Ativar notificações</button>
-          </h3>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
+    <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
+    <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
+    <button id="tabBtn-fin" onclick="openTab('fin')">Financeiro</button>
+    <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
+    <button id="tabBtn-profile" onclick="openTab('profile')">Perfil</button>
+  </div>
+
+  <div class="grid">
+
+    <!-- Coluna Principal -->
+    <div class="col-main">
+
+      <!-- Chat -->
+      <div class="card section" id="tab-chat">
+        <div class="chat-head">
+          <h3>Chat Geral do Condomínio</h3>
+          <button class="btn" id="btnNotify" onclick="enablePush()">🔔 Ativar notificações</button>
+        </div>
+
+        <div class="chat-wrap">
           <div id="chatBox" class="chat-box"></div>
-          <div class="chat-row" style="margin-top:8px">
-            <button class="emoji-toggle" id="emojiToggle" title="Emojis">😊</button>
-            <input id="chatInput" class="flex-1" placeholder="Escreva uma mensagem... (Enter envia, Shift+Enter quebra linha)">
-            <button class="primary" onclick="sendMessage()">Enviar</button>
-            <div id="emojiPanel" class="emoji-panel"><div class="emoji-grid" id="emojiGrid"></div></div>
-          </div>
-        </section>
 
-        <!-- POSTS (integração externa opcional) -->
-        <section id="tab-posts" class="card hidden">
-          <h3>Comunicados</h3>
-          <div class="grid2" style="margin-bottom:10px">
-            <a class="btn" id="openExternalNews" href="#" target="_blank" rel="noopener">Abrir comunicados no app atual</a>
-            <button class="btn" onclick="syncNewsInfo()">Como integrar automaticamente</button>
+          <div class="compose">
+            <button class="emoji-btn" title="Emojis" onclick="toggleEmoji()">😊</button>
+            <textarea id="chatInput" class="input" placeholder="Escreva uma mensagem… (Enter envia • Shift+Enter quebra linha)"></textarea>
+            <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
-          <div id="postsList" class="list"></div>
-          <div id="postForm" class="card hidden" style="margin-top:10px">
-            <div class="row"><input id="postTitle" class="flex-1" placeholder="Título"></div>
-            <div class="row"><textarea id="postContent" class="flex-1" placeholder="Conteúdo"></textarea></div>
-            <button class="primary" onclick="createPost()">Publicar comunicado</button>
-          </div>
-        </section>
 
-        <!-- BOOKINGS (integração) -->
-        <section id="tab-bookings" class="card hidden">
-          <h3>Reservas</h3>
-          <div class="grid2">
-            <button class="btn" onclick="openLogoApp()">Abrir app LOGO (Android)</button>
-            <a class="btn" id="openExternalBookings" href="#" target="_blank" rel="noopener">Abrir reservas no app atual</a>
+          <div id="emojiPanel" class="hidden" style="margin-top:6px;display:grid;grid-template-columns:repeat(10,1fr);gap:4px">
+            <!-- emojis básicos -->
           </div>
-          <hr class="sep">
-          <div id="internalBookings" class="hidden">
-            <div class="row">
-              <select id="amenitySelect"></select>
-              <input id="startAt" type="datetime-local">
-              <input id="endAt" type="datetime-local">
-              <button class="primary" onclick="requestBooking()">Solicitar</button>
-            </div>
-            <div id="bookingsList" class="list" style="margin-top:10px"></div>
-          </div>
-        </section>
-
-        <!-- FINANCE (integração) -->
-        <section id="tab-finance" class="card hidden">
-          <h3>Financeiro do seu apartamento</h3>
-          <div class="grid2">
-            <a class="btn" id="openExternalBills" href="#" target="_blank" rel="noopener">Abrir financeiro no app atual</a>
-            <button class="btn" onclick="explainBillingIntegration()">Como integrar automaticamente</button>
-          </div>
-          <div id="invoicesList" class="list" style="margin-top:12px"></div>
-        </section>
-
-        <!-- PROFILE -->
-        <section id="tab-profile" class="card hidden">
-          <h3>Perfil</h3>
-          <div id="profileInfo"></div>
-        </section>
+        </div>
       </div>
 
-      <!-- ADS / PARCEIROS -->
-      <aside class="sidebar">
-        <section id="tab-ads" class="card">
-          <h3>Parceiros</h3>
-          <div class="item">
-            <div style="font-weight:700; font-size:15px">📣 Moradores têm prioridade!</div>
-            <div class="small" style="margin:6px 0 10px">
-              Divulgue seu negócio aqui no CondUnity. Prioridade sempre para moradores do condomínio.
-            </div>
-            <button class="primary" onclick="togglePartnerForm()">Divulgar meu negócio</button>
+      <!-- Comunicados -->
+      <div class="card section hidden" id="tab-posts">
+        <h3>Comunicados</h3>
+        <div id="postsList"></div>
+        <div id="postForm" class="hidden" style="margin-top:12px">
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <input id="postTitle" class="btn ghost" style="flex:1" placeholder="Título">
+            <textarea id="postContent" class="btn ghost" style="flex:1" placeholder="Conteúdo"></textarea>
           </div>
-          <div id="adsBox" class="list" style="margin-top:10px"></div>
-          <div id="partnerForm" class="hidden" style="margin-top:12px">
-            <h4>Cadastrar parceiro</h4>
-            <div class="row"><input id="adTitle" class="flex-1" placeholder="Título (ex: CEC Tecnologia BA)"></div>
-            <div class="row"><input id="adLink" class="flex-1" placeholder="Link (WhatsApp, site, instagram...)"></div>
-            <div class="row"><input id="adImage" class="flex-1" placeholder="URL da imagem (logo)"></div>
-            <div class="small">Moradores: seu anúncio entra como <b>aguardando aprovação</b>.</div>
-            <button class="primary" onclick="createPartner()">Enviar para publicação</button>
+          <div style="margin-top:8px"><button class="btn primary" onclick="createPost()">Publicar comunicado</button></div>
+        </div>
+      </div>
+
+      <!-- Reservas -->
+      <div class="card section hidden" id="tab-bookings">
+        <h3>Reservas</h3>
+        <p class="sub">Integração com o app oficial do condomínio.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px">
+          <button class="btn" onclick="openLogoApp()">Abrir app LOGO (Android)</button>
+          <a class="btn" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv&hl=pt-BR">Ir para Play Store</a>
+        </div>
+        <div id="internalBookings" class="hidden">
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <select id="amenitySelect" class="btn ghost"></select>
+            <input id="startAt" type="datetime-local" class="btn ghost">
+            <input id="endAt" type="datetime-local" class="btn ghost">
+            <button class="btn primary" onclick="requestBooking()">Solicitar</button>
           </div>
-        </section>
-      </aside>
+          <div id="bookingsList" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- Financeiro -->
+      <div class="card section hidden" id="tab-fin">
+        <h3>Financeiro</h3>
+        <p class="sub">Acesse suas faturas/boletos no sistema atual do condomínio.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <a class="btn primary" id="btnFinance" target="_blank" rel="noopener" href="#">Abrir Financeiro</a>
+        </div>
+      </div>
+
+      <!-- Perfil -->
+      <div class="card section hidden" id="tab-profile">
+        <h3>Perfil</h3>
+        <div id="profileInfo"></div>
+      </div>
+
+    </div>
+
+    <!-- Coluna Lateral -->
+    <div class="col-side">
+
+      <div class="card section" id="tab-ads">
+        <h3>Parceiros</h3>
+
+        <div class="partner-cta">
+          <strong>📣 Moradores têm prioridade!</strong>
+          <div class="small">Divulgue seu negócio aqui no CondUnity. Preferência sempre para moradores do condomínio.</div>
+          <div style="margin-top:8px">
+            <button class="btn primary" onclick="openPartnerForm()">Divulgar meu negócio</button>
+          </div>
+        </div>
+
+        <div id="adsBox" style="display:grid; gap:10px"></div>
+
+        <div id="partnerForm" class="hidden" style="margin-top:12px">
+          <h4>Novo parceiro</h4>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <input id="adTitle" class="btn ghost" style="flex:1" placeholder="Título (ex: CEC Tecnologia BA)">
+            <input id="adLink" class="btn ghost" style="flex:1" placeholder="Link (WhatsApp, site, Instagram…)">
+            <input id="adImage" class="btn ghost" style="flex:1" placeholder="URL da imagem (logo)">
+          </div>
+          <div style="margin-top:8px"><button class="btn primary" onclick="createPartner()">Publicar parceiro</button></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Banner de instalação -->
-  <div id="installBanner" class="install-banner" role="region" aria-live="polite">
-    <div class="row">
-      <div>
-        <div class="title">Instale o CondUnity no seu aparelho</div>
-        <div id="installHint" class="hint"></div>
-      </div>
-      <div class="actions">
-        <button id="installBtn" class="primary">Instalar agora</button>
-        <button class="xbtn" aria-label="Fechar" onclick="hideInstallBanner()">✕</button>
-      </div>
-    </div>
-  </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-  /* =========================
-     CONFIGURAÇÕES RÁPIDAS
-  ==========================*/
-  // Supabase
-  const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ===== CONFIG ===== */
+const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
+const EDGE_PUSH_URL = 'https://kqkahzfzxbzqwjtkyqhe.functions.supabase.co/push-chat'; // ajuste se seu nome de função for outro
+const URL_COMUNICADOS = '#';               // opcional
+const URL_FINANCEIRO  = 'https://portal.logo.com.br'; // ajuste
 
-  // Deep links/URLs dos sistemas existentes (ajuste como preferir)
-  const DEEPLINK_LOGO = 'logoserv://open';
-  const PLAY_LOGO = 'https://play.google.com/store/apps/details?id=br.com.comunidadesmobile_logoserv';
-  const URL_COMUNICADOS = 'logoserv://news';   // ou https://...
-  const URL_FINANCEIRO  = 'logoserv://finance';// ou https://...
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Push (Web Push) – gere e coloque sua PUBLIC VAPID KEY aqui quando tiver
-  // Sem isso, o botão “Ativar notificações” vai mostrar instruções.
-  const VAPID_PUBLIC_KEY = 'BI9aR9_W97QuSa6CELRWbuvz2H1thSeLZhVmWn11ecgvLqwRWc7ixKuL2ba99H_sV4Jl4M1nAEK6KgPXMeADOn0'; // ex: 'BElQ3...'
+/* ===== Estado ===== */
+let session=null, profile=null, condoId=null, generalRoomId=null, isManager=false;
+let seenMsgIds = new Set();
+let chatChannel = null;
+let pollingTimer = null;
 
-  /* =========================
-     APP
-  ==========================*/
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true },
-    realtime: { params: { eventsPerSecond: 20 } }
+const $  = (id)=>document.getElementById(id);
+const show = (el)=>el.classList.remove('hidden');
+const hide = (el)=>el.classList.add('hidden');
+
+/* ===== UI ===== */
+function openTab(k){
+  const tabs = ['chat','posts','bookings','fin','ads','profile'];
+  tabs.forEach(t => {
+    const s=$('tab-'+t), b=$('tabBtn-'+(t==='fin'?'fin':t));
+    if(!s||!b) return;
+    if(t===k){ show(s); b.classList.add('active'); }
+    else { hide(s); b.classList.remove('active'); }
   });
+}
 
-  let profile=null, condoId=null, generalRoomId=null, isManager=false;
-  let chatChannel = null, rtConnected=false, pollTimer=null;
-  const seenMsgIds = new Set();
+function initials(s){ s=(s||'').trim(); if(!s) return '?'; const p=s.split(/\s+/).slice(0,2); return p.map(x=>x[0]?.toUpperCase()||'').join(''); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function fmt(s){ try{return new Date(s).toLocaleString('pt-BR')}catch{return s} }
 
-  const $ = id => document.getElementById(id);
-  const show = el => el.classList.remove('hidden');
-  const hide = el => el.classList.add('hidden');
-
-  function openTab(k){
-    ['chat','posts','bookings','finance','ads','profile'].forEach(t=>{
-      const s=$('tab-'+t), b=$('tabBtn-'+t);
-      if(s && b){ if(t===k){show(s); b.classList.add('active')} else {hide(s); b.classList.remove('active')} }
-    });
+function updateAuthUI(logged, name='', roleLabel=''){
+  if (logged){
+    hide($('authFields')); show($('authLogged'));
+    $('whoami').innerHTML = `<div class="userchip"><div class="u-circle">${initials(name)}</div><div>${escapeHtml(name)} <span class="small">• ${roleLabel}</span></div></div>`;
+  }else{
+    show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
   }
+}
 
-  function updateAuthUI(logged, displayName='', roleLabel=''){
-    if (logged){
-      hide($('authFields')); show($('authLogged'));
-      $('whoami').innerHTML =
-        `<div class="userchip">
-           <div class="circle">${initials(displayName)}</div>
-           <div class="name">${escapeHtml(displayName)}<span class="role"> • ${roleLabel}</span></div>
-         </div>`;
-    }else{
-      show($('authFields')); hide($('authLogged')); $('whoami').innerHTML='';
+/* ===== Auth ===== */
+async function login(){
+  try{
+    const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
+    if(error) throw error; session=data.session; $('password').value=''; await boot();
+  }catch(e){ alert('Falha no login: '+(e?.message||e)); }
+}
+async function signup(){
+  try{
+    const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
+    if(error) throw error; alert('Conta criada! (piloto: Confirm email desativado)');
+  }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
+}
+async function logout(){ await client.auth.signOut(); location.reload(); }
+
+/* ===== App Boot ===== */
+async function boot(){
+  const { data: auth } = await client.auth.getUser();
+  const uid = auth?.user?.id;
+  const email = auth?.user?.email || '';
+  if(!uid){ updateAuthUI(false); return; }
+
+  const { data: me, error:eProf } = await client.from('profiles')
+    .select('id, full_name, role, condominium_id, unit_id')
+    .eq('id', uid).single();
+  if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
+  profile = me; condoId = me.condominium_id; isManager = (me.role==='manager'||me.role==='admin');
+
+  const name = (me?.full_name?.trim()) || email.split('@')[0];
+  $('roleBadge').innerText = isManager ? 'Manager' : 'Resident';
+  updateAuthUI(true, name, isManager?'Manager':'Resident');
+
+  const { data: room, error:eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
+  if(eRoom){ alert('Sala de chat não encontrada'); return; }
+  generalRoomId = room.id;
+
+  $('btnFinance').href = URL_FINANCEIRO;
+
+  await loadChat();
+  subscribeChatRealtime(); // novo listener robusto
+  await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
+
+  $('profileInfo').innerHTML = `
+    <div class="partner-card"><div class="u-circle">${initials(name)}</div>
+      <div>
+        <div><strong>${escapeHtml(name)}</strong></div>
+        <div class="small">Role: ${me?.role} • Unidade: ${me?.unit_id||'-'}</div>
+      </div>
+    </div>`;
+
+  if (isManager) show($('partnerForm')); else hide($('partnerForm'));
+}
+
+/* ===== Chat: listagem e envio ===== */
+function makeMsgBubble(m){
+  const you = (profile?.id && m.sender_id && profile.id===m.sender_id);
+  const div = document.createElement('div');
+  div.className = 'msg ' + (you?'you':'other');
+  div.innerHTML = `<div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)}</div>${escapeHtml(m.content)}`;
+  return div;
+}
+async function loadChat(){
+  const { data, error } = await client.from('chat_messages')
+    .select('id, content, created_at, room_id, sender_name, sender_id')
+    .eq('room_id', generalRoomId)
+    .order('created_at',{ascending:true})
+    .limit(300);
+  if(error){ $('chatBox').innerHTML='<div class="small">Erro ao carregar chat.</div>'; return; }
+  seenMsgIds = new Set();
+  const box = $('chatBox'); box.innerHTML='';
+  (data||[]).forEach(m=>{ if(m?.id) seenMsgIds.add(m.id); box.appendChild(makeMsgBubble(m)); });
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMessage(){
+  const text = $('chatInput').value.trim(); if(!text) return;
+
+  const user = (await client.auth.getUser()).data.user;
+  const displayName = (profile?.full_name?.trim()) || (user?.email?.split('@')[0] || 'Morador');
+
+  const { data, error } = await client.from('chat_messages')
+    .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || user?.id || null, sender_name: displayName })
+    .select('id, content, created_at, room_id, sender_name, sender_id')
+    .single();
+
+  if(error){ alert('Erro ao enviar: '+error.message); return; }
+
+  $('chatInput').value='';
+  appendMsg(data); // otimista
+
+  // dispara push (não bloqueia UI)
+  fetch(EDGE_PUSH_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).catch(()=>{});
+}
+
+function appendMsg(m){
+  if (!m || !m.id || seenMsgIds.has(m.id)) return;
+  seenMsgIds.add(m.id);
+  $('chatBox').appendChild(makeMsgBubble(m));
+  $('chatBox').scrollTop = $('chatBox').scrollHeight;
+}
+
+/* ===== Chat: Realtime forte (corrige celular -> desktop) ===== */
+function subscribeChatRealtime(){
+  // limpa subs anteriores
+  if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
+  if (pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
+
+  // filtro por sala evita eventos de outras salas
+  chatChannel = client.channel('realtime:chat_messages:'+generalRoomId);
+
+  chatChannel.on('postgres_changes',
+    { event:'INSERT', schema:'public', table:'chat_messages', filter: `room_id=eq.${generalRoomId}` },
+    payload => { const m = payload.new; appendMsg(m); }
+  );
+
+  // handlers de estado – re-subscribe automático
+  chatChannel.subscribe(status => {
+    if (status === 'SUBSCRIBED'){
+      // desliga polling se estiver ativo
+      if (pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
     }
-  }
-  const initials = (s) => { s=(s||'').trim(); if(!s) return '?'; const p=s.split(/\s+/).slice(0,2); return p.map(x=>x[0]?.toUpperCase()||'').join(''); };
-
-  function appendMsg(m){
-    if(!m) return;
-    if (m.id && seenMsgIds.has(m.id)) return;
-    if (m.id) seenMsgIds.add(m.id);
-    const who = m.sender_name ? `<strong>${escapeHtml(m.sender_name)}</strong> • ` : '';
-    const div = document.createElement('div');
-    div.className='msg';
-    div.innerHTML = `<span class="kv">${who}${new Date(m.created_at||Date.now()).toLocaleString('pt-BR')}</span><br>${escapeHtml(m.content||'')}`;
-    $('chatBox').appendChild(div);
-    $('chatBox').scrollTop = $('chatBox').scrollHeight;
-  }
-
-  async function login(){
-    try{
-      const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
-      if(error) throw error; $('password').value=''; await boot();
-    }catch(e){ alert('Falha no login: ' + (e?.message || e)); }
-  }
-  async function signup(){
-    try{ const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value }); if(error) throw error; alert('Conta criada!'); }
-    catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
-  }
-  async function logout(){ await client.auth.signOut(); $('password').value=''; updateAuthUI(false); location.reload(); }
-
-  async function boot(){
-    // links integrações
-    setupExternalButtons();
-
-    const { data: userData } = await client.auth.getUser();
-    const uid = userData?.user?.id; const email = userData?.user?.email || '';
-    if(!uid){ updateAuthUI(false); return; }
-
-    const { data: me, error: eProf } = await client.from('profiles')
-      .select('id, full_name, role, condominium_id, unit_id')
-      .eq('id', uid).single();
-    if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
-
-    profile = me; condoId = me.condominium_id; isManager = (me.role==='manager' || me.role==='admin');
-    const displayName = (me?.full_name && me.full_name.trim()) || email.split('@')[0];
-    const roleLabel = isManager ? 'Manager' : 'Resident';
-    $('roleBadge').innerText = roleLabel; updateAuthUI(true, displayName, roleLabel);
-
-    const { data: room, error: eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
-    if(eRoom){ alert('Sala de chat não encontrada'); return; }
-    generalRoomId = room.id;
-
-    await loadChat();
-    startRealtime();         // realtime + watchdog
-    await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds(); await loadInvoices();
-
-    $('profileInfo').innerHTML = `
-      <div class="item"><div><strong>Nome:</strong> ${escapeHtml(displayName)}</div>
-      <div><strong>Role:</strong> ${me?.role}</div>
-      <div><strong>Unidade:</strong> ${me?.unit_id || '-'}</div></div>`;
-  }
-
-  /* ---------- CHAT ---------- */
-  async function loadChat(){
-    const { data, error } = await client
-      .from('chat_messages')
-      .select('id, content, created_at, room_id, sender_name')
-      .eq('room_id', generalRoomId)
-      .order('created_at',{ascending:true})
-      .limit(200);
-    if(error){ alert('Erro ao carregar chat: '+error.message); return; }
-    seenMsgIds.clear(); $('chatBox').innerHTML=''; (data||[]).forEach(appendMsg);
-  }
-
-  async function sendMessage(){
-    const input = $('chatInput'); const text = input.value.trim(); if(!text) return;
-    const displayName = (profile?.full_name && profile.full_name.trim()) || (await (await client.auth.getUser()).data.user.email.split('@')[0]);
-    const temp = { id:'tmp-'+Math.random().toString(36).slice(2), content:text, created_at:new Date().toISOString(), sender_name:displayName };
-    appendMsg(temp); input.value='';
-    const { error } = await client.from('chat_messages')
-      .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || null, sender_name: displayName });
-    if(error){ alert('Erro ao enviar: '+error.message); await loadChat(); }
-  }
-
-  // Enter envia; Shift+Enter quebra linha
-  (function(){
-    const input=$('chatInput');
-    input.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
-  })();
-
-  // Realtime + watchdog + fallback polling
-  function startRealtime(){
-    if (chatChannel) { client.removeChannel(chatChannel); chatChannel=null; }
-    chatChannel = client.channel('room:'+generalRoomId)
-      .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` }, (payload)=>{ rtConnected=true; appendMsg(payload.new); })
-      .subscribe(status=>{
-        rtConnected = (status==='SUBSCRIBED');
-      });
-
-    // Watchdog: verifica conexão e liga polling se cair
-    if (pollTimer) clearInterval(pollTimer);
-    let lastReload = 0;
-    pollTimer = setInterval(async ()=>{
-      const now = Date.now();
-      // se rt caiu, busca últimas mensagens
-      if(!rtConnected){
-        await loadChat();
+    if (status === 'CLOSED' || status === 'TIMED_OUT' || status === 'CHANNEL_ERROR'){
+      // fallback de polling leve enquanto reconecta
+      if (!pollingTimer){
+        pollingTimer = setInterval(()=>refreshSince(), 3000);
       }
-      // ping: força re-subscribe se ficar 30s sem RT
-      if(!rtConnected && now-lastReload>30000){
-        lastReload = now; startRealtime();
-      }
-    }, 3000);
-  }
+    }
+  });
+}
 
-  /* ---------- POSTS ---------- */
-  async function loadPosts(){
-    const { data, error } = await client.from('posts')
-      .select('id,title,content,created_at')
-      .eq('condominium_id', condoId)
-      .order('created_at',{ascending:false})
-      .limit(50);
-    if(error){ $('postsList').innerHTML='<div class="item">Sem permissão para ler comunicados.</div>'; return; }
-    $('postsList').innerHTML = (data||[]).map(p=>`<div class="item"><div style="font-weight:700">${escapeHtml(p.title)}</div><div class="kv">${new Date(p.created_at).toLocaleString('pt-BR')}</div><div>${escapeHtml(p.content)}</div></div>`).join('');
-  }
-  async function createPost(){
-    const title = $('postTitle').value.trim(), content = $('postContent').value.trim();
-    if(!title||!content){ alert('Preencha título e conteúdo'); return; }
-    const { error } = await client.from('posts').insert({ condominium_id: condoId, author_id: profile.id, title, content });
-    if(error){ alert('Erro ao publicar: '+error.message); return; }
-    $('postTitle').value=''; $('postContent').value=''; await loadPosts();
-  }
+// busca mensagens novas (fallback)
+let lastSeenAt = null;
+async function refreshSince(){
+  const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
+  const { data } = await client.from('chat_messages')
+    .select('id, content, created_at, room_id, sender_name, sender_id')
+    .eq('room_id', generalRoomId)
+    .gt('created_at', since)
+    .order('created_at',{ascending:true})
+    .limit(50);
+  (data||[]).forEach(m=>appendMsg(m));
+  const last = (data||[]).slice(-1)[0]; if(last) lastSeenAt = last.created_at;
+}
 
-  /* ---------- RESERVAS ---------- */
-  async function loadAmenities(){
-    const el=$('amenitySelect'); if(!el) return;
-    const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
-    el.innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+// textarea: Enter envia / Shift+Enter quebra linha
+(function(){
+  const input = $('chatInput');
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' && !e.shiftKey){
+      e.preventDefault(); sendMessage();
+    }
+  });
+})();
+
+/* ===== Emojis simples ===== */
+const EMOJIS = "😀😁😂🤣😊🙂😉😍😘🤩😇😎🤔😴🙄😭😡👍👎👏🙏💪🔥🎉✨🌟💡📌📎📲🏠🧹🚗🐶🐱🍕🍔🍻☕".split('');
+(function renderEmojis(){
+  const p = $('emojiPanel'); p.innerHTML = '';
+  EMOJIS.forEach(e => {
+    const b=document.createElement('button'); b.className='btn ghost'; b.style.padding='6px 8px'; b.textContent=e;
+    b.onclick=()=>{ const t=$('chatInput'); t.value=(t.value||'')+e; t.focus(); };
+    p.appendChild(b);
+  });
+})();
+function toggleEmoji(){ $('emojiPanel').classList.toggle('hidden'); }
+
+/* ===== Posts ===== */
+async function loadPosts(){
+  const { data, error } = await client.from('posts')
+    .select('id,title,content,created_at')
+    .eq('condominium_id', condoId)
+    .order('created_at',{ascending:false}).limit(50);
+  if(error){ $('postsList').innerHTML='<div class="small">Sem permissão para ler comunicados.</div>'; return; }
+  $('postsList').innerHTML = (data||[]).map(p=>`
+    <div class="partner-card" style="align-items:flex-start">
+      <div style="flex:1">
+        <div style="font-weight:700">${escapeHtml(p.title)}</div>
+        <div class="small">${fmt(p.created_at)}</div>
+        <div style="margin-top:4px">${escapeHtml(p.content)}</div>
+      </div>
+    </div>`).join('');
+  if (isManager) show($('postForm')); else hide($('postForm'));
+}
+async function createPost(){
+  const title=$('postTitle').value.trim(), content=$('postContent').value.trim();
+  if(!title||!content){ alert('Preencha título e conteúdo'); return; }
+  const { error } = await client.from('posts').insert({ condominium_id: condoId, author_id: profile.id, title, content });
+  if(error){ alert('Erro ao publicar: '+error.message); return; }
+  $('postTitle').value=''; $('postContent').value=''; loadPosts();
+}
+
+/* ===== Reservas (interno opcional) ===== */
+async function loadAmenities(){
+  const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
+  $('amenitySelect').innerHTML = (data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+}
+async function requestBooking(){
+  const amenity_id=$('amenitySelect').value;
+  const starts_at=$('startAt').value? new Date($('startAt').value).toISOString():null;
+  const ends_at=$('endAt').value? new Date($('endAt').value).toISOString():null;
+  if(!amenity_id||!starts_at||!ends_at){ alert('Preencha área e horários'); return; }
+  const { error } = await client.from('bookings').insert({ condominium_id:condoId, amenity_id, requester_id: profile.id, starts_at, ends_at });
+  if(error){ alert('Erro ao solicitar: '+error.message); return; }
+  loadBookings();
+}
+async function loadBookings(){
+  const list=$('bookingsList'); if(!list) return;
+  const { data } = await client.from('bookings')
+    .select('id,amenity_id,starts_at,ends_at,status')
+    .eq('condominium_id',condoId).order('starts_at',{ascending:false}).limit(50);
+  list.innerHTML=(data||[]).map(b=>{
+    const actions=(isManager && b.status==='pending')
+      ? `<button class="btn" onclick="setBooking('${b.id}','approved')">Aprovar</button>
+         <button class="btn" onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
+      : `<span class="badge">${b.status}</span>`;
+    return `<div class="partner-card"><div style="flex:1">
+      <div><strong>${escapeHtml(b.amenity_id)}</strong></div>
+      <div class="small">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div></div>${actions}</div>`;
+  }).join('');
+}
+async function setBooking(id,status){
+  const { error } = await client.from('bookings').update({ status }).eq('id', id);
+  if(error){ alert('Erro ao atualizar: '+error.message); return; }
+  loadBookings();
+}
+
+/* ===== Parceiros ===== */
+function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
+async function loadAds(){
+  const now = new Date().toISOString();
+  const { data, error } = await client.from('partner_ads')
+    .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
+    .eq('condominium_id', condoId)
+    .order('priority',{ascending:false});
+  if (error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
+  let items = (data||[]).filter(a=> a.is_active && (!a.starts_at || a.starts_at<=now) && (!a.ends_at || a.ends_at>=now));
+  if (!items.length){
+    items = [{ title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares', image_url:'cec-logo.png', link_url:'https://wa.me/5571999999999' }];
   }
-  async function requestBooking(){
-    const amenity_id=$('amenitySelect').value;
-    const starts_at=$('startAt').value?new Date($('startAt').value).toISOString():null;
-    const ends_at=$('endAt').value?new Date($('endAt').value).toISOString():null;
-    if(!amenity_id||!starts_at||!ends_at){ alert('Preencha área e horários'); return; }
-    const { error } = await client.from('bookings').insert({ condominium_id: condoId, amenity_id, requester_id: profile.id, starts_at, ends_at });
-    if(error){ alert('Erro ao solicitar: '+error.message); return; }
-    await loadBookings();
-  }
-  async function loadBookings(){
-    const list=$('bookingsList'); if(!list) return;
-    const { data } = await client.from('bookings')
-      .select('id,amenity_id,starts_at,ends_at,status')
-      .eq('condominium_id', condoId).order('starts_at',{ascending:false}).limit(50);
-    list.innerHTML = (data||[]).map(b=>{
-      const actions = (isManager && b.status==='pending')
-        ? `<button onclick="setBooking('${b.id}','approved')">Aprovar</button> <button onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
-        : `<span class="badge">${b.status}</span>`;
-      return `<div class="item"><div><strong>${b.amenity_id}</strong></div><div class="kv">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div><div>${actions}</div></div>`;
-    }).join('');
-  }
-  async function setBooking(id,status){ const { error } = await client.from('bookings').update({ status }).eq('id', id); if(!error) await loadBookings(); }
+  $('adsBox').innerHTML = items.map(a=>`
+    <div class="partner-card">
+      <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'">
+      <div style="flex:1">
+        <div style="font-weight:700">${escapeHtml(a.title)}</div>
+        <div class="small">Preferência para moradores</div>
+      </div>
+      <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
+    </div>`).join('');
+}
+async function createPartner(){
+  const title=$('adTitle').value.trim();
+  const link=$('adLink').value.trim();
+  const image=$('adImage').value.trim();
+  if(!title){ alert('Informe o título'); return; }
+  const { error } = await client.from('partner_ads').insert({
+    title, link_url: link||null, image_url: image||null,
+    is_active:true, priority:10, condominium_id: condoId
+  });
+  if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
+  $('adTitle').value=''; $('adLink').value=''; $('adImage').value=''; loadAds();
+}
 
-  /* ---------- PARCEIROS ---------- */
-  function togglePartnerForm(){ const f=$('partnerForm'); if(!f) return; f.classList.toggle('hidden'); }
-  async function loadAds(){
-    const now = new Date().toISOString();
-    const { data, error } = await client.from('partner_ads')
-      .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
-      .eq('condominium_id', condoId).order('priority',{ascending:false});
-    if (error){ $('adsBox').innerHTML='<div class="item">Não foi possível carregar os parceiros.</div>'; return; }
-    let items=(data||[]).filter(a=> a.is_active && (!a.starts_at||a.starts_at<=now) && (!a.ends_at||a.ends_at>=now));
-    if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares', image_url:'cec-logo.png', link_url:'https://wa.me/5571999999999'}]; }
-    $('adsBox').innerHTML = items.map(a=>`
-      <div class="item partner-card">
-        <img src="${a.image_url || 'cec-logo.png'}" alt="${escapeHtml(a.title)}" onerror="this.src='cec-logo.png'">
-        <div class="info"><div class="title">${escapeHtml(a.title)}</div><div class="sub">Preferência para moradores</div></div>
-        <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
-      </div>`).join('');
-  }
-  async function createPartner(){
-    const title=$('adTitle').value.trim(); const link=$('adLink').value.trim(); const image=$('adImage').value.trim();
-    if(!profile){ alert('Faça login para cadastrar.'); return; }
-    if(!title){ alert('Informe o título'); return; }
-    const rec={ title, link_url:link||null, image_url:image||null, is_active:(isManager?true:false), priority:10, condominium_id:condoId, owner_id:profile.id||null };
-    const { error } = await client.from('partner_ads').insert(rec);
-    if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
-    $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
-    if(isManager) await loadAds(); else alert('Enviado! Aguarde aprovação.');
-  }
+/* ===== Deep-link Android LOGO ===== */
+function openLogoApp(){
+  const pkg='br.com.comunidadesmobile_logoserv';
+  const deep='logoserv://open';
+  const store='https://play.google.com/store/apps/details?id='+pkg;
+  const isAndroid=/Android/i.test(navigator.userAgent);
+  if(isAndroid){
+    const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=deep; document.body.appendChild(iframe);
+    setTimeout(()=>{ window.location.href=store; }, 1200);
+    setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
+  } else { window.open(store,'_blank'); }
+}
 
-  /* ---------- FINANCE / INVOICES ---------- */
-  async function loadInvoices(){
-    try{
-      const { data, error } = await client.from('invoices')
-        .select('id, month, year, amount_cents, status, billet_url, unit_id')
-        .eq('unit_id', profile.unit_id).order('year',{ascending:false}).order('month',{ascending:false}).limit(24);
-      if(error) throw error;
-      const list = (data||[]);
-      $('invoicesList').innerHTML = list.length ? list.map(i=>{
-        const v=(i.amount_cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-        const st=i.status==='paid'?'✅ Pago':(i.status==='overdue'?'⚠️ Vencido':'🕘 Em aberto');
-        const link=i.billet_url?`<a class="btn" href="${i.billet_url}" target="_blank" rel="noopener">Boleto/PDF</a>`:'';
-        return `<div class="item"><div><strong>${String(i.month).padStart(2,'0')}/${i.year}</strong> — ${v}</div><div class="kv">${st}</div><div style="margin-top:6px">${link}</div></div>`;
-      }).join('') : '<div class="item">Sem dados aqui ainda — use o botão para abrir no app atual.</div>';
-    }catch{ $('invoicesList').innerHTML = '<div class="item">Integração direta não configurada — use o botão acima.</div>'; }
-  }
-  function explainBillingIntegration(){
-    alert('Integrações: podemos puxar dados do app atual via endpoint/planilha (Edge Function) ou sincronizar na tabela "invoices" do Supabase. Eu te passo os arquivos quando decidir.');
-  }
+/* ===== Push: inscrição ===== */
+async function enablePush(){
+  try{
+    if(!('serviceWorker' in navigator)) return alert('Service Worker indisponível.');
+    const reg = await navigator.serviceWorker.register('./sw.js'); await navigator.serviceWorker.ready;
 
-  /* ---------- Integrações externas (deep links) ---------- */
-  function openLogoApp(){
-    const isAndroid=/Android/i.test(navigator.userAgent);
-    if(isAndroid){ const i=document.createElement('iframe'); i.style.display='none'; i.src=DEEPLINK_LOGO; document.body.appendChild(i); setTimeout(()=>{ window.location.href=PLAY_LOGO; },1200); setTimeout(()=>{ document.body.removeChild(i); },2000); }
-    else { window.open(PLAY_LOGO,'_blank'); }
-  }
-  function setupExternalButtons(){
-    const bookings=$('openExternalBookings'); if(bookings){ bookings.href=DEEPLINK_LOGO; bookings.onclick=(e)=>{ e.preventDefault(); openLogoApp(); }; }
-    const news=$('openExternalNews'); if(news){ news.href=URL_COMUNICADOS; news.onclick=(e)=>{ if(URL_COMUNICADOS.startsWith('http')) return; e.preventDefault(); openLogoApp(); }; }
-    const bills=$('openExternalBills'); if(bills){ bills.href=URL_FINANCEIRO; bills.onclick=(e)=>{ if(URL_FINANCEIRO.startsWith('http')) return; e.preventDefault(); openLogoApp(); }; }
-  }
+    const perm = await Notification.requestPermission();
+    if(perm!=='granted'){ alert('Notificações bloqueadas.'); return; }
 
-  /* ---------- Helpers ---------- */
-  const escapeHtml = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const fmt = s => { try{ return new Date(s).toLocaleString('pt-BR'); }catch{ return s; } };
+    // VAPID PUBLIC KEY deve estar no sw.js — aqui só fazemos subscribe padrão
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: undefined });
+    if(!sub) return alert('Falha ao inscrever.');
 
-  // Sessão existente
-  (async ()=>{ const { data } = await client.auth.getSession(); if(data.session){ await boot(); } else { updateAuthUI(false); } })();
-
-  /* ---------- INSTALAÇÃO PWA ---------- */
-  let deferredPrompt=null;
-  const installBanner=$('installBanner'), installBtn=$('installBtn'), installHint=$('installHint');
-  const isStandalone=()=> (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone===true);
-  const isIOS=()=>/iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const isAndroid=()=>/Android/i.test(navigator.userAgent);
-  function showInstallBanner(mode){ if(isStandalone()) return; installBanner.style.display='block'; if(mode==='android'){ installBtn.style.display='inline-block'; installHint.textContent='Toque em “Instalar agora”.'; } else if(mode==='ios'){ installBtn.style.display='none'; installHint.innerHTML='No Safari: <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.'; } else { installBtn.style.display='none'; installHint.textContent='Menu do navegador → “Adicionar à tela inicial”.'; } }
-  window.hideInstallBanner=()=> installBanner.style.display='none';
-  window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; showInstallBanner('android'); });
-  window.addEventListener('load',()=>{ if(isIOS() && !isStandalone()) showInstallBanner('ios'); });
-  setTimeout(()=>{ if(isAndroid() && !isStandalone() && !deferredPrompt) showInstallBanner('generic'); },3500);
-  installBtn?.addEventListener('click', async ()=>{ try{ if(!deferredPrompt){ installHint.textContent='Se não abrir: menu ⋮ → “Adicionar à tela inicial”.'; return; } deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; hideInstallBanner(); }catch{} });
-
-  /* ---------- EMOJI PICKER ---------- */
-  const EMOJIS="😀 😃 😄 😁 😆 😅 😂 🙂 😉 😊 😍 😘 😎 🤩 🤔 🙏 👍 👏 🙌 🤝 💡 🎉 🥳 🏆 🔧 🧹 🛠️ 🛎️ 🚗 🏠 🧑‍🔧 🔌 🔋 🧰 📦 📞 📍".split(' ');
-  const emojiGrid=$('emojiGrid'), emojiPanel=$('emojiPanel'), emojiToggle=$('emojiToggle'), chatInput=$('chatInput');
-  EMOJIS.forEach(e=>{ const b=document.createElement('button'); b.type='button'; b.textContent=e; b.style.border='none'; b.style.background='transparent'; b.style.fontSize='22px'; b.style.cursor='pointer'; b.onclick=()=>{ insertAtCursor(chatInput,e+' '); emojiPanel.style.display='none'; chatInput.focus(); }; emojiGrid.appendChild(b); });
-  emojiToggle?.addEventListener('click',()=>{ emojiPanel.style.display = (emojiPanel.style.display==='block'?'none':'block'); });
-  document.addEventListener('click',(ev)=>{ if(emojiPanel && !emojiPanel.contains(ev.target) && ev.target!==emojiToggle) emojiPanel.style.display='none'; });
-  function insertAtCursor(input,text){ const s=input.selectionStart||input.value.length; const e=input.selectionEnd||input.value.length; input.value=input.value.substring(0,s)+text+input.value.substring(e); input.selectionStart=input.selectionEnd=s+text.length; }
-
-  /* ---------- PUSH NOTIFICATIONS (cliente) ---------- */
-  const notifyBtn=$('notifyBtn');
-  notifyBtn?.addEventListener('click', enablePush);
-
-  async function enablePush(){
-    if(!('serviceWorker' in navigator)){ alert('Seu navegador não suporta notificações.'); return; }
-    if(Notification.permission==='denied'){ alert('Notificações bloqueadas no navegador. Habilite nas configurações.'); return; }
-    if(!VAPID_PUBLIC_KEY){ alert('Para ativar notificações: gere uma VAPID PUBLIC KEY e cole em VAPID_PUBLIC_KEY no index.html. Também crie a tabela push_subscriptions no Supabase.'); return; }
-
-    const reg = await navigator.serviceWorker.ready;
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
-    // guardar no Supabase
+    const { endpoint, keys } = sub.toJSON();
     await client.from('push_subscriptions').upsert({
-      endpoint: sub.endpoint,
-      keys_p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(sub.getKey('p256dh')))),
-      keys_auth: btoa(String.fromCharCode.apply(null, new Uint8Array(sub.getKey('auth')))),
-      user_id: (await client.auth.getUser())?.data?.user?.id || null,
-      created_at: new Date().toISOString()
-    }, { onConflict: 'endpoint' });
-    alert('Notificações ativadas! Você receberá alertas de novas mensagens do chat.');
-  }
+      endpoint, keys_p256dh: keys?.p256dh || null, keys_auth: keys?.auth || null, user_id: profile?.id || null
+    });
+    $('btnNotify').textContent='🔔 Notificações ativas';
+  }catch(e){ alert('Falha ao ativar: '+(e?.message||e)); }
+}
 
-  function urlBase64ToUint8Array(base64String){
-    const padding='='.repeat((4-base64String.length%4)%4);
-    const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
-    const raw=atob(base64); const arr=new Uint8Array(raw.length);
-    for(let i=0;i<raw.length;i++) arr[i]=raw.charCodeAt(i); return arr;
-  }
+/* ===== Start ===== */
+(async()=>{
+  const { data } = await client.auth.getSession();
+  if(data.session){ await boot(); } else { updateAuthUI(false); }
+})();
+</script>
 
-  </script>
+<!-- SW register -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
+}
+</script>
 
-  <!-- Registrar service worker -->
-  <script>
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
-  }
-  </script>
 </body>
 </html>
