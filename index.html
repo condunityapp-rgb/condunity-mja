@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="apple-touch-icon" href="./icon-192.png" />
 
-<!-- Twemoji: emojis idênticos em Android/iOS/PC -->
+<!-- Twemoji para emojis consistentes -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
@@ -77,10 +77,16 @@ body{
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-/* ===== Tabs ===== */
-.tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding-bottom:6px;margin-bottom:12px}
-.tabs button{padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--text);font-weight:700;white-space:nowrap}
-.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
+/* ===== Tabs (novo estilo) ===== */
+.tabs{
+  display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;
+  background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)
+}
+.tabs button{
+  padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text);
+  font-weight:800;white-space:nowrap
+}
+.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
 
 /* ===== Inputs ===== */
 input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
@@ -105,20 +111,24 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* ===== Parceiros — Vitrine ===== */
+/* ===== Parceiros — Vitrine PRO ===== */
 .showcase{
   background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
               radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
   border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;
 }
 .hero{
-  display:flex; gap:10px; align-items:center; padding:12px;
+  display:flex; gap:10px; align-items:center; padding:14px;
   border-radius:12px;
-  background:linear-gradient(180deg,#e6fbff,#eef5ff);
+  background:linear-gradient(120deg,#e8f3ff 0%,#ecfeff 100%);
   border:1px dashed #93c5fd;
 }
-.hero h4{margin:0;font-size:15px}
+.hero h4{margin:0;font-size:16px}
 .badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.kpis .k{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-weight:700}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px}
+.tools input{flex:1}
 .carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
 .card-p{min-width:240px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px; box-shadow:var(--shadow); display:flex; gap:10px; align-items:center}
 .card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
@@ -170,14 +180,13 @@ a.link:hover{text-decoration:underline}
     </div>
   </div>
 
-  <!-- Tabs -->
+  <!-- Tabs (sem Perfil) -->
   <div class="tabs">
     <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
     <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
     <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
     <button id="tabBtn-fin" onclick="openTab('fin')">Financeiro</button>
     <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
-    <button id="tabBtn-profile" onclick="openTab('profile')">Perfil</button>
   </div>
 
   <div class="grid">
@@ -189,7 +198,6 @@ a.link:hover{text-decoration:underline}
       <div class="card section" id="tab-chat">
         <div class="chat-head">
           <h3 style="margin:0">Chat Geral do Condomínio</h3>
-          <button class="btn" id="btnNotify" onclick="enablePush()">🔔 Ativar notificações</button>
         </div>
 
         <div class="chat-wrap">
@@ -197,8 +205,8 @@ a.link:hover{text-decoration:underline}
 
           <div class="compose">
             <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
-            <!-- sem placeholder -->
-            <textarea id="chatInput" class="input"></textarea>
+            <!-- sem placeholder por pedido -->
+            <textarea id="chatInput" class="input" aria-label="Mensagem"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
 
@@ -249,12 +257,6 @@ a.link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <!-- Perfil -->
-      <div class="card section hidden" id="tab-profile">
-        <h3>Perfil</h3>
-        <div id="profileInfo"></div>
-      </div>
-
     </div>
 
     <!-- Coluna Lateral -->
@@ -263,14 +265,27 @@ a.link:hover{text-decoration:underline}
       <div class="card section" id="tab-ads">
         <h3>Parceiros</h3>
 
-        <!-- Vitrine -->
+        <!-- Vitrine PRO -->
         <div class="showcase">
           <div class="hero">
-            <div class="badge">Preferência para moradores</div>
-            <div style="flex:1">
+            <div>
+              <div class="badge">Preferência para moradores</div>
               <h4>Divulgue seu negócio no CondUnity</h4>
-              <div class="small">Ganhe destaque na vitrine e atraia clientes do seu condomínio.</div>
+              <div class="small">Ganhe destaque na vitrine, receba contatos e aumente as vendas no seu condomínio.</div>
             </div>
+            <div class="kpis">
+              <div class="k">+5k visualizações/mês</div>
+              <div class="k">Contato direto</div>
+              <div class="k">Sem comissão</div>
+            </div>
+          </div>
+
+          <div class="tools">
+            <input id="adSearch" placeholder="Pesquisar parceiro (ex: elétrica, celular…)" oninput="filterAds()">
+            <select id="adSort" onchange="filterAds()">
+              <option value="priority">Ordenar: Destaque</option>
+              <option value="az">A–Z</option>
+            </select>
             <button class="btn primary" onclick="openPartnerForm()">Quero divulgar</button>
           </div>
 
@@ -303,9 +318,7 @@ a.link:hover{text-decoration:underline}
 /* ===== CONFIG ===== */
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-const EDGE_PUSH_URL = 'https://kqkahzfzxbzqwjtkyqhe.functions.supabase.co/push-chat'; // sua Edge Function
-const URL_FINANCEIRO  = 'https://portal.logo.com.br';                                  // ajuste se tiver outro
-const VAPID_PUBLIC_KEY = '';
+const URL_FINANCEIRO  = 'https://portal.logo.com.br'; // ajuste se tiver outro
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -315,6 +328,7 @@ let seenMsgIds = new Set();
 let chatChannel = null;
 let pollingTimer = null;
 let lastSeenAt = null;
+let _adsCache = [];
 
 /* ===== Helpers ===== */
 const $=(id)=>document.getElementById(id);
@@ -328,7 +342,7 @@ function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el,{folder:'svg',e
 
 /* ===== Tabs ===== */
 function openTab(k){
-  const tabs=['chat','posts','bookings','fin','ads','profile'];
+  const tabs=['chat','posts','bookings','fin','ads'];
   tabs.forEach(t=>{
     const s=$('tab-'+t), b=$('tabBtn-'+(t==='fin'?'fin':t));
     if(!s||!b) return;
@@ -386,24 +400,11 @@ async function boot(){
   await loadChat();
   subscribeChatRealtime();
   await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
-  renderProfile(name, me);
-
-  // Reinscrever quando a aba volta / conexão muda
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) subscribeChatRealtime(); });
   window.addEventListener('online', subscribeChatRealtime);
   window.addEventListener('offline', ()=>{ startPolling(); });
-}
 
-/* ===== Profile ===== */
-function renderProfile(name, me){
-  $('profileInfo').innerHTML = `
-    <div class="partner-card" style="align-items:center">
-      <div class="u-circle">${initials(name)}</div>
-      <div>
-        <div><strong>${escapeHtml(name)}</strong></div>
-        <div class="small">Papel: ${me?.role||'-'} • Unidade: ${me?.unit_id||'-'}</div>
-      </div>
-    </div>`;
+  if(isManager) show($('partnerForm')); else hide($('partnerForm'));
 }
 
 /* ===== Chat ===== */
@@ -447,7 +448,6 @@ async function sendMessage(){
   $('chatInput').value='';
   appendMsg(data);
   setTimeout(refreshSince, 300); // puxa logo depois de enviar
-  fetch(EDGE_PUSH_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).catch(()=>{});
 }
 // Enter envia / Shift+Enter quebra linha
 (function(){
@@ -490,12 +490,8 @@ async function refreshSince(){
     .order('created_at',{ascending:true}).limit(50);
   (data||[]).forEach(m=>appendMsg(m));
 }
-function startPolling(){
-  if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 1500); }
-}
-function stopPolling(){
-  if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
-}
+function startPolling(){ if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 1500); } }
+function stopPolling(){ if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; } }
 
 /* ===== Emoji Picker (Twemoji) ===== */
 const EMOJIS=["😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😎","😢","😭","😡","👍","👎","👏","🙏","💪","🔥","🎉","✨","🌟","💡","📌","📎","📲","🏠","🚗","🍕","🍔","☕"];
@@ -518,12 +514,10 @@ async function loadPosts(){
     .order('created_at',{ascending:false}).limit(50);
   if(error){ $('postsList').innerHTML='<div class="small">Sem permissão para ler comunicados.</div>'; return; }
   $('postsList').innerHTML=(data||[]).map(p=>`
-    <div class="partner-card" style="align-items:flex-start">
-      <div style="flex:1">
-        <div style="font-weight:700">${escapeHtml(p.title)}</div>
-        <div class="small">${fmt(p.created_at)}</div>
-        <div style="margin-top:4px"><span class="__msg">${escapeHtml(p.content)}</span></div>
-      </div>
+    <div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);">
+      <div style="font-weight:700">${escapeHtml(p.title)}</div>
+      <div class="small">${fmt(p.created_at)}</div>
+      <div style="margin-top:4px"><span class="__msg">${escapeHtml(p.content)}</span></div>
     </div>`).join('');
   if(isManager) show($('postForm')); else hide($('postForm'));
   renderEmojiIn($('postsList'));
@@ -560,9 +554,9 @@ async function loadBookings(){
       ? `<button class="btn" onclick="setBooking('${b.id}','approved')">Aprovar</button>
          <button class="btn" onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
       : `<span class="btn ghost sm">${b.status}</span>`;
-    return `<div class="partner-card"><div style="flex:1">
-      <div><strong>${escapeHtml(b.amenity_id)}</strong></div>
-      <div class="small">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div></div>${actions}</div>`;
+    return `<div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div><strong>${escapeHtml(b.amenity_id)}</strong><div class="small">${fmt(b.starts_at)} → ${fmt(b.ends_at)}</div></div>
+      <div>${actions}</div></div>`;
   }).join('');
 }
 async function setBooking(id,status){
@@ -571,7 +565,7 @@ async function setBooking(id,status){
   loadBookings();
 }
 
-/* ===== Parceiros — carregar na vitrine ===== */
+/* ===== Parceiros — carregar e filtrar ===== */
 function pCard(a){
   return `<div class="card-p">
     <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" alt="">
@@ -590,17 +584,27 @@ async function loadAds(){
   if(error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
   let items=(data||[]).filter(a=>a.is_active&&(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
   if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999'}]; }
-
-  // destaques (até 6) no carrossel
+  _adsCache = items.slice();
+  renderAds(items);
+}
+function renderAds(items){
   $('adsCarousel').innerHTML = items.slice(0,6).map(pCard).join('');
-
-  // todos (grade)
   $('adsBox').innerHTML = items.map(a=>`
-    <div class="partner-card">
-      <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'">
-      <div style="flex:1"><div style="font-weight:700">${escapeHtml(a.title)}</div><div class="small">Preferência para moradores</div></div>
+    <div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);display:flex;gap:10px;align-items:center">
+      <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" style="width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
+      <div style="flex:1">
+        <div style="font-weight:800">${escapeHtml(a.title)}</div>
+        <div class="small">Preferência para moradores</div>
+      </div>
       <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
     </div>`).join('');
+}
+function filterAds(){
+  const q = ($('adSearch').value||'').toLowerCase();
+  const sort = $('adSort').value;
+  let items = _adsCache.filter(a => (a.title||'').toLowerCase().includes(q));
+  if(sort==='az'){ items = items.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||'')); }
+  renderAds(items);
 }
 function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
 async function createPartner(){
@@ -630,30 +634,6 @@ function openLogoApp(){
   } else { window.open(store,'_blank'); }
 }
 
-/* ===== Push ===== */
-function urlBase64ToUint8Array(base64String){
-  const padding='='.repeat((4 - base64String.length % 4) % 4);
-  const base64=(base64String+padding).replace(/\-/g,'+').replace(/_/g,'/');
-  const rawData=atob(base64); const outputArray=new Uint8Array(rawData.length);
-  for(let i=0;i<rawData.length;++i) outputArray[i]=rawData.charCodeAt(i);
-  return outputArray;
-}
-async function enablePush(){
-  try{
-    if(!('serviceWorker' in navigator)) return alert('Service Worker indisponível.');
-    const reg=await navigator.serviceWorker.register('./sw.js'); await navigator.serviceWorker.ready;
-    const perm=await Notification.requestPermission();
-    if(perm!=='granted'){ alert('Notificações bloqueadas.'); return; }
-    const appKey=VAPID_PUBLIC_KEY?urlBase64ToUint8Array(VAPID_PUBLIC_KEY):undefined;
-    const sub=await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:appKey });
-    const { endpoint, keys }=sub.toJSON();
-    await client.from('push_subscriptions').upsert({
-      endpoint, keys_p256dh:keys?.p256dh||null, keys_auth:keys?.auth||null, user_id:profile?.id||null
-    });
-    $('btnNotify').textContent='🔔 Notificações ativas';
-  }catch(e){ alert('Falha ao ativar: '+(e?.message||e)); }
-}
-
 /* ===== Start ===== */
 (async()=>{
   const { data } = await client.auth.getSession();
@@ -661,7 +641,7 @@ async function enablePush(){
 })();
 </script>
 
-<!-- SW register -->
+<!-- SW register (mantém PWA instalável) -->
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
