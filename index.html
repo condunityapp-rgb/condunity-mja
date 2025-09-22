@@ -61,6 +61,17 @@ body{
 .btn.ghost{background:#f8fafc}
 .btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
 
+/* Install pill */
+.install-pill{
+  position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%);
+  display:none; gap:10px; align-items:center;
+  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.15)
+}
+.install-pill .t{font-weight:800}
+.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
+.install-pill .x{background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer}
+
 /* layout */
 .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
 .grid{display:grid;grid-template-columns:1fr; gap:12px}
@@ -117,7 +128,7 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* parceiros PRO */
+/* parceiros PRO 2.0 */
 .showcase{
   background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
               radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
@@ -157,9 +168,20 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .kv{font-size:12px;color:var(--muted)}
 a.link{color:#1f4fd7;text-decoration:none}
 a.link:hover{text-decoration:underline}
+.approval{
+  margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;
+  background:#fffbeb; color:#92400e; font-weight:600;
+}
 </style>
 </head>
 <body>
+
+<!-- PILL de instalar -->
+<div class="install-pill" id="installPill">
+  <span class="t">Instale o app CondUnity</span>
+  <button class="a" id="installDo">Instalar</button>
+  <button class="x" id="installX" aria-label="Fechar">×</button>
+</div>
 
 <!-- top -->
 <div class="topbar">
@@ -194,6 +216,7 @@ a.link:hover{text-decoration:underline}
       <button class="btn primary" onclick="login()">Entrar</button>
       <button class="btn" onclick="signup()">Criar conta</button>
     </div>
+    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.</div>
   </div>
 
   <!-- Tabs -->
@@ -203,6 +226,10 @@ a.link:hover{text-decoration:underline}
     <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
     <button id="tabBtn-fin" onclick="openTab('fin')">Financeiro</button>
     <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
+  </div>
+
+  <div id="approvalBanner" class="approval hidden">
+    Sua conta está aguardando aprovação. Você já pode ver a vitrine de parceiros. Chat e integrações liberam após aprovação.
   </div>
 
   <div class="grid">
@@ -276,7 +303,7 @@ a.link:hover{text-decoration:underline}
             <div>
               <div class="badge">Preferência para moradores</div>
               <h4>Divulgue seu negócio no CondUnity</h4>
-              <div class="small">Destaque premium, contato 1-clique e prioridade para quem é morador.</div>
+              <div class="small">Destaque premium, contato 1-clique, favoritos e compartilhamento.</div>
             </div>
             <div class="kpis">
               <div class="k">+5k views/mês</div>
@@ -363,10 +390,12 @@ a.link:hover{text-decoration:underline}
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
 const URL_FINANCEIRO  = 'https://portal.logo.com.br';
+const SITE_URL = 'https://condunityapp-rgb.github.io/condunity-mja/';
+
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* Estado */
-let profile=null, condoId=null, generalRoomId=null, isManager=false;
+let profile=null, condoId=null, generalRoomId=null, isManager=false, approved=true;
 let seenMsgIds = new Set();
 let chatChannel=null, pollingTimer=null, lastSeenAt=null;
 let _adsFull=[], _favSet=new Set(), _currentPartner=null;
@@ -402,7 +431,7 @@ async function login(){
 async function signup(){
   try{
     const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
-    if(error) throw error; alert('Conta criada!');
+    if(error) throw error; alert('Conta criada! Aguarde aprovação do síndico/adm.');
   }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
 }
 async function logout(){ await client.auth.signOut(); location.reload(); }
@@ -415,6 +444,15 @@ function paintUserChip(name){
   try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
 }
 
+/* Gate de aprovação: se a coluna approved não existir, considera aprovado */
+function applyApprovalGate(){
+  if(approved){ hide($('approvalBanner')); return; }
+  show($('approvalBanner'));
+  // restringe chat/comunicados/reservas/financeiro, mantém Parceiros
+  hide($('tab-chat')); hide($('tab-posts')); hide($('tab-bookings')); hide($('tab-fin'));
+  openTab('ads');
+}
+
 async function boot(){
   const { data: auth } = await client.auth.getUser();
   const uid = auth?.user?.id;
@@ -423,9 +461,12 @@ async function boot(){
   $('authBox').style.display='none';
 
   const { data: me, error:eProf } = await client.from('profiles')
-    .select('id, full_name, role, condominium_id, unit_id').eq('id', uid).single();
+    .select('id, full_name, role, condominium_id, unit_id, approved')
+    .eq('id', uid).single();
   if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
   profile = me; condoId = me.condominium_id; isManager = (me.role==='manager'||me.role==='admin');
+  approved = (typeof me.approved === 'boolean') ? me.approved : true; // fallback
+  applyApprovalGate();
 
   const name = (me?.full_name?.trim()) || email.split('@')[0];
   paintUserChip(name);
@@ -447,7 +488,8 @@ async function boot(){
   if(isManager) show($('partnerForm')); else hide($('partnerForm'));
 }
 
-/* Chat */
+/* Chat (sem depender de updated_at) */
+let _editingId=null, lastSeenAt=null;
 function makeMsgMenu(id, you){
   const div=document.createElement('div'); div.className='menu';
   if(you){
@@ -512,6 +554,7 @@ function patchMsg(m){
   renderEmojiIn(el);
 }
 async function sendMessage(){
+  if(!approved){ alert('Aguarde aprovação para usar o chat.'); return; }
   const text = $('chatInput').value.trim(); if(!text) return;
   const user = (await client.auth.getUser()).data.user;
   const displayName = (profile?.full_name?.trim()) || (user?.email?.split('@')[0] || 'Morador');
@@ -521,7 +564,6 @@ async function sendMessage(){
   if(error){ alert('Erro ao enviar: '+error.message); return; }
   $('chatInput').value=''; appendMsg(data); setTimeout(refreshSince, 300);
 }
-let _editingId=null;
 function startEditMessage(id){
   const el = document.querySelector(`.msg[data-id="${id}"]`); if(!el) return;
   _editingId=id;
@@ -543,10 +585,7 @@ async function applyEditMessage(id, newText, el, actions){
     .update({ content: newText })
     .eq('id', id)
     .select('*').single();
-  if(error){
-    alert('Não foi possível editar. Habilite no Supabase a permissão de UPDATE (autor / manager).');
-    return;
-  }
+  if(error){ alert('Não foi possível editar. Verifique a permissão de UPDATE no Supabase.'); return; }
   patchMsg(data);
   const ta = el.querySelector('textarea'); if(ta){
     const span=document.createElement('span'); span.className='__msg'; span.textContent=newText; ta.replaceWith(span);
@@ -557,7 +596,7 @@ async function applyEditMessage(id, newText, el, actions){
 async function deleteMessage(id){
   if(!confirm('Apagar esta mensagem?')) return;
   const { error } = await client.from('chat_messages').delete().eq('id', id);
-  if(error){ alert('Não foi possível apagar. Verifique a política de DELETE.'); return; }
+  if(error){ alert('Não foi possível apagar. Verifique a permissão de DELETE.'); return; }
   const el = document.querySelector(`.msg[data-id="${id}"]`);
   if(el){ el.remove(); }
   seenMsgIds.delete(id);
@@ -780,9 +819,9 @@ function openPartnerModal(a){
 function closePartnerModal(){ $('partnerModal').style.display='none'; _currentPartner=null; }
 async function sharePartner(){
   if(!_currentPartner) return;
-  const text = `Conheça ${_currentPartner.title} no CondUnity! ${_currentPartner.link_url||''}`;
+  const text = `Conheça ${_currentPartner.title} no CondUnity! ${_currentPartner.link_url||''} — ${SITE_URL}`;
   try{
-    if(navigator.share){ await navigator.share({ title:_currentPartner.title, text, url: location.href }); }
+    if(navigator.share){ await navigator.share({ title:_currentPartner.title, text, url: SITE_URL }); }
     else { await navigator.clipboard.writeText(text); alert('Copiado para a área de transferência!'); }
   }catch{}
 }
@@ -815,6 +854,34 @@ function openLogoApp(){
     setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
   } else { window.open(store,'_blank'); }
 }
+
+/* PWA: convite de instalação */
+let _deferredPrompt=null;
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function maybeShowInstall(){
+  if(isStandalone()) return;                       // já instalado
+  if(localStorage.getItem('cu:pwaDismissed')==='1') return; // usuário dispensou
+  const pill=$('installPill'); pill.style.display='flex';
+}
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault(); _deferredPrompt=e; maybeShowInstall();
+});
+$('installDo').addEventListener('click', async ()=>{
+  if(!_deferredPrompt) { window.location.href = SITE_URL; return; }
+  _deferredPrompt.prompt();
+  const { outcome } = await _deferredPrompt.userChoice;
+  _deferredPrompt=null;
+  $('installPill').style.display='none';
+  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }
+});
+$('installX').addEventListener('click', ()=>{
+  localStorage.setItem('cu:pwaDismissed','1');
+  $('installPill').style.display='none';
+});
+window.addEventListener('appinstalled', ()=>{ $('installPill').style.display='none'; localStorage.removeItem('cu:pwaDismissed'); });
+window.addEventListener('load', ()=>{ if(!_deferredPrompt) setTimeout(maybeShowInstall, 1500); });
 
 /* Start */
 (async()=>{
