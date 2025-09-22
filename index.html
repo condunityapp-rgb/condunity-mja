@@ -105,10 +105,25 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* ===== Parceiros ===== */
-.partner-cta{background:linear-gradient(180deg,#e6fbff,#f4fdff);border:1px dashed #79d5e4;border-radius:12px;padding:12px;margin-bottom:12px}
-.partner-card{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff}
-.partner-card img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
+/* ===== Parceiros — Vitrine ===== */
+.showcase{
+  background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
+              radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
+  border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;
+}
+.hero{
+  display:flex; gap:10px; align-items:center; padding:12px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#e6fbff,#eef5ff);
+  border:1px dashed #93c5fd;
+}
+.hero h4{margin:0;font-size:15px}
+.badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
+.carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
+.card-p{min-width:240px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px; box-shadow:var(--shadow); display:flex; gap:10px; align-items:center}
+.card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
+.p-grid{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
 
 /* ===== Utility ===== */
 .hidden{display:none}
@@ -182,7 +197,8 @@ a.link:hover{text-decoration:underline}
 
           <div class="compose">
             <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
-            <textarea id="chatInput" class="input" placeholder="Escreva… (Enter envia • Shift+Enter nova linha)"></textarea>
+            <!-- sem placeholder -->
+            <textarea id="chatInput" class="input"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
 
@@ -247,15 +263,23 @@ a.link:hover{text-decoration:underline}
       <div class="card section" id="tab-ads">
         <h3>Parceiros</h3>
 
-        <div class="partner-cta">
-          <strong>📣 Moradores têm prioridade!</strong>
-          <div class="small">Divulgue seu negócio aqui no CondUnity. Preferência sempre para moradores do condomínio.</div>
-          <div style="margin-top:8px">
-            <button class="btn primary" onclick="openPartnerForm()">Divulgar meu negócio</button>
+        <!-- Vitrine -->
+        <div class="showcase">
+          <div class="hero">
+            <div class="badge">Preferência para moradores</div>
+            <div style="flex:1">
+              <h4>Divulgue seu negócio no CondUnity</h4>
+              <div class="small">Ganhe destaque na vitrine e atraia clientes do seu condomínio.</div>
+            </div>
+            <button class="btn primary" onclick="openPartnerForm()">Quero divulgar</button>
           </div>
-        </div>
 
-        <div id="adsBox" style="display:grid; gap:10px"></div>
+          <div style="margin:10px 2px 6px; font-weight:700">Destaques</div>
+          <div class="carousel" id="adsCarousel"></div>
+
+          <div style="margin:10px 2px 6px; font-weight:700">Todos os parceiros</div>
+          <div class="p-grid" id="adsBox"></div>
+        </div>
 
         <div id="partnerForm" class="hidden" style="margin-top:12px">
           <h4>Novo parceiro</h4>
@@ -281,7 +305,6 @@ const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
 const EDGE_PUSH_URL = 'https://kqkahzfzxbzqwjtkyqhe.functions.supabase.co/push-chat'; // sua Edge Function
 const URL_FINANCEIRO  = 'https://portal.logo.com.br';                                  // ajuste se tiver outro
-// Se tiver VAPID pública para Web Push: cole aqui (opcional). Ex: 'BIJ...'
 const VAPID_PUBLIC_KEY = '';
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -354,7 +377,6 @@ async function boot(){
   const name = (me?.full_name?.trim()) || email.split('@')[0];
   paintUserChip(name);
 
-  // Sala "Geral"
   const { data: room, error:eRoom } = await client.from('chat_rooms').select('id').eq('name','Geral').single();
   if(eRoom){ alert('Sala de chat não encontrada'); return; }
   generalRoomId = room.id;
@@ -365,6 +387,11 @@ async function boot(){
   subscribeChatRealtime();
   await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
   renderProfile(name, me);
+
+  // Reinscrever quando a aba volta / conexão muda
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) subscribeChatRealtime(); });
+  window.addEventListener('online', subscribeChatRealtime);
+  window.addEventListener('offline', ()=>{ startPolling(); });
 }
 
 /* ===== Profile ===== */
@@ -419,7 +446,7 @@ async function sendMessage(){
   if(error){ alert('Erro ao enviar: '+error.message); return; }
   $('chatInput').value='';
   appendMsg(data);
-  // push (não bloqueia)
+  setTimeout(refreshSince, 300); // puxa logo depois de enviar
   fetch(EDGE_PUSH_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).catch(()=>{});
 }
 // Enter envia / Shift+Enter quebra linha
@@ -430,22 +457,30 @@ async function sendMessage(){
   });
 })();
 
-/* ===== Realtime robusto (corrige atraso mobile→desktop) ===== */
+/* ===== Realtime robusto ===== */
 function subscribeChatRealtime(){
+  stopPolling();
   if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
-  if (pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
 
-  chatChannel = client.channel('realtime:chat_messages:'+generalRoomId);
+  chatChannel = client.channel('realtime:chat_messages:'+generalRoomId, { config:{ broadcast:{ack:true}}});
   chatChannel.on('postgres_changes',
     { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
     payload => appendMsg(payload.new)
   );
+
+  // heartbeat para manter conexão
+  let hb = setInterval(()=>{ try{ chatChannel.send({type:'broadcast', event:'hb', payload:{t:Date.now()}});}catch{} }, 15000);
+
   chatChannel.subscribe(status=>{
-    if(status==='SUBSCRIBED'){ if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; } }
+    if(status==='SUBSCRIBED'){ stopPolling(); }
     if(status==='CLOSED'||status==='TIMED_OUT'||status==='CHANNEL_ERROR'){
-      if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 2000); }
+      startPolling();
     }
   });
+
+  // segurança: se nada chegar por 20s, ativa polling
+  let watchdog = setTimeout(()=>startPolling(), 20000);
+  chatChannel.on('broadcast', {event:'hb'}, ()=>{ clearTimeout(watchdog); watchdog=setTimeout(()=>startPolling(), 20000); });
 }
 async function refreshSince(){
   const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
@@ -454,6 +489,12 @@ async function refreshSince(){
     .eq('room_id', generalRoomId).gt('created_at', since)
     .order('created_at',{ascending:true}).limit(50);
   (data||[]).forEach(m=>appendMsg(m));
+}
+function startPolling(){
+  if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 1500); }
+}
+function stopPolling(){
+  if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
 }
 
 /* ===== Emoji Picker (Twemoji) ===== */
@@ -530,8 +571,17 @@ async function setBooking(id,status){
   loadBookings();
 }
 
-/* ===== Parceiros ===== */
-function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
+/* ===== Parceiros — carregar na vitrine ===== */
+function pCard(a){
+  return `<div class="card-p">
+    <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" alt="">
+    <div style="flex:1">
+      <div style="font-weight:700">${escapeHtml(a.title)}</div>
+      <div class="small">Condomínio • Moradores primeiro</div>
+    </div>
+    <a class="btn sm" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
+  </div>`;
+}
 async function loadAds(){
   const now=new Date().toISOString();
   const { data, error } = await client.from('partner_ads')
@@ -540,12 +590,31 @@ async function loadAds(){
   if(error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
   let items=(data||[]).filter(a=>a.is_active&&(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
   if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999'}]; }
-  $('adsBox').innerHTML=items.map(a=>`
+
+  // destaques (até 6) no carrossel
+  $('adsCarousel').innerHTML = items.slice(0,6).map(pCard).join('');
+
+  // todos (grade)
+  $('adsBox').innerHTML = items.map(a=>`
     <div class="partner-card">
       <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'">
       <div style="flex:1"><div style="font-weight:700">${escapeHtml(a.title)}</div><div class="small">Preferência para moradores</div></div>
       <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
     </div>`).join('');
+}
+function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
+async function createPartner(){
+  const title=$('adTitle').value.trim();
+  const link=$('adLink').value.trim();
+  const image=$('adImage').value.trim();
+  if(!title){ alert('Informe o título'); return; }
+  const { error } = await client.from('partner_ads').insert({
+    title, link_url: link||null, image_url: image||null,
+    is_active: true, priority: 10, condominium_id: condoId
+  });
+  if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
+  $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
+  loadAds();
 }
 
 /* ===== Integração LOGO (Android) ===== */
