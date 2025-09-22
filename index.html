@@ -8,29 +8,32 @@
 <!-- PWA -->
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" href="favicon.ico" />
-<meta name="theme-color" content="#1f4fd7" />
+<meta name="theme-color" content="#2563eb" />
 <!-- iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="apple-touch-icon" href="./icon-192.png" />
 
+<!-- Twemoji para padronizar emojis em todos os dispositivos -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
+
 <style>
-/* ====== Design System (novo) ====== */
+/* ====== Design System (claro elegante) ====== */
 :root{
-  --bg:#0b1220;            /* fundo geral (escuro elegante) */
-  --bg-soft:#0f172a;       /* blocos */
-  --card:#0d1a34cc;        /* glass */
-  --card-strong:#0d1a34f2; /* glass mais forte */
-  --border:#1f2a44;        /* linhas */
-  --text:#e6ebff;          /* texto */
-  --muted:#9fb0d6;         /* subtítulo */
-  --primary:#2563eb;       /* azul CondUnity */
-  --primary-2:#1f4fd7;
-  --accent:#22d3ee;        /* ciano */
+  --bg:#f5f7fb;
+  --bg-grad: radial-gradient(900px 500px at -10% -10%, #dfe8ff 0%, transparent 50%),
+             radial-gradient(900px 600px at 110% -10%, #e3f7ff 0%, transparent 55%);
+  --card:#ffffff;
+  --muted:#6b7280;
+  --text:#0f172a;
+  --border:#e5e7eb;
+  --primary:#2563eb;
+  --primary-2:#1e40af;
+  --accent:#06b6d4;
   --ok:#10b981;
   --warn:#f59e0b;
-  --shadow:0 10px 40px rgba(0,0,0,.35);
   --radius:16px;
+  --shadow:0 10px 30px rgba(15,23,42,.08);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -38,10 +41,8 @@ body{
   margin:0;
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
   color:var(--text);
-  background:
-    radial-gradient(1200px 600px at -10% -10%, #0e1a38 10%, transparent 50%),
-    radial-gradient(1000px 800px at 110% -10%, #0b3a5a 10%, transparent 55%),
-    linear-gradient(180deg,#0a1020 0%, #0a1020 100%);
+  background: var(--bg);
+  background-image: var(--bg-grad);
 }
 
 /* ====== Topbar ====== */
@@ -49,12 +50,12 @@ body{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; gap:12px;
   padding:12px 16px;
-  background:linear-gradient(180deg,rgba(13,27,64,.92),rgba(13,27,64,.65));
-  border-bottom:1px solid var(--border);
-  backdrop-filter: blur(10px);
+  background:linear-gradient(180deg,#1f4fd7 0%, #2563eb 100%);
+  color:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);
 }
 .brand{display:flex; align-items:center; gap:12px}
-.brand svg{width:36px;height:36px;display:block;border-radius:12px}
+.brand svg{width:36px;height:36px;display:block;border-radius:12px;background:#fff0}
 .brand .title{font-weight:800;letter-spacing:.2px}
 .topbar .who{margin-left:auto}
 
@@ -62,7 +63,7 @@ body{
 .wrap{max-width:1200px;margin:22px auto;padding:0 16px}
 .badge{display:inline-flex;align-items:center;gap:8px;
   border:1px solid var(--border); color:var(--muted);
-  padding:6px 10px;border-radius:999px; font-size:12px;background:#0c1731;}
+  padding:6px 10px;border-radius:999px; font-size:12px;background:#fff;}
 .grid{display:grid;grid-template-columns:2fr 1.1fr; gap:16px}
 @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
 
@@ -81,56 +82,55 @@ body{
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
 .tabs button{
   padding:10px 14px;border:1px solid var(--border);border-radius:999px;
-  background:#0c1731; color:var(--text); font-weight:600; cursor:pointer;
+  background:#fff; color:var(--text); font-weight:600; cursor:pointer;
 }
-.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent}
+.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
+
+/* ====== Inputs/Buttons ====== */
+.btn{padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);cursor:pointer;font-weight:600}
+.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
+.btn.ghost{background:#f8fafc}
+input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.2);}
 
 /* ====== Chat ====== */
 .chat-wrap{display:flex;flex-direction:column;height:520px}
-.chat-head{
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:10px;
-}
+.chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
 .chat-box{
   flex:1; overflow:auto; padding:10px;border:1px solid var(--border);
-  border-radius:12px;background:#0b142b;
+  border-radius:12px;background:#f7f9ff;
 }
-.msg{max-width:90%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.msg{max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.4; box-shadow:0 4px 14px rgba(15,23,42,.06)}
 .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
-.msg.you{background:#0d234a}
-.msg.other{background:#132a54}
-.compose{
-  display:flex; gap:8px; margin-top:10px; align-items:flex-end;
-  position:sticky; bottom:0;
-}
+.msg.you{background:#e8efff}
+.msg.other{background:#eef2ff}
+.compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
 textarea.input{
   flex:1; min-height:46px; max-height:140px; resize:vertical;
-  padding:10px 12px;border:1px solid var(--border); border-radius:12px;
-  background:#0b162f;color:var(--text); font-size:14px;
+  background:#fff; font-size:14px;
 }
-textarea.input:focus{outline:none; box-shadow:0 0 0 3px rgba(37,99,235,.25); border-color:#3757a6}
-.btn{padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:#0c1731;color:var(--text);cursor:pointer;font-weight:600}
-.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent}
-.btn.ghost{background:#0b162f}
 .emoji-btn{font-size:20px;padding:6px 10px}
 
 /* ===== Partners ===== */
 .partner-cta{
-  background:linear-gradient(180deg,rgba(34,211,238,.12),rgba(34,211,238,.06));
-  border:1px dashed #2aa1b5; border-radius:12px; padding:12px; margin-bottom:12px;
+  background:linear-gradient(180deg,#e6fbff,#f4fdff);
+  border:1px dashed #79d5e4; border-radius:12px; padding:12px; margin-bottom:12px;
 }
-.partner-card{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#0b162f}
+.partner-card{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff}
 .partner-card img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
 
 /* ===== Utility ===== */
 .hidden{display:none}
 .kv{font-size:12px;color:var(--muted)}
 .hr{border:0;border-top:1px solid var(--border);margin:12px 0}
-a.link{color:#a7c0ff;text-decoration:none}
+a.link{color:#1f4fd7;text-decoration:none}
 a.link:hover{text-decoration:underline}
 .small{font-size:12px;color:var(--muted)}
-.userchip{display:flex;align-items:center;gap:8px;background:#0c1731;border:1px solid var(--border);border-radius:999px;padding:6px 10px}
+.userchip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 10px}
 .u-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
+.emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
+.emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
+.emoji-grid img{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -155,13 +155,13 @@ a.link:hover{text-decoration:underline}
   <!-- Auth -->
   <div class="card section" id="authBox">
     <div class="badge">Dica: use os logins de teste do Supabase (síndico e morador).</div>
-    <div class="hidden" id="authLogged" style="margin-top:10px">
+    <div id="authLogged" class="hidden" style="margin-top:10px">
       <span class="badge" id="roleBadge"></span>
       <button class="btn" onclick="logout()">Sair</button>
     </div>
     <div id="authFields" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px">
-      <input id="email" placeholder="Email" class="btn ghost" style="min-width:220px">
-      <input id="password" type="password" placeholder="Senha" class="btn ghost" style="min-width:160px">
+      <input id="email" placeholder="Email" class="ghost" style="min-width:220px">
+      <input id="password" type="password" placeholder="Senha" class="ghost" style="min-width:160px">
       <button class="btn primary" onclick="login()">Entrar</button>
       <button class="btn" onclick="signup()">Criar conta</button>
     </div>
@@ -193,13 +193,13 @@ a.link:hover{text-decoration:underline}
           <div id="chatBox" class="chat-box"></div>
 
           <div class="compose">
-            <button class="emoji-btn" title="Emojis" onclick="toggleEmoji()">😊</button>
+            <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
             <textarea id="chatInput" class="input" placeholder="Escreva uma mensagem… (Enter envia • Shift+Enter quebra linha)"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
 
-          <div id="emojiPanel" class="hidden" style="margin-top:6px;display:grid;grid-template-columns:repeat(10,1fr);gap:4px">
-            <!-- emojis básicos -->
+          <div id="emojiPanel" class="hidden" style="margin-top:8px">
+            <div class="emoji-grid" id="emojiGrid"></div>
           </div>
         </div>
       </div>
@@ -210,8 +210,8 @@ a.link:hover{text-decoration:underline}
         <div id="postsList"></div>
         <div id="postForm" class="hidden" style="margin-top:12px">
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <input id="postTitle" class="btn ghost" style="flex:1" placeholder="Título">
-            <textarea id="postContent" class="btn ghost" style="flex:1" placeholder="Conteúdo"></textarea>
+            <input id="postTitle" style="flex:1" placeholder="Título">
+            <textarea id="postContent" style="flex:1" placeholder="Conteúdo"></textarea>
           </div>
           <div style="margin-top:8px"><button class="btn primary" onclick="createPost()">Publicar comunicado</button></div>
         </div>
@@ -227,9 +227,9 @@ a.link:hover{text-decoration:underline}
         </div>
         <div id="internalBookings" class="hidden">
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <select id="amenitySelect" class="btn ghost"></select>
-            <input id="startAt" type="datetime-local" class="btn ghost">
-            <input id="endAt" type="datetime-local" class="btn ghost">
+            <select id="amenitySelect"></select>
+            <input id="startAt" type="datetime-local">
+            <input id="endAt" type="datetime-local">
             <button class="btn primary" onclick="requestBooking()">Solicitar</button>
           </div>
           <div id="bookingsList" style="margin-top:10px"></div>
@@ -272,9 +272,9 @@ a.link:hover{text-decoration:underline}
         <div id="partnerForm" class="hidden" style="margin-top:12px">
           <h4>Novo parceiro</h4>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <input id="adTitle" class="btn ghost" style="flex:1" placeholder="Título (ex: CEC Tecnologia BA)">
-            <input id="adLink" class="btn ghost" style="flex:1" placeholder="Link (WhatsApp, site, Instagram…)">
-            <input id="adImage" class="btn ghost" style="flex:1" placeholder="URL da imagem (logo)">
+            <input id="adTitle" style="flex:1" placeholder="Título (ex: CEC Tecnologia BA)">
+            <input id="adLink"  style="flex:1" placeholder="Link (WhatsApp, site, Instagram…)">
+            <input id="adImage" style="flex:1" placeholder="URL da imagem (logo)">
           </div>
           <div style="margin-top:8px"><button class="btn primary" onclick="createPartner()">Publicar parceiro</button></div>
         </div>
@@ -291,9 +291,10 @@ a.link:hover{text-decoration:underline}
 /* ===== CONFIG ===== */
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
-const EDGE_PUSH_URL = 'https://kqkahzfzxbzqwjtkyqhe.functions.supabase.co/push-chat'; // ajuste se seu nome de função for outro
-const URL_COMUNICADOS = '#';               // opcional
+const EDGE_PUSH_URL = 'https://kqkahzfzxbzqwjtkyqhe.functions.supabase.co/push-chat'; // ajuste se precisar
 const URL_FINANCEIRO  = 'https://portal.logo.com.br'; // ajuste
+// Se tiver VAPID pública, cole aqui (opcional). Ex: 'BJT...'
+const VAPID_PUBLIC_KEY = '';
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -302,6 +303,7 @@ let session=null, profile=null, condoId=null, generalRoomId=null, isManager=fals
 let seenMsgIds = new Set();
 let chatChannel = null;
 let pollingTimer = null;
+let lastSeenAt = null;
 
 const $  = (id)=>document.getElementById(id);
 const show = (el)=>el.classList.remove('hidden');
@@ -370,11 +372,11 @@ async function boot(){
   $('btnFinance').href = URL_FINANCEIRO;
 
   await loadChat();
-  subscribeChatRealtime(); // novo listener robusto
+  subscribeChatRealtime(); // listener robusto
   await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
   $('profileInfo').innerHTML = `
-    <div class="partner-card"><div class="u-circle">${initials(name)}</div>
+    <div class="partner-card" style="align-items:center"><div class="u-circle">${initials(name)}</div>
       <div>
         <div><strong>${escapeHtml(name)}</strong></div>
         <div class="small">Role: ${me?.role} • Unidade: ${me?.unit_id||'-'}</div>
@@ -385,11 +387,15 @@ async function boot(){
 }
 
 /* ===== Chat: listagem e envio ===== */
+function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el, {folder:'svg', ext:'.svg'}); } }
+
 function makeMsgBubble(m){
   const you = (profile?.id && m.sender_id && profile.id===m.sender_id);
   const div = document.createElement('div');
   div.className = 'msg ' + (you?'you':'other');
-  div.innerHTML = `<div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)}</div>${escapeHtml(m.content)}`;
+  div.innerHTML = `<div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)}</div><span class="__msg">${escapeHtml(m.content)}</span>`;
+  // parse emojis para <img> (Twemoji)
+  renderEmojiIn(div);
   return div;
 }
 async function loadChat(){
@@ -403,6 +409,7 @@ async function loadChat(){
   const box = $('chatBox'); box.innerHTML='';
   (data||[]).forEach(m=>{ if(m?.id) seenMsgIds.add(m.id); box.appendChild(makeMsgBubble(m)); });
   box.scrollTop = box.scrollHeight;
+  const last = (data||[]).slice(-1)[0]; if(last) lastSeenAt = last.created_at;
 }
 
 async function sendMessage(){
@@ -430,6 +437,7 @@ function appendMsg(m){
   seenMsgIds.add(m.id);
   $('chatBox').appendChild(makeMsgBubble(m));
   $('chatBox').scrollTop = $('chatBox').scrollHeight;
+  lastSeenAt = m.created_at || lastSeenAt;
 }
 
 /* ===== Chat: Realtime forte (corrige celular -> desktop) ===== */
@@ -438,7 +446,6 @@ function subscribeChatRealtime(){
   if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
   if (pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
 
-  // filtro por sala evita eventos de outras salas
   chatChannel = client.channel('realtime:chat_messages:'+generalRoomId);
 
   chatChannel.on('postgres_changes',
@@ -446,23 +453,17 @@ function subscribeChatRealtime(){
     payload => { const m = payload.new; appendMsg(m); }
   );
 
-  // handlers de estado – re-subscribe automático
   chatChannel.subscribe(status => {
     if (status === 'SUBSCRIBED'){
-      // desliga polling se estiver ativo
       if (pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; }
     }
     if (status === 'CLOSED' || status === 'TIMED_OUT' || status === 'CHANNEL_ERROR'){
-      // fallback de polling leve enquanto reconecta
-      if (!pollingTimer){
-        pollingTimer = setInterval(()=>refreshSince(), 3000);
-      }
+      if (!pollingTimer){ pollingTimer = setInterval(()=>refreshSince(), 2000); }
     }
   });
 }
 
 // busca mensagens novas (fallback)
-let lastSeenAt = null;
 async function refreshSince(){
   const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
   const { data } = await client.from('chat_messages')
@@ -472,7 +473,6 @@ async function refreshSince(){
     .order('created_at',{ascending:true})
     .limit(50);
   (data||[]).forEach(m=>appendMsg(m));
-  const last = (data||[]).slice(-1)[0]; if(last) lastSeenAt = last.created_at;
 }
 
 // textarea: Enter envia / Shift+Enter quebra linha
@@ -485,17 +485,20 @@ async function refreshSince(){
   });
 })();
 
-/* ===== Emojis simples ===== */
-const EMOJIS = "😀😁😂🤣😊🙂😉😍😘🤩😇😎🤔😴🙄😭😡👍👎👏🙏💪🔥🎉✨🌟💡📌📎📲🏠🧹🚗🐶🐱🍕🍔🍻☕".split('');
-(function renderEmojis(){
-  const p = $('emojiPanel'); p.innerHTML = '';
-  EMOJIS.forEach(e => {
-    const b=document.createElement('button'); b.className='btn ghost'; b.style.padding='6px 8px'; b.textContent=e;
-    b.onclick=()=>{ const t=$('chatInput'); t.value=(t.value||'')+e; t.focus(); };
-    p.appendChild(b);
+/* ===== Emoji Picker (Twemoji imagens) ===== */
+const EMOJIS = ["😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😎","😢","😭","😡","👍","👎","👏","🙏","💪","🔥","🎉","✨","🌟","💡","📌","📎","📲","🏠","🚗","🍕","🍔","☕"];
+function renderEmojiGrid(){
+  const grid=$('emojiGrid'); grid.innerHTML='';
+  EMOJIS.forEach(ch=>{
+    const btn=document.createElement('button');
+    btn.innerHTML = ch; // texto primeiro…
+    grid.appendChild(btn);
+    btn.onclick=()=>{ const t=$('chatInput'); t.value=(t.value||'')+ch; t.focus(); };
   });
-})();
-function toggleEmoji(){ $('emojiPanel').classList.toggle('hidden'); }
+  // …depois converte pra imagens twemoji (garante sem quadradinhos)
+  if(window.twemoji){ twemoji.parse(grid, {folder:'svg', ext:'.svg'}); }
+}
+function toggleEmoji(){ const p=$('emojiPanel'); p.classList.toggle('hidden'); if(!p.dataset.rendered){ renderEmojiGrid(); p.dataset.rendered='1'; } }
 
 /* ===== Posts ===== */
 async function loadPosts(){
@@ -509,10 +512,11 @@ async function loadPosts(){
       <div style="flex:1">
         <div style="font-weight:700">${escapeHtml(p.title)}</div>
         <div class="small">${fmt(p.created_at)}</div>
-        <div style="margin-top:4px">${escapeHtml(p.content)}</div>
+        <div style="margin-top:4px"><span class="__msg">${escapeHtml(p.content)}</span></div>
       </div>
     </div>`).join('');
   if (isManager) show($('postForm')); else hide($('postForm'));
+  renderEmojiIn($('postsList'));
 }
 async function createPost(){
   const title=$('postTitle').value.trim(), content=$('postContent').value.trim();
@@ -580,18 +584,6 @@ async function loadAds(){
       <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
     </div>`).join('');
 }
-async function createPartner(){
-  const title=$('adTitle').value.trim();
-  const link=$('adLink').value.trim();
-  const image=$('adImage').value.trim();
-  if(!title){ alert('Informe o título'); return; }
-  const { error } = await client.from('partner_ads').insert({
-    title, link_url: link||null, image_url: image||null,
-    is_active:true, priority:10, condominium_id: condoId
-  });
-  if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
-  $('adTitle').value=''; $('adLink').value=''; $('adImage').value=''; loadAds();
-}
 
 /* ===== Deep-link Android LOGO ===== */
 function openLogoApp(){
@@ -607,6 +599,13 @@ function openLogoApp(){
 }
 
 /* ===== Push: inscrição ===== */
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64); const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
 async function enablePush(){
   try{
     if(!('serviceWorker' in navigator)) return alert('Service Worker indisponível.');
@@ -615,8 +614,8 @@ async function enablePush(){
     const perm = await Notification.requestPermission();
     if(perm!=='granted'){ alert('Notificações bloqueadas.'); return; }
 
-    // VAPID PUBLIC KEY deve estar no sw.js — aqui só fazemos subscribe padrão
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: undefined });
+    const appKey = VAPID_PUBLIC_KEY ? urlBase64ToUint8Array(VAPID_PUBLIC_KEY) : undefined;
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: appKey });
     if(!sub) return alert('Falha ao inscrever.');
 
     const { endpoint, keys } = sub.toJSON();
