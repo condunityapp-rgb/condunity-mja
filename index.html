@@ -98,10 +98,15 @@ input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(3
 @media (min-width: 980px){ .chat-wrap{height:60vh} }
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
 .chat-box{flex:1; overflow:auto; padding:10px;border:1px solid var(--border);border-radius:12px;background:#f7f9ff}
-.msg{max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.4; box-shadow:0 4px 14px rgba(15,23,42,.06)}
+.msg{position:relative; max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.4; box-shadow:0 4px 14px rgba(15,23,42,.06)}
 .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
 .msg.you{background:#e8efff}
 .msg.other{background:#eef2ff}
+.msg .del{
+  position:absolute; right:6px; top:6px; border:none; background:transparent; cursor:pointer;
+  opacity:.0; transition:.15s; font-size:16px
+}
+.msg.you:hover .del{opacity:.8}
 .compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
 textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; background:#fff; font-size:15px}
 .emoji-btn{font-size:20px;padding:6px 10px}
@@ -129,11 +134,16 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .kpis .k{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-weight:700}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px}
 .tools input{flex:1}
+.tools select{min-width:140px}
 .carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
-.card-p{min-width:240px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px; box-shadow:var(--shadow); display:flex; gap:10px; align-items:center}
+.card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center}
 .card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
+.card-p .title{font-weight:800}
+.card-p .meta{font-size:12px;color:var(--muted)}
 .p-grid{display:grid;gap:10px;grid-template-columns:1fr}
 @media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
+.badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
+.star{color:#f59e0b}
 
 /* ===== Utility ===== */
 .hidden{display:none}
@@ -180,7 +190,7 @@ a.link:hover{text-decoration:underline}
     </div>
   </div>
 
-  <!-- Tabs (sem Perfil) -->
+  <!-- Tabs -->
   <div class="tabs">
     <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
     <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
@@ -205,7 +215,6 @@ a.link:hover{text-decoration:underline}
 
           <div class="compose">
             <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
-            <!-- sem placeholder por pedido -->
             <textarea id="chatInput" class="input" aria-label="Mensagem"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
@@ -270,21 +279,30 @@ a.link:hover{text-decoration:underline}
           <div class="hero">
             <div>
               <div class="badge">Preferência para moradores</div>
-              <h4>Divulgue seu negócio no CondUnity</h4>
-              <div class="small">Ganhe destaque na vitrine, receba contatos e aumente as vendas no seu condomínio.</div>
+              <h4>Vitrine de Negócios do CondUnity</h4>
+              <div class="small">Destaque premium, contato direto (WhatsApp) e prioridade para quem é morador.</div>
             </div>
             <div class="kpis">
               <div class="k">+5k visualizações/mês</div>
-              <div class="k">Contato direto</div>
+              <div class="k">Contato 1-clique</div>
               <div class="k">Sem comissão</div>
             </div>
           </div>
 
           <div class="tools">
             <input id="adSearch" placeholder="Pesquisar parceiro (ex: elétrica, celular…)" oninput="filterAds()">
+            <select id="adCat" onchange="filterAds()">
+              <option value="">Categoria: Todas</option>
+              <option value="tecnologia">Tecnologia</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="saude">Saúde & Bem-estar</option>
+              <option value="alimentos">Alimentos & Bebidas</option>
+              <option value="servicos">Serviços</option>
+            </select>
             <select id="adSort" onchange="filterAds()">
               <option value="priority">Ordenar: Destaque</option>
               <option value="az">A–Z</option>
+              <option value="rating">Melhor avaliação</option>
             </select>
             <button class="btn primary" onclick="openPartnerForm()">Quero divulgar</button>
           </div>
@@ -300,8 +318,20 @@ a.link:hover{text-decoration:underline}
           <h4>Novo parceiro</h4>
           <div class="row">
             <input id="adTitle" placeholder="Título (ex: CEC Tecnologia BA)">
-            <input id="adLink"  placeholder="Link (WhatsApp, site, Instagram…)">
-            <input id="adImage" placeholder="URL da imagem (logo)">
+            <input id="adLink"  placeholder="Link (WhatsApp: https://wa.me/55DDDNUM / Site / Instagram…)">
+            <input id="adImage" placeholder="URL da imagem (logo quadrada)">
+          </div>
+          <div class="row">
+            <select id="adCategory">
+              <option value="">Categoria</option>
+              <option value="tecnologia">Tecnologia</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="saude">Saúde & Bem-estar</option>
+              <option value="alimentos">Alimentos & Bebidas</option>
+              <option value="servicos">Serviços</option>
+            </select>
+            <input id="adRating" type="number" min="3" max="5" step="0.1" placeholder="Nota (3–5)">
+            <label class="small"><input id="adVerified" type="checkbox"> Verificado</label>
           </div>
           <div style="margin-top:8px"><button class="btn primary" onclick="createPartner()">Publicar parceiro</button></div>
         </div>
@@ -412,7 +442,17 @@ function makeMsgBubble(m){
   const you = (profile?.id && m.sender_id && profile.id===m.sender_id);
   const div = document.createElement('div');
   div.className = 'msg ' + (you?'you':'other');
-  div.innerHTML = `<div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)}</div><span class="__msg">${escapeHtml(m.content)}</span>`;
+  div.dataset.id = m.id;
+  div.innerHTML = `
+    <button class="del" title="Apagar" ${you?'':'style="display:none"'} onclick="deleteMessage('${m.id}')">🗑️</button>
+    <div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)}</div>
+    <span class="__msg">${escapeHtml(m.content)}</span>`;
+  // Long press no mobile para deletar
+  if(you){
+    let t=null;
+    div.addEventListener('touchstart', ()=>{ t=setTimeout(()=>{ if(confirm('Apagar esta mensagem?')) deleteMessage(m.id); },600); });
+    div.addEventListener('touchend', ()=>{ if(t) clearTimeout(t); });
+  }
   renderEmojiIn(div);
   return div;
 }
@@ -447,7 +487,19 @@ async function sendMessage(){
   if(error){ alert('Erro ao enviar: '+error.message); return; }
   $('chatInput').value='';
   appendMsg(data);
-  setTimeout(refreshSince, 300); // puxa logo depois de enviar
+  setTimeout(refreshSince, 300);
+}
+// Deletar sua mensagem (requer política DELETE no Supabase)
+async function deleteMessage(id){
+  if(!confirm('Apagar esta mensagem?')) return;
+  const { error } = await client.from('chat_messages').delete().eq('id', id);
+  if(error){
+    alert('Não foi possível apagar. Habilite no Supabase a permissão de DELETE apenas para o autor da mensagem.');
+    return;
+  }
+  const el = document.querySelector(`.msg[data-id="${id}"]`);
+  if(el){ el.remove(); }
+  seenMsgIds.delete(id);
 }
 // Enter envia / Shift+Enter quebra linha
 (function(){
@@ -467,8 +519,15 @@ function subscribeChatRealtime(){
     { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
     payload => appendMsg(payload.new)
   );
+  chatChannel.on('postgres_changes',
+    { event:'DELETE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
+    payload => {
+      const id = payload?.old?.id;
+      if(id){ const el=document.querySelector(`.msg[data-id="${id}"]`); if(el) el.remove(); seenMsgIds.delete(id); }
+    }
+  );
 
-  // heartbeat para manter conexão
+  // heartbeat
   let hb = setInterval(()=>{ try{ chatChannel.send({type:'broadcast', event:'hb', payload:{t:Date.now()}});}catch{} }, 15000);
 
   chatChannel.subscribe(status=>{
@@ -478,7 +537,6 @@ function subscribeChatRealtime(){
     }
   });
 
-  // segurança: se nada chegar por 20s, ativa polling
   let watchdog = setTimeout(()=>startPolling(), 20000);
   chatChannel.on('broadcast', {event:'hb'}, ()=>{ clearTimeout(watchdog); watchdog=setTimeout(()=>startPolling(), 20000); });
 }
@@ -566,44 +624,64 @@ async function setBooking(id,status){
 }
 
 /* ===== Parceiros — carregar e filtrar ===== */
-function pCard(a){
-  return `<div class="card-p">
+function stars(rating=5){
+  const r=Math.max(3, Math.min(5, Number(rating)||5));
+  let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; }
+  return s;
+}
+function catFromTitle(t=''){
+  t=t.toLowerCase();
+  if(t.includes('tec')||t.includes('celular')||t.includes('comput')) return 'tecnologia';
+  if(t.includes('manuten')||t.includes('conserto')||t.includes('reparo')) return 'manutencao';
+  if(t.includes('clin')||t.includes('saúde')||t.includes('estética')) return 'saude';
+  if(t.includes('lanch')||t.includes('rest')||t.includes('pizza')||t.includes('açaí')) return 'alimentos';
+  return 'servicos';
+}
+function pCard(a,wide=false){
+  const rating = a.rating || 5;
+  const cat = a.category || catFromTitle(a.title||'');
+  const verified = a.verified ? `<span class="badge-blue">Verificado</span>` : '';
+  const wa = (a.link_url||'').includes('wa.me') ? a.link_url : null;
+  const site = wa ? null : (a.link_url||null);
+  const inner = `
     <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" alt="">
     <div style="flex:1">
-      <div style="font-weight:700">${escapeHtml(a.title)}</div>
-      <div class="small">Condomínio • Moradores primeiro</div>
+      <div class="title">${escapeHtml(a.title||'Parceiro')}</div>
+      <div class="meta">${verified} <span class="badge-blue" style="margin-left:6px">${cat}</span></div>
+      <div style="margin-top:4px">${stars(rating)}</div>
     </div>
-    <a class="btn sm" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
-  </div>`;
+    ${wa?`<a class="btn sm" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`:''}
+    ${site?`<a class="btn sm" href="${site}" target="_blank" rel="noopener">Visitar</a>`:''}
+  `;
+  return `<div class="${wide?'card':'card-p'}" style="${wide?'display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)':''}">${inner}</div>`;
 }
+let _adsFull = [];
 async function loadAds(){
   const now=new Date().toISOString();
   const { data, error } = await client.from('partner_ads')
-    .select('title,image_url,link_url,priority,starts_at,ends_at,is_active')
+    .select('title,image_url,link_url,priority,starts_at,ends_at,is_active,category,rating,verified')
     .eq('condominium_id',condoId).order('priority',{ascending:false});
   if(error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
   let items=(data||[]).filter(a=>a.is_active&&(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
-  if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999'}]; }
-  _adsCache = items.slice();
-  renderAds(items);
+  if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999',category:'tecnologia',rating:5,verified:true}]; }
+  // normaliza
+  _adsFull = items.map(a=>({...a, category: a.category || catFromTitle(a.title||'') , rating: a.rating || 5 }));
+  _adsCache = _adsFull.slice();
+  renderAds(_adsCache);
 }
 function renderAds(items){
-  $('adsCarousel').innerHTML = items.slice(0,6).map(pCard).join('');
-  $('adsBox').innerHTML = items.map(a=>`
-    <div class="card" style="padding:10px;border-radius:12px;border:1px solid var(--border);display:flex;gap:10px;align-items:center">
-      <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" style="width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover">
-      <div style="flex:1">
-        <div style="font-weight:800">${escapeHtml(a.title)}</div>
-        <div class="small">Preferência para moradores</div>
-      </div>
-      <a class="btn" href="${a.link_url||'#'}" target="_blank" rel="noopener">Fale agora</a>
-    </div>`).join('');
+  $('adsCarousel').innerHTML = items.slice(0,6).map(x=>pCard(x)).join('');
+  $('adsBox').innerHTML = items.map(x=>pCard(x,true)).join('');
 }
 function filterAds(){
   const q = ($('adSearch').value||'').toLowerCase();
   const sort = $('adSort').value;
-  let items = _adsCache.filter(a => (a.title||'').toLowerCase().includes(q));
+  const cat = $('adCat').value;
+  let items = _adsFull.filter(a => (a.title||'').toLowerCase().includes(q));
+  if(cat) items = items.filter(a=> (a.category||'')===cat);
   if(sort==='az'){ items = items.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||'')); }
+  if(sort==='rating'){ items = items.slice().sort((a,b)=> (b.rating||0)-(a.rating||0)); }
+  // priority é default
   renderAds(items);
 }
 function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
@@ -611,13 +689,18 @@ async function createPartner(){
   const title=$('adTitle').value.trim();
   const link=$('adLink').value.trim();
   const image=$('adImage').value.trim();
+  const category=$('adCategory').value || null;
+  const rating= Number($('adRating').value) || null;
+  const verified= $('adVerified').checked;
   if(!title){ alert('Informe o título'); return; }
   const { error } = await client.from('partner_ads').insert({
     title, link_url: link||null, image_url: image||null,
-    is_active: true, priority: 10, condominium_id: condoId
+    is_active: true, priority: 10, condominium_id: condoId,
+    category, rating, verified
   });
   if(error){ alert('Erro ao cadastrar parceiro: '+error.message); return; }
   $('adTitle').value=''; $('adLink').value=''; $('adImage').value='';
+  $('adCategory').value=''; $('adRating').value=''; $('adVerified').checked=false;
   loadAds();
 }
 
