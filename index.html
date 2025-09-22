@@ -9,16 +9,12 @@
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" href="favicon.ico" />
 <meta name="theme-color" content="#2563eb" />
-<!-- iOS -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="apple-touch-icon" href="./icon-192.png" />
 
 <!-- Twemoji para emojis consistentes -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
-/* ========== Design (MOBILE-FIRST) — mantido e refinado ========== */
 :root{
   --bg:#f6f8fc;
   --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
@@ -29,9 +25,6 @@
   --border:#e5e7eb;
   --primary:#2563eb;
   --primary-2:#1e40af;
-  --accent:#06b6d4;
-  --success:#10b981;
-  --danger:#ef4444;
   --radius:16px;
   --shadow:0 10px 30px rgba(15,23,42,.08);
 }
@@ -45,14 +38,13 @@ body{
   background-image:var(--bg-grad);
 }
 
-/* ===== Topbar ===== */
+/* Topbar */
 .topbar{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; gap:12px;
   padding:10px 12px;
   background:linear-gradient(180deg,#2150d9 0%, #2563eb 100%);
-  color:#fff;
-  box-shadow:0 6px 18px rgba(0,0,0,.15);
+  color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15);
 }
 .brand{display:flex; align-items:center; gap:10px}
 .brand svg{width:32px;height:32px;display:block;border-radius:10px}
@@ -69,18 +61,17 @@ body{
 .btn.ghost{background:#f8fafc}
 .btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
 
-/* ===== Layout ===== */
+/* layout */
 .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
 .grid{display:grid;grid-template-columns:1fr; gap:12px}
 @media (min-width: 980px){ .grid{grid-template-columns:1.8fr 1fr} }
 
-/* ===== Cards ===== */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
 .section{padding:14px}
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-/* ===== Tabs ===== */
+/* tabs */
 .tabs{
   display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;
   background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)
@@ -91,12 +82,12 @@ body{
 }
 .tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
 
-/* ===== Inputs ===== */
+/* inputs */
 input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
 input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.18)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* ===== Chat ===== */
+/* chat */
 .chat-wrap{display:flex;flex-direction:column;height:62vh}
 @media (min-width: 980px){ .chat-wrap{height:60vh} }
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
@@ -121,12 +112,12 @@ input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(3
 textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; background:#fff; font-size:15px}
 .emoji-btn{font-size:20px;padding:6px 10px}
 
-/* ===== Emojis ===== */
+/* emojis */
 .emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* ===== Parceiros — Vitrine PRO 2.0 ===== */
+/* parceiros PRO */
 .showcase{
   background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
               radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
@@ -156,18 +147,10 @@ textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; backg
 .badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
 .star{color:#f59e0b}
 
-/* Modal Parceiro */
-.modal{
-  position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60;
-}
-.modal .box{
-  width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
-  padding:14px;
-}
-.modal .box h4{margin:0 0 6px 0}
+/* modal parceiro */
+.modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60; }
+.modal .box{ width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); padding:14px; }
 .modal .row{margin-top:6px}
-.share{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.share .btn{display:flex;gap:6px; align-items:center}
 
 .hidden{display:none}
 .small{font-size:12px;color:var(--muted)}
@@ -178,7 +161,7 @@ a.link:hover{text-decoration:underline}
 </head>
 <body>
 
-<!-- ===== Topbar ===== -->
+<!-- top -->
 <div class="topbar">
   <div class="brand">
     <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -224,14 +207,10 @@ a.link:hover{text-decoration:underline}
 
   <div class="grid">
 
-    <!-- Coluna Principal -->
+    <!-- Coluna principal -->
     <div>
-
-      <!-- Chat -->
       <div class="card section" id="tab-chat">
-        <div class="chat-head">
-          <h3 style="margin:0">Chat Geral do Condomínio</h3>
-        </div>
+        <div class="chat-head"><h3 style="margin:0">Chat Geral do Condomínio</h3></div>
 
         <div class="chat-wrap">
           <div id="chatBox" class="chat-box"></div>
@@ -248,7 +227,6 @@ a.link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <!-- Comunicados -->
       <div class="card section hidden" id="tab-posts">
         <h3>Comunicados</h3>
         <div id="postsList"></div>
@@ -261,7 +239,6 @@ a.link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <!-- Reservas -->
       <div class="card section hidden" id="tab-bookings">
         <h3>Reservas</h3>
         <p class="sub">Integração com o app oficial do condomínio.</p>
@@ -271,7 +248,7 @@ a.link:hover{text-decoration:underline}
         </div>
         <div id="internalBookings" class="hidden">
           <div class="row">
-            <select id="amenitySelect"></></select>
+            <select id="amenitySelect"></select>
             <input id="startAt" type="datetime-local">
             <input id="endAt" type="datetime-local">
             <button class="btn primary" onclick="requestBooking()">Solicitar</button>
@@ -280,7 +257,6 @@ a.link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <!-- Financeiro -->
       <div class="card section hidden" id="tab-fin">
         <h3>Financeiro</h3>
         <p class="sub">Acesse suas faturas/boletos no sistema atual do condomínio.</p>
@@ -288,16 +264,13 @@ a.link:hover{text-decoration:underline}
           <a class="btn primary" id="btnFinance" target="_blank" rel="noopener" href="#">Abrir Financeiro</a>
         </div>
       </div>
-
     </div>
 
-    <!-- Coluna Lateral (Parceiros) -->
+    <!-- Lateral: Parceiros -->
     <div>
-
       <div class="card section" id="tab-ads">
         <h3>Parceiros</h3>
 
-        <!-- Vitrine PRO 2.0 -->
         <div class="showcase">
           <div class="hero">
             <div>
@@ -337,7 +310,6 @@ a.link:hover{text-decoration:underline}
           <div class="p-grid" id="adsBox"></div>
         </div>
 
-        <!-- Form (apenas manager) -->
         <div id="partnerForm" class="hidden" style="margin-top:12px">
           <h4>Novo parceiro</h4>
           <div class="row">
@@ -360,13 +332,11 @@ a.link:hover{text-decoration:underline}
           <div style="margin-top:8px"><button class="btn primary" onclick="createPartner()">Publicar parceiro</button></div>
         </div>
       </div>
-
     </div>
   </div>
-
 </div>
 
-<!-- ===== Modal Parceiro ===== -->
+<!-- Modal Parceiro -->
 <div class="modal" id="partnerModal" onclick="if(event.target===this)closePartnerModal()">
   <div class="box">
     <div style="display:flex;gap:10px;align-items:center">
@@ -387,46 +357,40 @@ a.link:hover{text-decoration:underline}
   </div>
 </div>
 
-<!-- ===== Scripts ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ===== CONFIG ===== */
+/* CONFIG */
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
 const URL_FINANCEIRO  = 'https://portal.logo.com.br';
-
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ===== Estado ===== */
+/* Estado */
 let profile=null, condoId=null, generalRoomId=null, isManager=false;
 let seenMsgIds = new Set();
-let chatChannel = null;
-let pollingTimer = null;
-let lastSeenAt = null;
-let _adsFull = [], _adsCache = [], _favSet = new Set();
-let _currentPartner = null;
+let chatChannel=null, pollingTimer=null, lastSeenAt=null;
+let _adsFull=[], _favSet=new Set(), _currentPartner=null;
 
-/* ===== Helpers ===== */
-const $=(id)=>document.getElementById(id);
-const show=(el)=>el.classList.remove('hidden');
-const hide=(el)=>el.classList.add('hidden');
+/* Helpers */
+const $=id=>document.getElementById(id);
+const show=el=>el.classList.remove('hidden');
+const hide=el=>el.classList.add('hidden');
 function initials(s){ s=(s||'').trim(); if(!s) return '?'; const p=s.split(/\s+/).slice(0,2); return p.map(x=>x[0]?.toUpperCase()||'').join(''); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function fmt(s){ try{return new Date(s).toLocaleString('pt-BR')}catch{return s} }
 function firstName(full){ const t=(full||'').trim(); if(!t) return ''; return t.split(/\s+/)[0]; }
 function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el,{folder:'svg',ext:'.svg'}); } }
 
-/* ===== Tabs ===== */
+/* Tabs */
 function openTab(k){
-  const tabs=['chat','posts','bookings','fin','ads'];
-  tabs.forEach(t=>{
+  ['chat','posts','bookings','fin','ads'].forEach(t=>{
     const s=$('tab-'+t), b=$('tabBtn-'+(t==='fin'?'fin':t));
     if(!s||!b) return;
     if(t===k){ show(s); b.classList.add('active'); } else { hide(s); b.classList.remove('active'); }
   });
 }
 
-/* ===== Auth & Boot ===== */
+/* Auth */
 async function login(){
   try{
     const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
@@ -438,7 +402,7 @@ async function login(){
 async function signup(){
   try{
     const { error } = await client.auth.signUp({ email:$('email').value, password:$('password').value });
-    if(error) throw error; alert('Conta criada! Verifique seu email (se aplicável).');
+    if(error) throw error; alert('Conta criada!');
   }catch(e){ alert('Erro no cadastro: '+(e?.message||e)); }
 }
 async function logout(){ await client.auth.signOut(); location.reload(); }
@@ -448,11 +412,7 @@ function paintUserChip(name){
   $('chipName').textContent = firstName(name);
   $('userChip').style.display='flex';
   $('btnSignoutTop').style.display='inline-flex';
-  // favoritos do aparelho
-  try{
-    const raw=localStorage.getItem('cu:favs')||'[]';
-    _favSet = new Set(JSON.parse(raw));
-  }catch{}
+  try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
 }
 
 async function boot(){
@@ -463,8 +423,7 @@ async function boot(){
   $('authBox').style.display='none';
 
   const { data: me, error:eProf } = await client.from('profiles')
-    .select('id, full_name, role, condominium_id, unit_id')
-    .eq('id', uid).single();
+    .select('id, full_name, role, condominium_id, unit_id').eq('id', uid).single();
   if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
   profile = me; condoId = me.condominium_id; isManager = (me.role==='manager'||me.role==='admin');
 
@@ -480,6 +439,7 @@ async function boot(){
   await loadChat();
   subscribeChatRealtime();
   await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
+
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) subscribeChatRealtime(); });
   window.addEventListener('online', subscribeChatRealtime);
   window.addEventListener('offline', ()=>{ startPolling(); });
@@ -487,50 +447,45 @@ async function boot(){
   if(isManager) show($('partnerForm')); else hide($('partnerForm'));
 }
 
-/* ===== Chat ===== */
+/* Chat */
 function makeMsgMenu(id, you){
-  const div=document.createElement('div');
-  div.className='menu';
-  const btnEdit=document.createElement('button');
-  btnEdit.textContent='✏️ Editar';
-  btnEdit.onclick=()=>{ div.style.display='none'; startEditMessage(id); };
-  const btnDel=document.createElement('button');
-  btnDel.textContent='🗑️ Apagar';
-  btnDel.onclick=()=>{ div.style.display='none'; deleteMessage(id); };
-  if(you){ div.appendChild(btnEdit); div.appendChild(btnDel); }
+  const div=document.createElement('div'); div.className='menu';
+  if(you){
+    const btnEdit=document.createElement('button'); btnEdit.textContent='✏️ Editar';
+    btnEdit.onclick=()=>{ div.style.display='none'; startEditMessage(id); };
+    const btnDel=document.createElement('button'); btnDel.textContent='🗑️ Apagar';
+    btnDel.onclick=()=>{ div.style.display='none'; deleteMessage(id); };
+    div.appendChild(btnEdit); div.appendChild(btnDel);
+  }
   return div;
 }
 function makeMsgBubble(m){
   const you = (profile?.id && m.sender_id && profile.id===m.sender_id);
+  const edited = m.updated_at && m.updated_at !== m.created_at;
   const div = document.createElement('div');
   div.className = 'msg ' + (you?'you':'other');
   div.dataset.id = m.id;
   div.innerHTML = `
     <button class="kebab" ${you?'':'style="display:none"'} aria-label="Mais ações" title="Mais ações">⋯</button>
-    <div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${m.updated_at && m.updated_at!==m.created_at ? '<span class="edited">(editada)</span>' : ''}</div>
+    <div class="meta">${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${edited?'<span class="edited">(editada)</span>':''}</div>
     <span class="__msg">${escapeHtml(m.content)}</span>`;
   const menu=makeMsgMenu(m.id, you);
   div.appendChild(menu);
-
   const kebab=div.querySelector('.kebab');
   if(kebab){
     kebab.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = menu.style.display==='flex' ? 'none' : 'flex'; });
-  }
-  // Long-press mobile
-  if(you){
+    // long-press mobile
     let t=null;
     div.addEventListener('touchstart', ()=>{ t=setTimeout(()=>{ menu.style.display='flex'; },500); });
     div.addEventListener('touchend', ()=>{ if(t) clearTimeout(t); });
   }
-  // Clique fora fecha
   document.addEventListener('click', ()=>{ menu.style.display='none'; });
-
   renderEmojiIn(div);
   return div;
 }
 async function loadChat(){
   const { data, error } = await client.from('chat_messages')
-    .select('id, content, created_at, updated_at, room_id, sender_name, sender_id')
+    .select('*')
     .eq('room_id', generalRoomId)
     .order('created_at',{ascending:true})
     .limit(300);
@@ -550,8 +505,9 @@ function appendMsg(m){
 }
 function patchMsg(m){
   const el = document.querySelector(`.msg[data-id="${m.id}"]`); if(!el) return;
+  const edited = m.updated_at && m.updated_at !== m.created_at;
   const meta = el.querySelector('.meta');
-  if(meta){ meta.innerHTML = `${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${m.updated_at && m.updated_at!==m.created_at ? '<span class="edited">(editada)</span>' : ''}`; }
+  if(meta){ meta.innerHTML = `${escapeHtml(m.sender_name||'Morador')} • ${fmt(m.created_at)} ${edited?'<span class="edited">(editada)</span>':''}`; }
   el.querySelector('span.__msg').textContent = m.content;
   renderEmojiIn(el);
 }
@@ -561,14 +517,10 @@ async function sendMessage(){
   const displayName = (profile?.full_name?.trim()) || (user?.email?.split('@')[0] || 'Morador');
   const { data, error } = await client.from('chat_messages')
     .insert({ room_id: generalRoomId, content: text, sender_id: profile?.id || user?.id || null, sender_name: displayName })
-    .select('id, content, created_at, updated_at, room_id, sender_name, sender_id')
-    .single();
+    .select('*').single();
   if(error){ alert('Erro ao enviar: '+error.message); return; }
-  $('chatInput').value='';
-  appendMsg(data);
-  setTimeout(refreshSince, 300);
+  $('chatInput').value=''; appendMsg(data); setTimeout(refreshSince, 300);
 }
-// Editar (inline)
 let _editingId=null;
 function startEditMessage(id){
   const el = document.querySelector(`.msg[data-id="${id}"]`); if(!el) return;
@@ -590,10 +542,9 @@ async function applyEditMessage(id, newText, el, actions){
   const { data, error } = await client.from('chat_messages')
     .update({ content: newText })
     .eq('id', id)
-    .select('id, content, created_at, updated_at, room_id, sender_name, sender_id')
-    .single();
+    .select('*').single();
   if(error){
-    alert('Não foi possível editar. Habilite no Supabase a permissão de UPDATE apenas para o autor da mensagem.');
+    alert('Não foi possível editar. Habilite no Supabase a permissão de UPDATE (autor / manager).');
     return;
   }
   patchMsg(data);
@@ -603,27 +554,29 @@ async function applyEditMessage(id, newText, el, actions){
   if(actions) actions.remove();
   _editingId=null;
 }
-// Deletar sua mensagem
 async function deleteMessage(id){
   if(!confirm('Apagar esta mensagem?')) return;
   const { error } = await client.from('chat_messages').delete().eq('id', id);
-  if(error){
-    alert('Não foi possível apagar. Habilite no Supabase a permissão de DELETE apenas para o autor da mensagem.');
-    return;
-  }
+  if(error){ alert('Não foi possível apagar. Verifique a política de DELETE.'); return; }
   const el = document.querySelector(`.msg[data-id="${id}"]`);
   if(el){ el.remove(); }
   seenMsgIds.delete(id);
 }
-// Enter envia / Shift+Enter quebra linha
 (function(){
   const input=$('chatInput');
   input.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); if(_editingId){ /* salvar edição com Enter */ const el=document.querySelector(`.msg[data-id="${_editingId}"]`); const ta=el?.querySelector('textarea'); if(ta){ applyEditMessage(_editingId, ta.value.trim(), el, el.querySelector('div')); } } else { sendMessage(); } }
+    if(e.key==='Enter' && !e.shiftKey){
+      e.preventDefault();
+      if(_editingId){
+        const el=document.querySelector(`.msg[data-id="${_editingId}"]`);
+        const ta=el?.querySelector('textarea');
+        if(ta){ applyEditMessage(_editingId, ta.value.trim(), el, el.querySelector('div')); }
+      } else { sendMessage(); }
+    }
   });
 })();
 
-/* ===== Realtime robusto ===== */
+/* Realtime robusto */
 function subscribeChatRealtime(){
   stopPolling();
   if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
@@ -635,19 +588,13 @@ function subscribeChatRealtime(){
   );
   chatChannel.on('postgres_changes',
     { event:'DELETE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
-    payload => {
-      const id = payload?.old?.id;
-      if(id){ const el=document.querySelector(`.msg[data-id="${id}"]`); if(el) el.remove(); seenMsgIds.delete(id); }
-    }
+    payload => { const id=payload?.old?.id; if(id){ const el=document.querySelector(`.msg[data-id="${id}"]`); if(el) el.remove(); seenMsgIds.delete(id); } }
   );
   chatChannel.on('postgres_changes',
     { event:'UPDATE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
-    payload => {
-      if(payload?.new){ patchMsg(payload.new); }
-    }
+    payload => { if(payload?.new) patchMsg(payload.new); }
   );
 
-  // heartbeat
   let hb = setInterval(()=>{ try{ chatChannel.send({type:'broadcast', event:'hb', payload:{t:Date.now()}});}catch{} }, 15000);
 
   chatChannel.subscribe(status=>{
@@ -661,7 +608,7 @@ function subscribeChatRealtime(){
 async function refreshSince(){
   const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
   const { data } = await client.from('chat_messages')
-    .select('id, content, created_at, updated_at, room_id, sender_name, sender_id')
+    .select('*')
     .eq('room_id', generalRoomId).gt('created_at', since)
     .order('created_at',{ascending:true}).limit(50);
   (data||[]).forEach(m=>appendMsg(m));
@@ -669,7 +616,7 @@ async function refreshSince(){
 function startPolling(){ if(!pollingTimer){ pollingTimer=setInterval(()=>refreshSince(), 1500); } }
 function stopPolling(){ if(pollingTimer){ clearInterval(pollingTimer); pollingTimer=null; } }
 
-/* ===== Emoji Picker ===== */
+/* Emojis */
 const EMOJIS=["😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😎","😢","😭","😡","👍","👎","👏","🙏","💪","🔥","🎉","✨","🌟","💡","📌","📎","📲","🏠","🚗","🍕","🍔","☕"];
 function renderEmojiGrid(){
   const grid=$('emojiGrid'); grid.innerHTML='';
@@ -682,11 +629,10 @@ function renderEmojiGrid(){
 }
 function toggleEmoji(){ const p=$('emojiPanel'); p.classList.toggle('hidden'); if(!p.dataset.rendered){ renderEmojiGrid(); p.dataset.rendered='1'; } }
 
-/* ===== Posts ===== */
+/* Posts */
 async function loadPosts(){
   const { data, error } = await client.from('posts')
-    .select('id,title,content,created_at')
-    .eq('condominium_id', condoId)
+    .select('id,title,content,created_at').eq('condominium_id', condoId)
     .order('created_at',{ascending:false}).limit(50);
   if(error){ $('postsList').innerHTML='<div class="small">Sem permissão para ler comunicados.</div>'; return; }
   $('postsList').innerHTML=(data||[]).map(p=>`
@@ -706,7 +652,7 @@ async function createPost(){
   $('postTitle').value=''; $('postContent').value=''; loadPosts();
 }
 
-/* ===== Reservas (interno opcional) ===== */
+/* Reservas */
 async function loadAmenities(){
   const { data } = await client.from('amenities').select('id,name').eq('condominium_id', condoId).order('name');
   $('amenitySelect').innerHTML=(data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
@@ -741,14 +687,9 @@ async function setBooking(id,status){
   loadBookings();
 }
 
-/* ===== Parceiros ===== */
-function stars(rating=5){
-  const r=Math.max(3, Math.min(5, Number(rating)||5));
-  let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; }
-  return s;
-}
-function catFromTitle(t=''){
-  t=t.toLowerCase();
+/* Parceiros */
+function stars(r=5){ r=Math.max(3, Math.min(5, Number(r)||5)); let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; } return s; }
+function catFromTitle(t=''){ t=t.toLowerCase();
   if(t.includes('tec')||t.includes('celular')||t.includes('comput')) return 'tecnologia';
   if(t.includes('manuten')||t.includes('conserto')||t.includes('reparo')) return 'manutencao';
   if(t.includes('clin')||t.includes('saúde')||t.includes('estética')) return 'saude';
@@ -759,9 +700,6 @@ function pCard(a,wide=false,idx=0){
   const rating = a.rating || 5;
   const cat = a.category || catFromTitle(a.title||'');
   const verified = a.verified ? `<span class="badge-blue">Verificado</span>` : '';
-  const wa = (a.link_url||'').includes('wa.me') ? a.link_url : null;
-  const site = wa ? null : (a.link_url||null);
-  const fav = _favSet.has(a.title||'');
   const inner = `
     ${idx<3?'<div class="ribbon">Top do mês</div>':''}
     <img src="${a.image_url||'cec-logo.png'}" onerror="this.src='cec-logo.png'" alt="">
@@ -773,14 +711,9 @@ function pCard(a,wide=false,idx=0){
     </div>
     <button class="btn sm" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>Abrir</button>
   `;
-  if(wide){
-    return `<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);position:relative">
-      ${inner}
-    </div>`;
-  }
-  return `<div class="card-p" style="cursor:pointer" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>
-    ${inner}
-  </div>`;
+  return wide
+    ? `<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);position:relative">${inner}</div>`
+    : `<div class="card-p" style="cursor:pointer" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>${inner}</div>`;
 }
 async function loadAds(){
   const now=new Date().toISOString();
@@ -790,10 +723,8 @@ async function loadAds(){
   if(error){ $('adsBox').innerHTML='<div class="small">Não foi possível carregar os parceiros.</div>'; return; }
   let items=(data||[]).filter(a=>a.is_active&&(!a.starts_at||a.starts_at<=now)&&(!a.ends_at||a.ends_at>=now));
   if(!items.length){ items=[{title:'CEC Tecnologia BA — Manutenção de Computadores e Celulares',image_url:'cec-logo.png',link_url:'https://wa.me/5571999999999',category:'tecnologia',rating:5,verified:true}]; }
-  // normaliza
   _adsFull = items.map(a=>({...a, category: a.category || catFromTitle(a.title||'') , rating: a.rating || 5 }));
-  _adsCache = _adsFull.slice();
-  renderAds(_adsCache);
+  renderAds(_adsFull);
 }
 function renderAds(items){
   $('adsCarousel').innerHTML = items.slice(0,6).map((x,i)=>pCard(x,false,i)).join('');
@@ -810,7 +741,7 @@ function filterAds(){
   renderAds(items);
 }
 
-/* ===== Modal Parceiro (ações PRO) ===== */
+/* Modal Parceiro */
 function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
 async function createPartner(){
   const title=$('adTitle').value.trim();
@@ -830,12 +761,11 @@ async function createPartner(){
   $('adCategory').value=''; $('adRating').value=''; $('adVerified').checked=false;
   loadAds();
 }
-
 function openPartnerModal(a){
   _currentPartner = a;
   $('pmImg').src = a.image_url || 'cec-logo.png';
   $('pmTitle').textContent = a.title || 'Parceiro';
-  $('pmCat').textContent = a.category || catFromTitle(a.title||'');
+  $('pmCat').textContent = a.category || (a.title?catFromTitle(a.title):'serviços');
   $('pmVerified').innerHTML = a.verified ? '• <span class="badge-blue">Verificado</span>' : '';
   $('pmStars').innerHTML = stars(a.rating||5);
   const wa = (a.link_url||'').includes('wa.me') ? a.link_url : '';
@@ -843,7 +773,7 @@ function openPartnerModal(a){
   $('pmWhats').href = wa || '#';
   $('pmSite').style.display = wa ? 'none' : (a.link_url ? 'inline-flex' : 'none');
   if(a.link_url && !wa) $('pmSite').href = a.link_url;
-  const fav = _favSet.has(a.title||'');
+  const fav = (_favSet||new Set()).has(a.title||'');
   $('pmFav').textContent = fav ? '★ Favorito' : '☆ Favoritar';
   $('partnerModal').style.display='grid';
 }
@@ -873,7 +803,7 @@ function quotePartner(){
   window.open(url,'_blank','noopener');
 }
 
-/* ===== Integração LOGO (Android) ===== */
+/* Integração LOGO */
 function openLogoApp(){
   const pkg='br.com.comunidadesmobile_logoserv';
   const deep='logoserv://open';
@@ -886,19 +816,17 @@ function openLogoApp(){
   } else { window.open(store,'_blank'); }
 }
 
-/* ===== Start ===== */
+/* Start */
 (async()=>{
   const { data } = await client.auth.getSession();
   if(data.session){ await boot(); } else { $('authBox').style.display='block'; }
 })();
 </script>
 
-<!-- SW register (mantém PWA instalável) -->
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
 }
 </script>
-
 </body>
 </html>
