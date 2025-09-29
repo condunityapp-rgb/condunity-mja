@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
-/* === (seu estilo original, com pequenos ajustes de responsividade) === */
+/* === base original + pequenos PATCHes responsivos === */
 :root{
   --bg:#f6f8fc; --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
              radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
@@ -30,7 +30,7 @@ body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,
 .brand .title{font-weight:800;letter-spacing:.2px;font-size:16px}
 .topbar .right{margin-left:auto; display:flex; align-items:center; gap:8px}
 
-/* ⬇️ PATCH: chip aguenta mais largura no mobile e mostra nome completo com elipse mais tarde */
+/* PATCH: chip mais elástico no mobile e exibe nome completo com elipse só se necessário */
 .userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);
   border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px;max-width:70vw}
 .u-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -58,10 +58,8 @@ body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-/* ⬇️ PATCH: tabs mais confortáveis no mobile */
 .tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}
-.tabs::-webkit-scrollbar{height:6px}
-.tabs button{padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:#var(--text);font-weight:800;white-space:nowrap}
+.tabs button{padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text);font-weight:800;white-space:nowrap}
 .tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
 
 input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
@@ -70,7 +68,8 @@ input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(3
 
 /* Chat */
 .chat-wrap{display:flex;flex-direction:column;height:62vh}
-@media (max-width:640px){ .chat-wrap{height:58vh} } /* ⬅️ PATCH: melhora viewport no celular */
+/* PATCH: melhor aproveitamento de viewport no celular, sem afetar desktop */
+@media (max-width:640px){ .chat-wrap{height:58vh} }
 @media (min-width:980px){.chat-wrap{height:60vh}}
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
 .chat-box{flex:1; overflow:auto; padding:10px;border:1px solid var(--border);border-radius:12px;background:#f7f9ff}
@@ -372,12 +371,12 @@ async function signup(){
 }
 async function logout(){ await client.auth.signOut(); location.reload(); }
 
-/* ⬇️ PATCH: chip agora mostra nome COMPLETO, com tooltip e iniciais */
+/* PATCH: agora mostramos o NOME COMPLETO no chip + tooltip, sem mexer em nada do chat */
 function paintUserChip(name){
   const full = (name||'').trim();
   $('chipIni').textContent = initials(full);
-  $('chipName').textContent = full;             // << nome completo
-  const chip = $('userChip'); chip.title = full; // tooltip
+  $('chipName').textContent = full;             // nome completo visível
+  const chip = $('userChip'); chip.title = full; // tooltip com nome completo
   chip.style.display='flex';
   $('btnSignoutTop').style.display='inline-flex';
   try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
@@ -397,10 +396,10 @@ async function boot(){
   if(!uid){ $('authBox').style.display='block'; $('userChip').style.display='none'; $('btnSignoutTop').style.display='none'; return; }
   $('authBox').style.display='none';
 
-  // (mantido) 1) garante profile
+  // garante profile (RPC seu já existente)
   await client.rpc('ensure_profile', { p_default_condo: 'mja' });
 
-  // (mantido) 2) lê profile
+  // lê profile
   const { data: me, error:eProf } = await client.from('profiles')
     .select('id, full_name, role, condominium_id, unit_id, approved')
     .eq('id', uid).single();
@@ -416,7 +415,7 @@ async function boot(){
   const name = (me?.full_name?.trim()) || email.split('@')[0];
   paintUserChip(name);
 
-  // (mantido) 3) garante sala Geral do condomínio
+  // garante sala Geral e obtém id (RPC seu já existente)
   const { data: rid, error:eRid } = await client.rpc('ensure_general_room', { p_condo: condoId });
   if(eRid){ alert('Erro ao garantir sala do chat: '+eRid.message); return; }
   generalRoomId = rid;
@@ -434,7 +433,7 @@ async function boot(){
   if(isManager || isSupervisor || isAdmin) show($('partnerForm')); else hide($('partnerForm'));
 }
 
-/* Chat — (sem alterações de lógica) */
+/* Chat (inalterado de lógica) */
 let _editingId=null;
 function makeMsgMenu(id, you){
   const div=document.createElement('div'); div.className='menu';
@@ -663,7 +662,7 @@ async function setBooking(id,status){
   loadBookings();
 }
 
-/* Parceiros (inalterado) */
+/* Parceiros */
 function stars(r=5){ r=Math.max(3, Math.min(5, Number(r)||5)); let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; } return s; }
 function catFromTitle(t=''){ t=t.toLowerCase();
   if(t.includes('tec')||t.includes('celular')||t.includes('comput')) return 'tecnologia';
@@ -792,7 +791,7 @@ function openLogoApp(){
   } else { window.open(store,'_blank'); }
 }
 
-/* PWA (inalterado) */
+/* PWA */
 let _deferredPrompt=null;
 function isStandalone(){
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
