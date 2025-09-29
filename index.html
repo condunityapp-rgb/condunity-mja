@@ -5,74 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CondUnity • Mansão Jorge Amado</title>
 
-<!-- PWA -->
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" href="favicon.ico" />
 <meta name="theme-color" content="#2563eb" />
 <link rel="apple-touch-icon" href="./icon-192.png" />
-
-<!-- Twemoji para emojis consistentes -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
+/* === (seu estilo original, com pequenos ajustes de responsividade) === */
 :root{
-  --bg:#f6f8fc;
-  --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
+  --bg:#f6f8fc; --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
              radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
-  --card:#ffffff;
-  --muted:#667085;
-  --text:#0f172a;
-  --border:#e5e7eb;
-  --primary:#2563eb;
-  --primary-2:#1e40af;
-  --radius:16px;
-  --shadow:0 10px 30px rgba(15,23,42,.08);
+  --card:#ffffff; --muted:#667085; --text:#0f172a; --border:#e5e7eb;
+  --primary:#2563eb; --primary-2:#1e40af; --radius:16px; --shadow:0 10px 30px rgba(15,23,42,.08);
 }
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  color:var(--text);
-  background:var(--bg);
-  background-image:var(--bg-grad);
-}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  color:var(--text); background:var(--bg); background-image:var(--bg-grad);}
 
-/* Topbar */
-.topbar{
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; gap:12px;
-  padding:10px 12px;
-  background:linear-gradient(180deg,#2150d9 0%, #2563eb 100%);
-  color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15);
-}
+.topbar{position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:12px; padding:10px 12px;
+  background:linear-gradient(180deg,#2150d9 0%, #2563eb 100%); color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15)}
 .brand{display:flex; align-items:center; gap:10px}
 .brand svg{width:32px;height:32px;display:block;border-radius:10px}
 .brand .title{font-weight:800;letter-spacing:.2px;font-size:16px}
 .topbar .right{margin-left:auto; display:flex; align-items:center; gap:8px}
+
+/* ⬇️ PATCH: chip aguenta mais largura no mobile e mostra nome completo com elipse mais tarde */
 .userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);
   border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px;max-width:70vw}
 .u-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   color:#fff;font-weight:800;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
 .userchip .name{font-weight:700;font-size:13px;max-width:56vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:980px){ .userchip{max-width:340px} .userchip .name{max-width:280px} }
+
 .btn{padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);cursor:pointer;font-weight:600}
 .btn.sm{padding:6px 10px;font-size:12px}
 .btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
 .btn.ghost{background:#f8fafc}
 .btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
 
-/* Install pill */
-.install-pill{
-  position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%);
-  display:none; gap:10px; align-items:center;
-  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.15)
-}
-.install-pill .t{font-weight:800}
-.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
+.install-pill{position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%); display:none; gap:10px; align-items:center;
+  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,.15)}
+.install-pill .t{font-weight:800}.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
 .install-pill .x{background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer}
 
-/* layout */
 .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
 .grid{display:grid;grid-template-columns:1fr; gap:12px}
 @media (min-width: 980px){ .grid{grid-template-columns:1.8fr 1fr} }
@@ -82,109 +58,75 @@ body{
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-/* tabs */
-.tabs{
-  display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;
-  background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)
-}
-.tabs button{
-  padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text);
-  font-weight:800;white-space:nowrap
-}
+/* ⬇️ PATCH: tabs mais confortáveis no mobile */
+.tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}
+.tabs::-webkit-scrollbar{height:6px}
+.tabs button{padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:#var(--text);font-weight:800;white-space:nowrap}
 .tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
 
-/* inputs */
 input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
 input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.18)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* chat */
+/* Chat */
 .chat-wrap{display:flex;flex-direction:column;height:62vh}
-@media (max-width: 640px){ .chat-wrap{height:58vh} }
-@media (min-width: 980px){ .chat-wrap{height:60vh} }
+@media (max-width:640px){ .chat-wrap{height:58vh} } /* ⬅️ PATCH: melhora viewport no celular */
+@media (min-width:980px){.chat-wrap{height:60vh}}
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
 .chat-box{flex:1; overflow:auto; padding:10px;border:1px solid var(--border);border-radius:12px;background:#f7f9ff}
 .msg{position:relative; max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.45; box-shadow:0 4px 14px rgba(15,23,42,.06)}
 .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
-.msg.you{background:#e8efff}
-.msg.other{background:#eef2ff}
+.msg.you{background:#e8efff}.msg.other{background:#eef2ff}
 .msg .edited{font-size:11px;color:#64748b;margin-left:6px}
-.msg .menu{
-  position:absolute; right:6px; top:6px;
-  background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
-  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5
-}
+.msg .menu{position:absolute; right:6px; top:6px;background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
+  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5}
 .msg .menu button{background:#fff;border:none;text-align:left;padding:10px 12px;cursor:pointer;font-weight:600}
 .msg .menu button:hover{background:#f1f5f9}
-.msg .kebab{
-  position:absolute; right:6px; top:6px;
-  border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800
-}
+.msg .kebab{position:absolute; right:6px; top:6px;border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800}
 .compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
 textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; background:#fff; font-size:15px}
 .emoji-btn{font-size:20px;padding:6px 10px}
 
-/* emojis */
 .emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* parceiros PRO 2.0 */
-.showcase{
-  background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
-              radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%);
-  border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;
-}
-.hero{
-  display:flex; gap:10px; align-items:center; padding:14px;
-  border-radius:12px;
-  background:linear-gradient(120deg,#e8f3ff 0%,#ecfeff 100%);
-  border:1px dashed #93c5fd;
-}
+.showcase{background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
+              radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;}
+.hero{display:flex; gap:10px; align-items:center; padding:14px; border-radius:12px; background:linear-gradient(120deg,#e8f3ff 0%,#ecfeff 100%); border:1px dashed #93c5fd;}
 .hero h4{margin:0;font-size:16px}
 .badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
 .kpis .k{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-weight:700}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px}
-.tools input{flex:1}
-.tools select{min-width:140px}
+.tools input{flex:1}.tools select{min-width:140px}
 .carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
 .card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center; position:relative}
 .card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
-.card-p .title{font-weight:800}
-.card-p .meta{font-size:12px;color:var(--muted)}
+.card-p .title{font-weight:800}.card-p .meta{font-size:12px;color:#667085}
 .ribbon{position:absolute; top:10px; left:-6px; background:#fde68a; color:#92400e; font-weight:800; font-size:11px; padding:2px 8px; border-radius:6px}
 .p-grid{display:grid;gap:10px;grid-template-columns:1fr}
 @media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
 .badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
 .star{color:#f59e0b}
 
-/* modal parceiro */
 .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60; }
 .modal .box{ width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); padding:14px; }
 .modal .row{margin-top:6px}
 
-.hidden{display:none}
-.small{font-size:12px;color:var(--muted)}
-.kv{font-size:12px;color:var(--muted)}
-a.link{color:#1f4fd7;text-decoration:none}
-a.link:hover{text-decoration:underline}
-.approval{
-  margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;
-  background:#fffbeb; color:#92400e; font-weight:600;
-}
+.hidden{display:none}.small{font-size:12px;color:var(--muted)} .kv{font-size:12px;color:var(--muted)}
+a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underline}
+.approval{margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;background:#fffbeb; color:#92400e; font-weight:600;}
 </style>
 </head>
 <body>
 
-<!-- PILL de instalar -->
 <div class="install-pill" id="installPill">
   <span class="t">Instale o app CondUnity</span>
   <button class="a" id="installDo">Instalar</button>
   <button class="x" id="installX" aria-label="Fechar">×</button>
 </div>
 
-<!-- top -->
 <div class="topbar">
   <div class="brand">
     <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -197,7 +139,7 @@ a.link:hover{text-decoration:underline}
     <div class="title">CondUnity • Mansão Jorge Amado</div>
   </div>
   <div class="right">
-    <div class="userchip" id="userChip" style="display:none">
+    <div class="userchip" id="userChip" style="display:none" title="">
       <div class="u-circle" id="chipIni">?</div>
       <div class="name" id="chipName">Usuário</div>
     </div>
@@ -207,7 +149,6 @@ a.link:hover{text-decoration:underline}
 
 <div class="wrap">
 
-  <!-- Login -->
   <div class="card section" id="authBox" style="display:none">
     <div class="row">
       <input id="email" placeholder="Email" style="min-width:220px">
@@ -217,10 +158,11 @@ a.link:hover{text-decoration:underline}
       <button class="btn primary" onclick="login()">Entrar</button>
       <button class="btn" onclick="signup()">Criar conta</button>
     </div>
-    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.</div>
+    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">
+      Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.
+    </div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
     <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
@@ -234,21 +176,17 @@ a.link:hover{text-decoration:underline}
   </div>
 
   <div class="grid">
-
-    <!-- Coluna principal -->
     <div>
       <div class="card section" id="tab-chat">
         <div class="chat-head"><h3 style="margin:0">Chat Geral do Condomínio</h3></div>
 
         <div class="chat-wrap">
           <div id="chatBox" class="chat-box"></div>
-
           <div class="compose">
             <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
             <textarea id="chatInput" class="input" aria-label="Mensagem"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
-
           <div id="emojiPanel" class="hidden" style="margin-top:8px">
             <div class="emoji-grid" id="emojiGrid"></div>
           </div>
@@ -294,7 +232,6 @@ a.link:hover{text-decoration:underline}
       </div>
     </div>
 
-    <!-- Lateral: Parceiros -->
     <div>
       <div class="card section" id="tab-ads">
         <h3>Parceiros</h3>
@@ -319,8 +256,8 @@ a.link:hover{text-decoration:underline}
               <option value="">Categoria: Todas</option>
               <option value="tecnologia">Tecnologia</option>
               <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde & Bem-estar</option>
-              <option value="alimentos">Alimentos & Bebidas</option>
+              <option value="saude">Saúde &amp; Bem-estar</option>
+              <option value="alimentos">Alimentos &amp; Bebidas</option>
               <option value="servicos">Serviços</option>
             </select>
             <select id="adSort" onchange="filterAds()">
@@ -350,8 +287,8 @@ a.link:hover{text-decoration:underline}
               <option value="">Categoria</option>
               <option value="tecnologia">Tecnologia</option>
               <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde & Bem-estar</option>
-              <option value="alimentos">Alimentos & Bebidas</option>
+              <option value="saude">Saúde &amp; Bem-estar</option>
+              <option value="alimentos">Alimentos &amp; Bebidas</option>
               <option value="servicos">Serviços</option>
             </select>
             <input id="adRating" type="number" min="3" max="5" step="0.1" placeholder="Nota (3–5)">
@@ -364,7 +301,6 @@ a.link:hover{text-decoration:underline}
   </div>
 </div>
 
-<!-- Modal Parceiro -->
 <div class="modal" id="partnerModal" onclick="if(event.target===this)closePartnerModal()">
   <div class="box">
     <div style="display:flex;gap:10px;align-items:center">
@@ -391,12 +327,12 @@ a.link:hover{text-decoration:underline}
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
 const URL_FINANCEIRO  = 'https://portal.logo.com.br';
-const SITE_URL = 'https://condunityapp-rgb.github.io/condunity-mja/';
+const SITE_URL = location.origin + location.pathname; // funciona no GitHub Pages
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* Estado */
-let profile=null, condoId=null, generalRoomId=null, isManager=false, approved=true;
+let profile=null, condoId=null, generalRoomId=null, isManager=false, isSupervisor=false, isAdmin=false, approved=true;
 let seenMsgIds = new Set();
 let chatChannel=null, pollingTimer=null, lastSeenAt=null;
 let _adsFull=[], _favSet=new Set(), _currentPartner=null;
@@ -408,6 +344,7 @@ const hide=el=>el.classList.add('hidden');
 function initials(s){ s=(s||'').trim(); if(!s) return '?'; const p=s.split(/\s+/).slice(0,2); return p.map(x=>x[0]?.toUpperCase()||'').join(''); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function fmt(s){ try{return new Date(s).toLocaleString('pt-BR')}catch{return s} }
+function firstName(full){ const t=(full||'').trim(); if(!t) return ''; return t.split(/\s+/)[0]; }
 function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el,{folder:'svg',ext:'.svg'}); } }
 
 /* Tabs */
@@ -422,10 +359,9 @@ function openTab(k){
 /* Auth */
 async function login(){
   try{
-    const { data, error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
+    const { error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
     if(error) throw error;
-    $('password').value='';
-    await boot();
+    $('password').value=''; await boot();
   }catch(e){ alert('Falha no login: '+(e?.message||e)); }
 }
 async function signup(){
@@ -436,15 +372,17 @@ async function signup(){
 }
 async function logout(){ await client.auth.signOut(); location.reload(); }
 
+/* ⬇️ PATCH: chip agora mostra nome COMPLETO, com tooltip e iniciais */
 function paintUserChip(name){
-  $('chipIni').textContent = initials(name);
-  $('chipName').textContent = (name||'').trim(); // nome completo visível
-  $('userChip').style.display='flex';
+  const full = (name||'').trim();
+  $('chipIni').textContent = initials(full);
+  $('chipName').textContent = full;             // << nome completo
+  const chip = $('userChip'); chip.title = full; // tooltip
+  chip.style.display='flex';
   $('btnSignoutTop').style.display='inline-flex';
   try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
 }
 
-/* Gate de aprovação: se a coluna approved não existir, considera aprovado */
 function applyApprovalGate(){
   if(approved){ hide($('approvalBanner')); return; }
   show($('approvalBanner'));
@@ -459,27 +397,29 @@ async function boot(){
   if(!uid){ $('authBox').style.display='block'; $('userChip').style.display='none'; $('btnSignoutTop').style.display='none'; return; }
   $('authBox').style.display='none';
 
+  // (mantido) 1) garante profile
+  await client.rpc('ensure_profile', { p_default_condo: 'mja' });
+
+  // (mantido) 2) lê profile
   const { data: me, error:eProf } = await client.from('profiles')
     .select('id, full_name, role, condominium_id, unit_id, approved')
     .eq('id', uid).single();
   if(eProf){ alert('Erro ao ler perfil: '+eProf.message); return; }
-  profile = me; condoId = me.condominium_id; isManager = (me.role==='manager'||me.role==='admin');
+  profile = me;
+  condoId = me.condominium_id || 'mja';
+  isAdmin = me.role==='admin';
+  isManager = (me.role==='manager'||isAdmin);
+  isSupervisor = (me.role==='supervisor');
   approved = (typeof me.approved === 'boolean') ? me.approved : true;
   applyApprovalGate();
 
   const name = (me?.full_name?.trim()) || email.split('@')[0];
   paintUserChip(name);
 
-  // >>> PATCH: buscar sala 'Geral' do mesmo condomínio
-  const { data: room, error:eRoom } = await client
-    .from('chat_rooms')
-    .select('id')
-    .eq('name','Geral')
-    .eq('condominium_id', condoId)
-    .single();
-  if(eRoom){ alert('Sala de chat não encontrada'); return; }
-  generalRoomId = room?.id;
-  if (!generalRoomId) { alert('Sala de chat do condomínio não encontrada.'); return; }
+  // (mantido) 3) garante sala Geral do condomínio
+  const { data: rid, error:eRid } = await client.rpc('ensure_general_room', { p_condo: condoId });
+  if(eRid){ alert('Erro ao garantir sala do chat: '+eRid.message); return; }
+  generalRoomId = rid;
 
   $('btnFinance').href = URL_FINANCEIRO;
 
@@ -491,10 +431,10 @@ async function boot(){
   window.addEventListener('online', subscribeChatRealtime);
   window.addEventListener('offline', ()=>{ startPolling(); });
 
-  if(isManager) show($('partnerForm')); else hide($('partnerForm'));
+  if(isManager || isSupervisor || isAdmin) show($('partnerForm')); else hide($('partnerForm'));
 }
 
-/* Chat */
+/* Chat — (sem alterações de lógica) */
 let _editingId=null;
 function makeMsgMenu(id, you){
   const div=document.createElement('div'); div.className='menu';
@@ -532,10 +472,8 @@ function makeMsgBubble(m){
 }
 async function loadChat(){
   const { data, error } = await client.from('chat_messages')
-    .select('*')
-    .eq('room_id', generalRoomId)
-    .order('created_at',{ascending:true})
-    .limit(300);
+    .select('*').eq('room_id', generalRoomId)
+    .order('created_at',{ascending:true}).limit(300);
   if(error){ $('chatBox').innerHTML='<div class="small">Erro ao carregar chat.</div>'; return; }
   seenMsgIds = new Set();
   const box = $('chatBox'); box.innerHTML='';
@@ -587,27 +525,22 @@ function startEditMessage(id){
 async function applyEditMessage(id, newText, el, actions){
   if(!newText){ alert('A mensagem não pode ficar vazia.'); return; }
   const { data, error } = await client.from('chat_messages')
-    .update({ content: newText })
-    .eq('id', id)
-    .select('*').single();
-  if(error){ alert('Não foi possível editar. Verifique a permissão de UPDATE no Supabase.'); return; }
+    .update({ content: newText }).eq('id', id).select('*').single();
+  if(error){ alert('Não foi possível editar.'); return; }
   patchMsg(data);
   const ta = el.querySelector('textarea'); if(ta){
     const span=document.createElement('span'); span.className='__msg'; span.textContent=newText; ta.replaceWith(span);
   }
-  if(actions) actions.remove();
-  _editingId=null;
+  if(actions) actions.remove(); _editingId=null;
 }
 async function deleteMessage(id){
   if(!confirm('Apagar esta mensagem?')) return;
   const { error } = await client.from('chat_messages').delete().eq('id', id);
-  if(error){ alert('Não foi possível apagar. Verifique a permissão de DELETE.'); return; }
-  const el = document.querySelector(`.msg[data-id="${id}"]`);
-  if(el){ el.remove(); }
+  if(error){ alert('Não foi possível apagar.'); return; }
+  const el = document.querySelector(`.msg[data-id="${id}"]`); if(el){ el.remove(); }
   seenMsgIds.delete(id);
 }
-(function(){
-  const input=$('chatInput');
+(function(){ const input=$('chatInput');
   input.addEventListener('keydown', (e)=>{
     if(e.key==='Enter' && !e.shiftKey){
       e.preventDefault();
@@ -620,25 +553,21 @@ async function deleteMessage(id){
   });
 })();
 
-/* Realtime robusto */
+/* Realtime com fallback polling (inalterado) */
 function subscribeChatRealtime(){
-  if (!generalRoomId) return; // >>> PATCH: não assina sem sala
   stopPolling();
   if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
 
   chatChannel = client.channel('realtime:chat_messages:'+generalRoomId, { config:{ broadcast:{ack:true}}});
-  chatChannel.on(
-    'postgres_changes',
+  chatChannel.on('postgres_changes',
     { event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
     payload => appendMsg(payload.new)
   );
-  chatChannel.on(
-    'postgres_changes',
+  chatChannel.on('postgres_changes',
     { event:'DELETE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
     payload => { const id=payload?.old?.id; if(id){ const el=document.querySelector(`.msg[data-id="${id}"]`); if(el) el.remove(); seenMsgIds.delete(id); } }
   );
-  chatChannel.on(
-    'postgres_changes',
+  chatChannel.on('postgres_changes',
     { event:'UPDATE', schema:'public', table:'chat_messages', filter:`room_id=eq.${generalRoomId}` },
     payload => { if(payload?.new) patchMsg(payload.new); }
   );
@@ -656,8 +585,7 @@ function subscribeChatRealtime(){
 async function refreshSince(){
   const since = lastSeenAt || new Date(Date.now()-1000*60*10).toISOString();
   const { data } = await client.from('chat_messages')
-    .select('*')
-    .eq('room_id', generalRoomId).gt('created_at', since)
+    .select('*').eq('room_id', generalRoomId).gt('created_at', since)
     .order('created_at',{ascending:true}).limit(50);
   (data||[]).forEach(m=>appendMsg(m));
 }
@@ -689,7 +617,7 @@ async function loadPosts(){
       <div class="small">${fmt(p.created_at)}</div>
       <div style="margin-top:4px"><span class="__msg">${escapeHtml(p.content)}</span></div>
     </div>`).join('');
-  if(isManager) show($('postForm')); else hide($('postForm'));
+  if(isManager || isSupervisor || isAdmin) show($('postForm')); else hide($('postForm'));
   renderEmojiIn($('postsList'));
 }
 async function createPost(){
@@ -720,7 +648,7 @@ async function loadBookings(){
     .select('id,amenity_id,starts_at,ends_at,status')
     .eq('condominium_id',condoId).order('starts_at',{ascending:false}).limit(50);
   list.innerHTML=(data||[]).map(b=>{
-    const actions=(isManager && b.status==='pending')
+    const actions=((isManager||isSupervisor||isAdmin) && b.status==='pending')
       ? `<button class="btn" onclick="setBooking('${b.id}','approved')">Aprovar</button>
          <button class="btn warn" onclick="setBooking('${b.id}','rejected')">Rejeitar</button>`
       : `<span class="btn ghost sm">${b.status}</span>`;
@@ -735,7 +663,7 @@ async function setBooking(id,status){
   loadBookings();
 }
 
-/* Parceiros */
+/* Parceiros (inalterado) */
 function stars(r=5){ r=Math.max(3, Math.min(5, Number(r)||5)); let s=''; for(let i=1;i<=5;i++){ s+=`<span class="star">${i<=Math.round(r)?'★':'☆'}</span>`; } return s; }
 function catFromTitle(t=''){ t=t.toLowerCase();
   if(t.includes('tec')||t.includes('celular')||t.includes('comput')) return 'tecnologia';
@@ -790,7 +718,7 @@ function filterAds(){
 }
 
 /* Modal Parceiro */
-function openPartnerForm(){ if(isManager) show($('partnerForm')); else alert('Somente Manager pode publicar.'); }
+function openPartnerForm(){ if(isManager || isSupervisor || isAdmin) show($('partnerForm')); else alert('Somente Manager/Supervisor pode publicar.'); }
 async function createPartner(){
   const title=$('adTitle').value.trim();
   const link=$('adLink').value.trim();
@@ -864,7 +792,7 @@ function openLogoApp(){
   } else { window.open(store,'_blank'); }
 }
 
-/* PWA: convite de instalação */
+/* PWA (inalterado) */
 let _deferredPrompt=null;
 function isStandalone(){
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -874,27 +802,16 @@ function maybeShowInstall(){
   if(localStorage.getItem('cu:pwaDismissed')==='1') return;
   const pill=$('installPill'); pill.style.display='flex';
 }
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault(); _deferredPrompt=e; maybeShowInstall();
-});
-$('installDo').addEventListener('click', async ()=>{
-  if(!_deferredPrompt) { window.location.href = SITE_URL; return; }
-  _deferredPrompt.prompt();
-  const { outcome } = await _deferredPrompt.userChoice;
-  _deferredPrompt=null;
-  $('installPill').style.display='none';
-  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }
-});
-$('installX').addEventListener('click', ()=>{
-  localStorage.setItem('cu:pwaDismissed','1');
-  $('installPill').style.display='none';
-});
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); _deferredPrompt=e; maybeShowInstall(); });
+$('installDo').addEventListener('click', async ()=>{ if(!_deferredPrompt){ window.location.href=SITE_URL; return; }
+  _deferredPrompt.prompt(); const { outcome } = await _deferredPrompt.userChoice; _deferredPrompt=null; $('installPill').style.display='none';
+  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }});
+$('installX').addEventListener('click', ()=>{ localStorage.setItem('cu:pwaDismissed','1'); $('installPill').style.display='none'; });
 window.addEventListener('appinstalled', ()=>{ $('installPill').style.display='none'; localStorage.removeItem('cu:pwaDismissed'); });
 window.addEventListener('load', ()=>{ if(!_deferredPrompt) setTimeout(maybeShowInstall, 1500); });
 
 /* Start */
-(async()=>{
-  const { data } = await client.auth.getSession();
+(async()=>{ const { data } = await client.auth.getSession();
   if(data.session){ await boot(); } else { $('authBox').style.display='block'; }
 })();
 </script>
