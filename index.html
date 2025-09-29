@@ -12,43 +12,77 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
-/* === base original + pequenos PATCHes responsivos === */
-:root{
-  --bg:#f6f8fc; --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
-             radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
-  --card:#ffffff; --muted:#667085; --text:#0f172a; --border:#e5e7eb;
-  --primary:#2563eb; --primary-2:#1e40af; --radius:16px; --shadow:0 10px 30px rgba(15,23,42,.08);
+/* === TEMA MODERNO COM CARA DE APP (somente CSS trocado) === */
+:root {
+  --bg:#f9fafb;
+  --bg-grad:
+    radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
+    radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
+  --card:#ffffff;
+  --muted:#64748b;
+  --text:#0f172a;
+  --border:#e2e8f0;
+  --primary:#2563eb;
+  --primary-2:#1e40af;
+  --radius:20px;
+  --shadow:0 6px 20px rgba(15,23,42,.06);
 }
-*{box-sizing:border-box} html,body{height:100%}
-body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  color:var(--text); background:var(--bg); background-image:var(--bg-grad);}
 
-.topbar{position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:12px; padding:10px 12px;
-  background:linear-gradient(180deg,#2150d9 0%, #2563eb 100%); color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.15)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  background-image:var(--bg-grad);
+}
+
+/* Topbar */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:12px;
+  padding:12px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-2));
+  color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.12)
+}
 .brand{display:flex; align-items:center; gap:10px}
 .brand svg{width:32px;height:32px;display:block;border-radius:10px}
-.brand .title{font-weight:800;letter-spacing:.2px;font-size:16px}
+.brand .title{font-weight:800;letter-spacing:.2px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
 .topbar .right{margin-left:auto; display:flex; align-items:center; gap:8px}
-
-/* PATCH: chip mais elástico no mobile e exibe nome completo com elipse só se necessário */
-.userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px;max-width:70vw}
-.u-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;background:linear-gradient(135deg,#1d4ed8,#22d3ee)}
-.userchip .name{font-weight:700;font-size:13px;max-width:56vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (min-width:980px){ .userchip{max-width:340px} .userchip .name{max-width:280px} }
-
-.btn{padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);cursor:pointer;font-weight:600}
+.userchip{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;padding:6px 10px
+}
+.u-circle{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--primary);font-weight:800;background:#fff
+}
+.userchip .name{
+  font-weight:700;font-size:14px;max-width:150px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.btn{padding:10px 14px;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--text);cursor:pointer;font-weight:700}
 .btn.sm{padding:6px 10px;font-size:12px}
-.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary-2)); border-color:transparent; color:#fff}
+.btn.primary{background:var(--primary); border-color:transparent; color:#fff}
 .btn.ghost{background:#f8fafc}
 .btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
 
-.install-pill{position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%); display:none; gap:10px; align-items:center;
-  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,.15)}
-.install-pill .t{font-weight:800}.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
+/* Install pill */
+.install-pill{
+  position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%);
+  display:none; gap:10px; align-items:center;
+  background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.15)
+}
+.install-pill .t{font-weight:800}
+.install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
 .install-pill .x{background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer}
 
+/* layout */
 .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
 .grid{display:grid;grid-template-columns:1fr; gap:12px}
 @media (min-width: 980px){ .grid{grid-template-columns:1.8fr 1fr} }
@@ -58,82 +92,121 @@ body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-.tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow:auto;padding:6px;border-radius:999px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}
-.tabs button{padding:10px 14px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text);font-weight:800;white-space:nowrap}
-.tabs button.active{background:linear-gradient(180deg,var(--primary),var(--primary-2)); color:#fff}
+/* tabs como barra de app */
+.tabs{
+  display:flex;gap:4px;flex-wrap:nowrap;overflow:auto;padding:0;border-radius:0;
+  background:#fff;border-bottom:1px solid var(--border)
+}
+.tabs button{
+  flex:1 0 auto;
+  padding:12px 16px;border:none;border-radius:0;background:transparent;color:var(--muted);
+  font-weight:800;white-space:nowrap
+}
+.tabs button.active{
+  color:var(--primary); border-bottom:3px solid var(--primary);
+}
 
-input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
+/* inputs */
+input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%;background:#fff}
 input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.18)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* Chat */
-.chat-wrap{display:flex;flex-direction:column;height:62vh}
-/* PATCH: melhor aproveitamento de viewport no celular, sem afetar desktop */
-@media (max-width:640px){ .chat-wrap{height:58vh} }
-@media (min-width:980px){.chat-wrap{height:60vh}}
+/* chat */
+.chat-wrap{display:flex;flex-direction:column;height:70vh}
+@media (min-width: 980px){ .chat-wrap{height:60vh} }
+@media (max-width:640px){ .chat-wrap{height:calc(100vh - 200px)} }
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
-.chat-box{flex:1; overflow:auto; padding:10px;border:1px solid var(--border);border-radius:12px;background:#f7f9ff}
-.msg{position:relative; max-width:92%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.45; box-shadow:0 4px 14px rgba(15,23,42,.06)}
+.chat-box{flex:1; overflow:auto; padding:12px;border:1px solid var(--border);border-radius:16px;background:#f1f5f9}
+.msg{position:relative; max-width:88%; padding:10px 14px; border-radius:14px; margin:8px 0; line-height:1.45; box-shadow:0 2px 8px rgba(15,23,42,.06)}
 .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
-.msg.you{background:#e8efff}.msg.other{background:#eef2ff}
+.msg.you{background:#dbeafe; align-self:flex-end}
+.msg.other{background:#e2e8f0; align-self:flex-start}
 .msg .edited{font-size:11px;color:#64748b;margin-left:6px}
-.msg .menu{position:absolute; right:6px; top:6px;background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
-  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5}
+.msg .menu{
+  position:absolute; right:6px; top:6px;
+  background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
+  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5
+}
 .msg .menu button{background:#fff;border:none;text-align:left;padding:10px 12px;cursor:pointer;font-weight:600}
 .msg .menu button:hover{background:#f1f5f9}
-.msg .kebab{position:absolute; right:6px; top:6px;border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800}
+.msg .kebab{
+  position:absolute; right:6px; top:6px;
+  border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800
+}
 .compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
-textarea.input{flex:1; min-height:46px; max-height:140px; resize:vertical; background:#fff; font-size:15px}
+textarea.input{flex:1; min-height:46px; max-height:120px; resize:vertical; background:#fff; font-size:15px}
 .emoji-btn{font-size:20px;padding:6px 10px}
 
+/* emojis */
 .emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-.showcase{background: radial-gradient(800px 200px at 0% 0%, #e9f3ff 0%, transparent 60%),
-              radial-gradient(800px 200px at 100% 0%, #eaffe9 0%, transparent 60%); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px;}
-.hero{display:flex; gap:10px; align-items:center; padding:14px; border-radius:12px; background:linear-gradient(120deg,#e8f3ff 0%,#ecfeff 100%); border:1px dashed #93c5fd;}
+/* vitrine parceiros */
+.showcase{
+  background: radial-gradient(800px 200px at 0% 0%, #eef4ff 0%, transparent 60%),
+              radial-gradient(800px 200px at 100% 0%, #ecfff3 0%, transparent 60%);
+  border:1px solid var(--border); border-radius:16px; padding:12px; margin-bottom:12px;
+}
+.hero{
+  display:flex; gap:10px; align-items:center; padding:14px;
+  border-radius:14px;
+  background:linear-gradient(120deg,#edf2ff 0%,#efffff 100%);
+  border:1px dashed #93c5fd;
+}
 .hero h4{margin:0;font-size:16px}
 .badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
 .kpis .k{background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-weight:700}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px}
-.tools input{flex:1}.tools select{min-width:140px}
+.tools input{flex:1}
+.tools select{min-width:140px}
 .carousel{display:flex; gap:10px; overflow:auto; scroll-snap-type:x mandatory; padding:6px 2px 2px}
-.card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center; position:relative}
+.card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:16px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center; position:relative}
 .card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
-.card-p .title{font-weight:800}.card-p .meta{font-size:12px;color:#667085}
+.card-p .title{font-weight:800}
+.card-p .meta{font-size:12px;color:var(--muted)}
 .ribbon{position:absolute; top:10px; left:-6px; background:#fde68a; color:#92400e; font-weight:800; font-size:11px; padding:2px 8px; border-radius:6px}
 .p-grid{display:grid;gap:10px;grid-template-columns:1fr}
 @media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
 .badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
 .star{color:#f59e0b}
 
+/* modal parceiro */
 .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60; }
 .modal .box{ width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); padding:14px; }
 .modal .row{margin-top:6px}
 
-.hidden{display:none}.small{font-size:12px;color:var(--muted)} .kv{font-size:12px;color:var(--muted)}
-a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underline}
-.approval{margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;background:#fffbeb; color:#92400e; font-weight:600;}
+/* utils */
+.hidden{display:none}
+.small{font-size:12px;color:var(--muted)}
+.kv{font-size:12px;color:var(--muted)}
+a.link{color:#1f4fd7;text-decoration:none}
+a.link:hover{text-decoration:underline}
+.approval{
+  margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;
+  background:#fffbeb; color:#92400e; font-weight:600;
+}
 </style>
 </head>
 <body>
 
+<!-- PILL de instalar -->
 <div class="install-pill" id="installPill">
   <span class="t">Instale o app CondUnity</span>
   <button class="a" id="installDo">Instalar</button>
   <button class="x" id="installX" aria-label="Fechar">×</button>
 </div>
 
+<!-- top -->
 <div class="topbar">
   <div class="brand">
     <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-      <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
-      <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
-      <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
-      <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
+    <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
+    <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
+    <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
+    <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
     </svg>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
   </div>
@@ -148,6 +221,7 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
 
 <div class="wrap">
 
+  <!-- Login -->
   <div class="card section" id="authBox" style="display:none">
     <div class="row">
       <input id="email" placeholder="Email" style="min-width:220px">
@@ -157,11 +231,10 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
       <button class="btn primary" onclick="login()">Entrar</button>
       <button class="btn" onclick="signup()">Criar conta</button>
     </div>
-    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">
-      Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.
-    </div>
+    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.</div>
   </div>
 
+  <!-- Tabs -->
   <div class="tabs">
     <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
     <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
@@ -175,17 +248,21 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
   </div>
 
   <div class="grid">
+
+    <!-- Coluna principal -->
     <div>
       <div class="card section" id="tab-chat">
         <div class="chat-head"><h3 style="margin:0">Chat Geral do Condomínio</h3></div>
 
         <div class="chat-wrap">
           <div id="chatBox" class="chat-box"></div>
+
           <div class="compose">
             <button class="emoji-btn btn" title="Emojis" onclick="toggleEmoji()">😊</button>
             <textarea id="chatInput" class="input" aria-label="Mensagem"></textarea>
             <button class="btn primary" onclick="sendMessage()">Enviar</button>
           </div>
+
           <div id="emojiPanel" class="hidden" style="margin-top:8px">
             <div class="emoji-grid" id="emojiGrid"></div>
           </div>
@@ -231,6 +308,7 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
       </div>
     </div>
 
+    <!-- Lateral: Parceiros -->
     <div>
       <div class="card section" id="tab-ads">
         <h3>Parceiros</h3>
@@ -255,8 +333,8 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
               <option value="">Categoria: Todas</option>
               <option value="tecnologia">Tecnologia</option>
               <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde &amp; Bem-estar</option>
-              <option value="alimentos">Alimentos &amp; Bebidas</option>
+              <option value="saude">Saúde & Bem-estar</option>
+              <option value="alimentos">Alimentos & Bebidas</option>
               <option value="servicos">Serviços</option>
             </select>
             <select id="adSort" onchange="filterAds()">
@@ -286,8 +364,8 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
               <option value="">Categoria</option>
               <option value="tecnologia">Tecnologia</option>
               <option value="manutencao">Manutenção</option>
-              <option value="saude">Saúde &amp; Bem-estar</option>
-              <option value="alimentos">Alimentos &amp; Bebidas</option>
+              <option value="saude">Saúde & Bem-estar</option>
+              <option value="alimentos">Alimentos & Bebidas</option>
               <option value="servicos">Serviços</option>
             </select>
             <input id="adRating" type="number" min="3" max="5" step="0.1" placeholder="Nota (3–5)">
@@ -300,6 +378,7 @@ a.link{color:#1f4fd7;text-decoration:none} a.link:hover{text-decoration:underlin
   </div>
 </div>
 
+<!-- Modal Parceiro -->
 <div class="modal" id="partnerModal" onclick="if(event.target===this)closePartnerModal()">
   <div class="box">
     <div style="display:flex;gap:10px;align-items:center">
@@ -371,13 +450,12 @@ async function signup(){
 }
 async function logout(){ await client.auth.signOut(); location.reload(); }
 
-/* PATCH: agora mostramos o NOME COMPLETO no chip + tooltip, sem mexer em nada do chat */
 function paintUserChip(name){
   const full = (name||'').trim();
   $('chipIni').textContent = initials(full);
-  $('chipName').textContent = full;             // nome completo visível
-  const chip = $('userChip'); chip.title = full; // tooltip com nome completo
-  chip.style.display='flex';
+  $('chipName').textContent = firstName(full); // exibe primeiro nome
+  $('userChip').title = full;                  // tooltip com nome completo
+  $('userChip').style.display='flex';
   $('btnSignoutTop').style.display='inline-flex';
   try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
 }
@@ -396,10 +474,10 @@ async function boot(){
   if(!uid){ $('authBox').style.display='block'; $('userChip').style.display='none'; $('btnSignoutTop').style.display='none'; return; }
   $('authBox').style.display='none';
 
-  // garante profile (RPC seu já existente)
+  // 1) garante que existe profile (via RPC security definer)
   await client.rpc('ensure_profile', { p_default_condo: 'mja' });
 
-  // lê profile
+  // 2) lê o profile
   const { data: me, error:eProf } = await client.from('profiles')
     .select('id, full_name, role, condominium_id, unit_id, approved')
     .eq('id', uid).single();
@@ -412,10 +490,10 @@ async function boot(){
   approved = (typeof me.approved === 'boolean') ? me.approved : true;
   applyApprovalGate();
 
-  const name = (me?.full_name?.trim()) || email.split('@')[0];
-  paintUserChip(name);
+  const displayName = (me?.full_name?.trim()) || email.split('@')[0];
+  paintUserChip(displayName);
 
-  // garante sala Geral e obtém id (RPC seu já existente)
+  // 3) garante sala Geral do condomínio e obtém id (via RPC)
   const { data: rid, error:eRid } = await client.rpc('ensure_general_room', { p_condo: condoId });
   if(eRid){ alert('Erro ao garantir sala do chat: '+eRid.message); return; }
   generalRoomId = rid;
@@ -430,10 +508,11 @@ async function boot(){
   window.addEventListener('online', subscribeChatRealtime);
   window.addEventListener('offline', ()=>{ startPolling(); });
 
+  // manager/supervisor/admin pode cadastrar parceiros
   if(isManager || isSupervisor || isAdmin) show($('partnerForm')); else hide($('partnerForm'));
 }
 
-/* Chat (inalterado de lógica) */
+/* Chat */
 let _editingId=null;
 function makeMsgMenu(id, you){
   const div=document.createElement('div'); div.className='menu';
@@ -461,6 +540,7 @@ function makeMsgBubble(m){
   const kebab=div.querySelector('.kebab');
   if(kebab){
     kebab.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = menu.style.display==='flex' ? 'none' : 'flex'; });
+    // long-press mobile
     let t=null;
     div.addEventListener('touchstart', ()=>{ t=setTimeout(()=>{ menu.style.display='flex'; },500); });
     div.addEventListener('touchend', ()=>{ if(t) clearTimeout(t); });
@@ -552,7 +632,7 @@ async function deleteMessage(id){
   });
 })();
 
-/* Realtime com fallback polling (inalterado) */
+/* Realtime com fallback polling */
 function subscribeChatRealtime(){
   stopPolling();
   if (chatChannel){ try{ client.removeChannel(chatChannel); }catch{} chatChannel=null; }
@@ -687,7 +767,7 @@ function pCard(a,wide=false,idx=0){
     <button class="btn sm" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>Abrir</button>
   `;
   return wide
-    ? `<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);position:relative">${inner}</div>`
+    ? `<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);position:relative">${inner}</div>`
     : `<div class="card-p" style="cursor:pointer" onclick='openPartnerModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>${inner}</div>`;
 }
 async function loadAds(){
