@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CondUnity • Mansão Jorge Amado</title>
 
 <link rel="manifest" href="./manifest.json" />
@@ -12,12 +12,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" defer></script>
 
 <style>
-/* === TEMA MODERNO COM CARA DE APP (somente CSS trocado) === */
-:root {
+/* ===== TEMA & LAYOUT (mobile-first, cara de app) ===== */
+:root{
   --bg:#f9fafb;
-  --bg-grad:
-    radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
-    radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
+  --bg-grad: radial-gradient(600px 320px at -10% -10%, #e6edff 0%, transparent 55%),
+             radial-gradient(700px 420px at 110% -10%, #eafcff 0%, transparent 60%);
   --card:#ffffff;
   --muted:#64748b;
   --text:#0f172a;
@@ -26,8 +25,9 @@
   --primary-2:#1e40af;
   --radius:20px;
   --shadow:0 6px 20px rgba(15,23,42,.06);
+  --bottomnav-h:64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -36,6 +36,7 @@ body{
   color:var(--text);
   background:var(--bg);
   background-image:var(--bg-grad);
+  padding-bottom: calc(var(--bottomnav-h) + var(--safe-bottom));
 }
 
 /* Topbar */
@@ -71,9 +72,9 @@ body{
 .btn.ghost{background:#f8fafc}
 .btn.warn{background:#fff3f3;border-color:#fecaca;color:#b91c1c}
 
-/* Install pill */
+/* Instalar PWA */
 .install-pill{
-  position:fixed; z-index:60; bottom:14px; left:50%; transform:translateX(-50%);
+  position:fixed; z-index:60; bottom: calc(14px + var(--bottomnav-h)); left:50%; transform:translateX(-50%);
   display:none; gap:10px; align-items:center;
   background:#0b1220; color:#fff; padding:10px 14px; border-radius:999px; box-shadow:var(--shadow);
   border:1px solid rgba(255,255,255,.15)
@@ -82,7 +83,7 @@ body{
 .install-pill .a{background:#fff; color:#0b1220; font-weight:800; border-radius:999px; padding:6px 10px; border:none; cursor:pointer}
 .install-pill .x{background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer}
 
-/* layout */
+/* Conteúdo */
 .wrap{max-width:1100px;margin:14px auto;padding:0 12px}
 .grid{display:grid;grid-template-columns:1fr; gap:12px}
 @media (min-width: 980px){ .grid{grid-template-columns:1.8fr 1fr} }
@@ -92,29 +93,29 @@ body{
 .section h3{margin:0 0 10px 0}
 .sub{font-size:12px;color:var(--muted)}
 
-/* tabs como barra de app */
+/* Tabs desktop (no mobile usamos bottom bar) */
 .tabs{
-  display:flex;gap:4px;flex-wrap:nowrap;overflow:auto;padding:0;border-radius:0;
-  background:#fff;border-bottom:1px solid var(--border)
+  display:none;
+  gap:4px;flex-wrap:nowrap;overflow:auto;padding:0;border-radius:0;
+  background:#fff;border-bottom:1px solid var(--border); margin-bottom:8px;
 }
 .tabs button{
   flex:1 0 auto;
   padding:12px 16px;border:none;border-radius:0;background:transparent;color:var(--muted);
   font-weight:800;white-space:nowrap
 }
-.tabs button.active{
-  color:var(--primary); border-bottom:3px solid var(--primary);
-}
+.tabs button.active{ color:var(--primary); border-bottom:3px solid var(--primary); }
+@media (min-width:980px){ .tabs{display:flex} }
 
-/* inputs */
+/* Inputs */
 input,select,textarea{border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px;width:100%;background:#fff}
 input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.18)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* chat */
+/* Chat */
 .chat-wrap{display:flex;flex-direction:column;height:70vh}
 @media (min-width: 980px){ .chat-wrap{height:60vh} }
-@media (max-width:640px){ .chat-wrap{height:calc(100vh - 200px)} }
+@media (max-width:640px){ .chat-wrap{height:calc(100vh - 240px - var(--safe-bottom))} }
 .chat-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
 .chat-box{flex:1; overflow:auto; padding:12px;border:1px solid var(--border);border-radius:16px;background:#f1f5f9}
 .msg{position:relative; max-width:88%; padding:10px 14px; border-radius:14px; margin:8px 0; line-height:1.45; box-shadow:0 2px 8px rgba(15,23,42,.06)}
@@ -122,38 +123,24 @@ input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(3
 .msg.you{background:#dbeafe; align-self:flex-end}
 .msg.other{background:#e2e8f0; align-self:flex-start}
 .msg .edited{font-size:11px;color:#64748b;margin-left:6px}
-.msg .menu{
-  position:absolute; right:6px; top:6px;
-  background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
-  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5
-}
+.msg .menu{position:absolute; right:6px; top:6px;background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
+  display:none; flex-direction:column; min-width:140px; overflow:hidden; z-index:5}
 .msg .menu button{background:#fff;border:none;text-align:left;padding:10px 12px;cursor:pointer;font-weight:600}
 .msg .menu button:hover{background:#f1f5f9}
-.msg .kebab{
-  position:absolute; right:6px; top:6px;
-  border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800
-}
+.msg .kebab{position:absolute; right:6px; top:6px;border:none; background:rgba(255,255,255,.8); cursor:pointer; border-radius:8px; padding:2px 8px; font-weight:800}
 .compose{display:flex; gap:8px; margin-top:10px; align-items:flex-end; position:sticky; bottom:0;}
 textarea.input{flex:1; min-height:46px; max-height:120px; resize:vertical; background:#fff; font-size:15px}
 .emoji-btn{font-size:20px;padding:6px 10px}
 
-/* emojis */
+/* Emojis */
 .emoji-grid{display:grid;grid-template-columns:repeat(10,28px);gap:6px}
 .emoji-grid button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
 .emoji-grid img{width:20px;height:20px}
 
-/* vitrine parceiros */
-.showcase{
-  background: radial-gradient(800px 200px at 0% 0%, #eef4ff 0%, transparent 60%),
-              radial-gradient(800px 200px at 100% 0%, #ecfff3 0%, transparent 60%);
-  border:1px solid var(--border); border-radius:16px; padding:12px; margin-bottom:12px;
-}
-.hero{
-  display:flex; gap:10px; align-items:center; padding:14px;
-  border-radius:14px;
-  background:linear-gradient(120deg,#edf2ff 0%,#efffff 100%);
-  border:1px dashed #93c5fd;
-}
+/* Parceiros */
+.showcase{background: radial-gradient(800px 200px at 0% 0%, #eef4ff 0%, transparent 60%), radial-gradient(800px 200px at 100% 0%, #ecfff3 0%, transparent 60%);
+  border:1px solid var(--border); border-radius:16px; padding:12px; margin-bottom:12px;}
+.hero{display:flex; gap:10px; align-items:center; padding:14px; border-radius:14px;background:linear-gradient(120deg,#edf2ff 0%,#efffff 100%); border:1px dashed #93c5fd;}
 .hero h4{margin:0;font-size:16px}
 .badge{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #cbd5e1;color:#334155;background:#f8fafc}
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
@@ -165,28 +152,39 @@ textarea.input{flex:1; min-height:46px; max-height:120px; resize:vertical; backg
 .card-p{min-width:260px; scroll-snap-align:start; background:#fff; border:1px solid var(--border); border-radius:16px; padding:12px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:center; position:relative}
 .card-p img{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover}
 .card-p .title{font-weight:800}
-.card-p .meta{font-size:12px;color:var(--muted)}
+.card-p .meta{font-size:12px;color:#64748b}
 .ribbon{position:absolute; top:10px; left:-6px; background:#fde68a; color:#92400e; font-weight:800; font-size:11px; padding:2px 8px; border-radius:6px}
 .p-grid{display:grid;gap:10px;grid-template-columns:1fr}
 @media(min-width:640px){ .p-grid{grid-template-columns:1fr 1fr}}
 .badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:11px}
 .star{color:#f59e0b}
 
-/* modal parceiro */
-.modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:60; }
+/* Modal */
+.modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(2,6,23,.5); z-index:70; }
 .modal .box{ width:min(560px,92vw); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); padding:14px; }
 .modal .row{margin-top:6px}
 
-/* utils */
+/* Bottom Tab Bar (mobile) */
+.bottom-nav{
+  position:fixed; left:0; right:0; bottom:0; z-index:60;
+  display:flex; justify-content:space-around; align-items:center;
+  height:calc(var(--bottomnav-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background:#fff; border-top:1px solid var(--border); box-shadow:0 -4px 14px rgba(15,23,42,.06)
+}
+.bottom-nav .item{
+  flex:1; text-align:center; padding:8px 0; font-weight:700; color:#64748b; border:none; background:none;
+}
+.bottom-nav .item .ic{display:block; margin:0 auto 4px; width:22px; height:22px}
+.bottom-nav .item.active{ color:var(--primary); }
+
+/* Utils */
 .hidden{display:none}
 .small{font-size:12px;color:var(--muted)}
 .kv{font-size:12px;color:var(--muted)}
 a.link{color:#1f4fd7;text-decoration:none}
 a.link:hover{text-decoration:underline}
-.approval{
-  margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;
-  background:#fffbeb; color:#92400e; font-weight:600;
-}
+.approval{margin-top:10px; padding:10px; border-radius:12px; border:1px solid #fde68a;background:#fffbeb; color:#92400e; font-weight:600;}
 </style>
 </head>
 <body>
@@ -195,18 +193,28 @@ a.link:hover{text-decoration:underline}
 <div class="install-pill" id="installPill">
   <span class="t">Instale o app CondUnity</span>
   <button class="a" id="installDo">Instalar</button>
+  <button class="a" id="installHow">Como instalar</button>
   <button class="x" id="installX" aria-label="Fechar">×</button>
 </div>
 
-<!-- top -->
+<!-- MODAL Instruções de Instalação -->
+<div class="modal" id="installModal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="box">
+    <h3>Como instalar no seu celular</h3>
+    <div id="installSteps" class="small"></div>
+    <div style="margin-top:10px"><button class="btn" onclick="document.getElementById('installModal').style.display='none'">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Topbar -->
 <div class="topbar">
   <div class="brand">
     <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="cuG" x1="0" y1="0" x2="40" y2="40"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-    <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
-    <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
-    <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
-    <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
+      <rect width="40" height="40" rx="12" fill="url(#cuG)"/>
+      <rect x="8" y="14" width="7" height="16" rx="2" fill="white" opacity=".92"/>
+      <rect x="17" y="10" width="7" height="20" rx="2" fill="white" opacity=".92"/>
+      <rect x="26" y="16" width="7" height="14" rx="2" fill="white" opacity=".92"/>
     </svg>
     <div class="title">CondUnity • Mansão Jorge Amado</div>
   </div>
@@ -231,16 +239,18 @@ a.link:hover{text-decoration:underline}
       <button class="btn primary" onclick="login()">Entrar</button>
       <button class="btn" onclick="signup()">Criar conta</button>
     </div>
-    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.</div>
+    <div id="approvalHint" class="small" style="margin-top:6px;color:#475569">
+      Cadastro livre. O acesso completo é liberado quando o síndico/adm aprovar.
+    </div>
   </div>
 
-  <!-- Tabs -->
+  <!-- Tabs (desktop) -->
   <div class="tabs">
-    <button id="tabBtn-chat" class="active" onclick="openTab('chat')">Chat</button>
-    <button id="tabBtn-posts" onclick="openTab('posts')">Comunicados</button>
-    <button id="tabBtn-bookings" onclick="openTab('bookings')">Reservas</button>
-    <button id="tabBtn-fin" onclick="openTab('fin')">Financeiro</button>
-    <button id="tabBtn-ads" onclick="openTab('ads')">Parceiros</button>
+    <button id="tabBtn-chat" class="active" onclick="openTab('chat'); setActiveBottom('chat')">Chat</button>
+    <button id="tabBtn-posts" onclick="openTab('posts'); setActiveBottom('posts')">Comunicados</button>
+    <button id="tabBtn-bookings" onclick="openTab('bookings'); setActiveBottom('bookings')">Reservas</button>
+    <button id="tabBtn-fin" onclick="openTab('fin'); setActiveBottom('fin')">Financeiro</button>
+    <button id="tabBtn-ads" onclick="openTab('ads'); setActiveBottom('ads')">Parceiros</button>
   </div>
 
   <div id="approvalBanner" class="approval hidden">
@@ -248,7 +258,6 @@ a.link:hover{text-decoration:underline}
   </div>
 
   <div class="grid">
-
     <!-- Coluna principal -->
     <div>
       <div class="card section" id="tab-chat">
@@ -278,6 +287,25 @@ a.link:hover{text-decoration:underline}
             <textarea id="postContent" placeholder="Conteúdo"></textarea>
           </div>
           <div style="margin-top:8px"><button class="btn primary" onclick="createPost()">Publicar comunicado</button></div>
+        </div>
+
+        <!-- ====== CONVITES (apenas admin/síndico) ====== -->
+        <div id="invitesCard" class="card section hidden" style="margin-top:12px; border-radius:14px">
+          <h3>Convites</h3>
+          <div class="small">Gere um link para convidar moradores/supervisores. O link funciona após login do convidado.</div>
+          <div class="row" style="margin-top:8px">
+            <select id="inviteRole">
+              <option value="morador">Morador</option>
+              <option value="supervisor">Supervisor</option>
+            </select>
+            <select id="inviteExpiry">
+              <option value="24">Expira em 24h</option>
+              <option value="72">Expira em 3 dias</option>
+              <option value="168">Expira em 7 dias</option>
+            </select>
+            <button class="btn primary" onclick="createInvite()">Gerar link</button>
+          </div>
+          <div id="inviteResult" class="small" style="margin-top:6px"></div>
         </div>
       </div>
 
@@ -378,6 +406,30 @@ a.link:hover{text-decoration:underline}
   </div>
 </div>
 
+<!-- Bottom Tab Bar (mobile) -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="item active" id="b-chat"    onclick="openTab('chat'); setActiveBottom('chat')" aria-label="Chat">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H9l-5 4v-4H5a3 3 0 0 1-3-3V5z"/></svg>
+    Chat
+  </button>
+  <button class="item" id="b-posts" onclick="openTab('posts'); setActiveBottom('posts')" aria-label="Comunicados">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4zm0 4h16v10H4z"/><path d="M6 10h8v2H6zm0 4h12v2H6z"/></svg>
+    Avisos
+  </button>
+  <button class="item" id="b-bookings" onclick="openTab('bookings'); setActiveBottom('bookings')" aria-label="Reservas">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zM3 10v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8z"/></svg>
+    Reservas
+  </button>
+  <button class="item" id="b-fin" onclick="openTab('fin'); setActiveBottom('fin')" aria-label="Financeiro">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v2H3zM5 8h14v10H5z"/><path d="M8 12h8v2H8z"/></svg>
+    Financeiro
+  </button>
+  <button class="item" id="b-ads" onclick="openTab('ads'); setActiveBottom('ads')" aria-label="Parceiros">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5 0-9 2.5-9 5v3h18v-3c0-2.5-4-5-9-5z"/></svg>
+    Parceiros
+  </button>
+</div>
+
 <!-- Modal Parceiro -->
 <div class="modal" id="partnerModal" onclick="if(event.target===this)closePartnerModal()">
   <div class="box">
@@ -405,7 +457,7 @@ a.link:hover{text-decoration:underline}
 const SUPABASE_URL = 'https://kqkahzfzxbzqwjtkyqhe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtxa2FoemZ6eGJ6cXdqdGt5cWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODk0MTcsImV4cCI6MjA3Mzk2NTQxN30.AyvxACf6RutV35-3gFpUlfutjG9NZzY6ZtCgDijuCrM';
 const URL_FINANCEIRO  = 'https://portal.logo.com.br';
-const SITE_URL = location.origin + location.pathname; // funciona no GitHub Pages
+const SITE_URL = location.origin + location.pathname; // GitHub Pages ok
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -414,7 +466,8 @@ let profile=null, condoId=null, generalRoomId=null, isManager=false, isSuperviso
 let seenMsgIds = new Set();
 let chatChannel=null, pollingTimer=null, lastSeenAt=null;
 let _adsFull=[], _favSet=new Set(), _currentPartner=null;
-
+/* PWA */
+let _deferredPrompt=null;
 /* Helpers */
 const $=id=>document.getElementById(id);
 const show=el=>el.classList.remove('hidden');
@@ -424,13 +477,21 @@ function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':
 function fmt(s){ try{return new Date(s).toLocaleString('pt-BR')}catch{return s} }
 function firstName(full){ const t=(full||'').trim(); if(!t) return ''; return t.split(/\s+/)[0]; }
 function renderEmojiIn(el){ if(window.twemoji){ twemoji.parse(el,{folder:'svg',ext:'.svg'}); } }
+function getQP(name){ return new URLSearchParams(location.search).get(name); }
 
 /* Tabs */
 function openTab(k){
   ['chat','posts','bookings','fin','ads'].forEach(t=>{
     const s=$('tab-'+t), b=$('tabBtn-'+(t==='fin'?'fin':t));
-    if(!s||!b) return;
-    if(t===k){ show(s); b.classList.add('active'); } else { hide(s); b.classList.remove('active'); }
+    if(!s) return;
+    if(t===k){ s.classList.remove('hidden'); b && b.classList.add('active'); }
+    else { s.classList.add('hidden'); b && b.classList.remove('active'); }
+  });
+}
+function setActiveBottom(k){
+  ['chat','posts','bookings','fin','ads'].forEach(t=>{
+    const el=$('b-'+t);
+    if(el){ if(t===k) el.classList.add('active'); else el.classList.remove('active'); }
   });
 }
 
@@ -439,7 +500,8 @@ async function login(){
   try{
     const { error } = await client.auth.signInWithPassword({ email:$('email').value, password:$('password').value });
     if(error) throw error;
-    $('password').value=''; await boot();
+    $('password').value='';
+    await boot();
   }catch(e){ alert('Falha no login: '+(e?.message||e)); }
 }
 async function signup(){
@@ -453,8 +515,8 @@ async function logout(){ await client.auth.signOut(); location.reload(); }
 function paintUserChip(name){
   const full = (name||'').trim();
   $('chipIni').textContent = initials(full);
-  $('chipName').textContent = firstName(full); // exibe primeiro nome
-  $('userChip').title = full;                  // tooltip com nome completo
+  $('chipName').textContent = firstName(full);
+  $('userChip').title = full;
   $('userChip').style.display='flex';
   $('btnSignoutTop').style.display='inline-flex';
   try{ _favSet = new Set(JSON.parse(localStorage.getItem('cu:favs')||'[]')); }catch{}
@@ -464,14 +526,19 @@ function applyApprovalGate(){
   if(approved){ hide($('approvalBanner')); return; }
   show($('approvalBanner'));
   hide($('tab-chat')); hide($('tab-posts')); hide($('tab-bookings')); hide($('tab-fin'));
-  openTab('ads');
+  openTab('ads'); setActiveBottom('ads');
 }
 
 async function boot(){
   const { data: auth } = await client.auth.getUser();
   const uid = auth?.user?.id;
   const email = auth?.user?.email || '';
-  if(!uid){ $('authBox').style.display='block'; $('userChip').style.display='none'; $('btnSignoutTop').style.display='none'; return; }
+  if(!uid){
+    $('authBox').style.display='block';
+    $('userChip').style.display='none';
+    $('btnSignoutTop').style.display='none';
+    return;
+  }
   $('authBox').style.display='none';
 
   // 1) garante que existe profile (via RPC security definer)
@@ -504,15 +571,21 @@ async function boot(){
   subscribeChatRealtime();
   await loadPosts(); await loadAmenities(); await loadBookings(); await loadAds();
 
+  // Resgate de convite por token na URL
+  const inv = getQP('invite');
+  if(inv){ await redeemInvite(inv); }
+
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) subscribeChatRealtime(); });
   window.addEventListener('online', subscribeChatRealtime);
   window.addEventListener('offline', ()=>{ startPolling(); });
 
   // manager/supervisor/admin pode cadastrar parceiros
   if(isManager || isSupervisor || isAdmin) show($('partnerForm')); else hide($('partnerForm'));
+  // convites: só admin/manager
+  if(isAdmin || isManager){ $('invitesCard').classList.remove('hidden'); }
 }
 
-/* Chat */
+/* Chat (igual ao seu) */
 let _editingId=null;
 function makeMsgMenu(id, you){
   const div=document.createElement('div'); div.className='menu';
@@ -540,7 +613,6 @@ function makeMsgBubble(m){
   const kebab=div.querySelector('.kebab');
   if(kebab){
     kebab.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = menu.style.display==='flex' ? 'none' : 'flex'; });
-    // long-press mobile
     let t=null;
     div.addEventListener('touchstart', ()=>{ t=setTimeout(()=>{ menu.style.display='flex'; },500); });
     div.addEventListener('touchend', ()=>{ if(t) clearTimeout(t); });
@@ -858,44 +930,112 @@ function quotePartner(){
   window.open(url,'_blank','noopener');
 }
 
-/* Integração LOGO */
-function openLogoApp(){
-  const pkg='br.com.comunidadesmobile_logoserv';
-  const deep='logoserv://open';
-  const store='https://play.google.com/store/apps/details?id='+pkg;
-  const isAndroid=/Android/i.test(navigator.userAgent);
-  if(isAndroid){
-    const iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=deep; document.body.appendChild(iframe);
-    setTimeout(()=>{ window.location.href=store; }, 1200);
-    setTimeout(()=>{ document.body.removeChild(iframe); }, 2000);
-  } else { window.open(store,'_blank'); }
+/* ====== CONVITES (front) ====== */
+async function createInvite(){
+  try{
+    const role = $('inviteRole').value;
+    const hours = Number($('inviteExpiry').value);
+    const { data, error } = await client.rpc('create_invite', { p_condo: condoId, p_role: role, p_expires_in_hours: hours });
+    if(error) throw error;
+    const link = SITE_URL + '?invite=' + data;
+    $('inviteResult').innerHTML = `Link criado: <a class="link" href="${link}" target="_blank" rel="noopener">${link}</a>
+      <button class="btn sm" onclick="navigator.clipboard.writeText('${link}')">Copiar</button>`;
+  }catch(e){ alert('Erro ao gerar convite: '+(e?.message||e)); }
+}
+async function redeemInvite(token){
+  try{
+    const { data, error } = await client.rpc('redeem_invite', { p_token: token });
+    if(error) throw error;
+    if(data && data.ok){
+      alert('Convite aplicado! Seu acesso foi ajustado.');
+      history.replaceState({}, document.title, SITE_URL); // limpa ?invite=
+      await boot(); // re-lê perfil/permissões
+    }else{
+      alert('Convite inválido ou expirado.');
+    }
+  }catch(e){ alert('Falha ao aplicar convite: '+(e?.message||e)); }
 }
 
-/* PWA */
-let _deferredPrompt=null;
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+/* ====== Bottom nav init ====== */
+function ensureBottomTabInit(){
+  // Ao carregar, mantemos o Chat selecionado por padrão
+  setActiveBottom('chat');
+}
+
+/* ====== PWA: convite de instalação com fallback ====== */
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+function ua(){ return navigator.userAgent||''; }
+function platformSteps(){
+  const ios = /iPhone|iPad|iPod/i.test(ua());
+  const chrome = /Chrome/i.test(ua()) && /Android/i.test(ua());
+  if(ios){
+    return `
+      <p>No iPhone/iPad (Safari):</p>
+      <ol>
+        <li>Toque no botão <strong>Compartilhar</strong> (ícone quadrado com seta).</li>
+        <li>Escolha <strong>Adicionar à Tela de Início</strong>.</li>
+        <li>Confirme em <strong>Adicionar</strong>.</li>
+      </ol>`;
+  } else if(chrome){
+    return `
+      <p>No Android (Chrome):</p>
+      <ol>
+        <li>Toque no menu ⋮ do Chrome.</li>
+        <li>Toque em <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong>.</li>
+        <li>Confirme.</li>
+      </ol>`;
+  }
+  return `<p>Procure no menu do navegador a opção <strong>Instalar app</strong> / <strong>Adicionar à tela inicial</strong>.</p>`;
 }
 function maybeShowInstall(){
   if(isStandalone()) return;
   if(localStorage.getItem('cu:pwaDismissed')==='1') return;
-  const pill=$('installPill'); pill.style.display='flex';
+  $('installPill').style.display='flex';
 }
-window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); _deferredPrompt=e; maybeShowInstall(); });
-$('installDo').addEventListener('click', async ()=>{ if(!_deferredPrompt){ window.location.href=SITE_URL; return; }
-  _deferredPrompt.prompt(); const { outcome } = await _deferredPrompt.userChoice; _deferredPrompt=null; $('installPill').style.display='none';
-  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }});
-$('installX').addEventListener('click', ()=>{ localStorage.setItem('cu:pwaDismissed','1'); $('installPill').style.display='none'; });
-window.addEventListener('appinstalled', ()=>{ $('installPill').style.display='none'; localStorage.removeItem('cu:pwaDismissed'); });
-window.addEventListener('load', ()=>{ if(!_deferredPrompt) setTimeout(maybeShowInstall, 1500); });
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  _deferredPrompt = e;
+  maybeShowInstall();
+});
+$('installDo').addEventListener('click', async ()=>{
+  if(!_deferredPrompt){
+    // Sem evento (iOS Safari ou critérios não cumpridos) => abre instruções
+    $('installSteps').innerHTML = platformSteps();
+    $('installModal').style.display='grid';
+    return;
+  }
+  _deferredPrompt.prompt();
+  const { outcome } = await _deferredPrompt.userChoice;
+  _deferredPrompt=null;
+  $('installPill').style.display='none';
+  if(outcome!=='accepted'){ localStorage.setItem('cu:pwaDismissed','1'); }
+});
+$('installHow').addEventListener('click', ()=>{
+  $('installSteps').innerHTML = platformSteps();
+  $('installModal').style.display='grid';
+});
+$('installX').addEventListener('click', ()=>{
+  localStorage.setItem('cu:pwaDismissed','1');
+  $('installPill').style.display='none';
+});
+window.addEventListener('appinstalled', ()=>{
+  $('installPill').style.display='none';
+  localStorage.removeItem('cu:pwaDismissed');
+});
+window.addEventListener('load', ()=>{
+  if(!_deferredPrompt) setTimeout(maybeShowInstall, 1200);
+  ensureBottomTabInit();
+});
 
 /* Start */
-(async()=>{ const { data } = await client.auth.getSession();
+(async()=>{
+  const { data } = await client.auth.getSession();
   if(data.session){ await boot(); } else { $('authBox').style.display='block'; }
 })();
 </script>
 
 <script>
+/* SW */
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js'); });
 }
